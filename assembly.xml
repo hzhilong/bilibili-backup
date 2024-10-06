@@ -1,0 +1,58 @@
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.2.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.2.0 http://maven.apache.org/xsd/assembly-2.2.0.xsd">
+    <!--https://maven.apache.org/plugins/maven-assembly-plugin/assembly.html-->
+    <!-- 描述文件的id -->
+    <id>win</id>
+    <!-- 是否生成和压缩包同名的项目跟目录 -->
+    <includeBaseDirectory>true</includeBaseDirectory>
+    <!-- 指定程序集格式 -->
+    <formats>
+        <format>dir</format>
+        <format>zip</format>
+    </formats>
+
+    <!--是对依赖包的设置-->
+    <dependencySets>
+        <!--assembly中dependencySets的意思就是，将scope为runtime的依赖包，放到lib目录下-->
+        <dependencySet>
+            <!--定义了是否解压依赖包，如果为true，会解压出依赖包中的class文件，反之，则不进行解压-->
+            <unpack>false</unpack>
+            <!--限定了对哪些依赖包进行操作；（依赖包scope的值是在pom.xml中定义的）-->
+            <scope>runtime</scope>
+            <!-- 依赖包在打好的包中相对于根目录的路径-->
+            <outputDirectory>bin/lib</outputDirectory>
+            <!--依赖包中是否包含当前工程-->
+            <useProjectArtifact>false</useProjectArtifact>
+        </dependencySet>
+    </dependencySets>
+
+    <files>
+        <file>
+            <source>${project.build.directory}/${project.artifactId}-${project.version}.jar</source>
+            <outputDirectory>bin/</outputDirectory>
+            <destName>${project.artifactId}.jar</destName>
+        </file>
+    </files>
+
+    <!-- 这里指定需要包含的其他文件 -->
+    <fileSets>
+        <fileSet>
+            <directory>jre</directory>
+            <outputDirectory>bin/jre/</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>bat</directory>
+            <outputDirectory>.</outputDirectory>
+        </fileSet>
+
+        <fileSet>
+            <directory>${project.build.directory}</directory>
+            <outputDirectory>bin/</outputDirectory>
+            <includes>
+                <include>${project.artifactId}.jar</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+
+</assembly>
