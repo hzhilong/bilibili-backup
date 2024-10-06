@@ -1,6 +1,6 @@
 @echo off
 color 3F
-title=ﬂŸ¡®ﬂŸ¡®’ ∫≈ªπ‘≠
+title=ﬂŸ¡®ﬂŸ¡®’À∫≈ªπ‘≠
 
 if "%1" equ "" (
 start /max call "%0" 1
