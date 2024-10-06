@@ -25,6 +25,11 @@
 ## 使用方法
 下载[已发布的版本](https://github.com/hzhilong/bilibili-backup/releases)，解压后，打开对应功能的bat文件即可。
 
+## 注意事项
+
+- 新号请先升到2级。
+- 关注数过多的话，还原时可能会遇到风控，建议过段时间再继续还原。
+
 ## 感谢
 
 - [bilibili-API-collect](https://github.com/SocialSisterYi/bilibili-API-collect)
