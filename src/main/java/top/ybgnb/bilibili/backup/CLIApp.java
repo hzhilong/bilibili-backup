@@ -143,7 +143,7 @@ public class CLIApp {
         OkHttpClient client = new OkHttpClient.Builder().addInterceptor(
                 new ThrottlingInterceptor(1000)).build();
         LoginService loginService = new LoginService(client);
-        log.info("正在获取登录二维码...");
+        log.info("正在获取登录二维码（长时间不显示的话，可按一下方向键下刷新屏幕）...");
         log.info("可尝试按住【Ctrl+鼠标滚轮键】调整字体为较小状态（方便展示二维码）");
         QRCode qrCode = loginService.generateQRCode();
         log.info("请使用手机哔哩哔哩扫码登录：");
