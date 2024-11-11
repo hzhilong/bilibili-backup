@@ -7,7 +7,7 @@
     <groupId>top.ybgnb</groupId>
     <artifactId>bilibili-backup</artifactId>
     <description>哔哩哔哩账号备份</description>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>

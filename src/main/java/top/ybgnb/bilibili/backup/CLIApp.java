@@ -27,6 +27,7 @@ import top.ybgnb.bilibili.backup.utils.QRUtil;
 import top.ybgnb.bilibili.backup.utils.StringUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -143,12 +144,25 @@ public class CLIApp {
         OkHttpClient client = new OkHttpClient.Builder().addInterceptor(
                 new ThrottlingInterceptor(1000)).build();
         LoginService loginService = new LoginService(client);
-        log.info("正在获取登录二维码（长时间不显示的话，可按一下方向键下刷新屏幕）...");
-        log.info("可尝试按住【Ctrl+鼠标滚轮键】调整字体为较小状态（方便展示二维码）");
+        log.info("正在获取登录二维码...");
+//        log.info("正在获取登录二维码（长时间不显示的话，可按一下方向键下刷新屏幕）...");
+//        log.info("可尝试按住【Ctrl+鼠标滚轮键】调整字体为较小状态（方便展示二维码）");
         QRCode qrCode = loginService.generateQRCode();
         log.info("请使用手机哔哩哔哩扫码登录：");
-        QRUtil.printQR(qrCode.getUrl());
-        log.info("请使用手机哔哩哔哩扫码登录：");
+//        QRUtil.printQR(qrCode.getUrl());
+//        log.info("请使用手机哔哩哔哩扫码登录：");
+        File dir = new File("qr");
+        if(!dir.exists()){
+            dir.mkdir();
+        }
+        String filePath = "qr/" + System.currentTimeMillis() + ".png";
+        File file = QRUtil.writeQRFile(qrCode.getUrl(), filePath);
+        Runtime runtime = Runtime.getRuntime();
+        try {
+            runtime.exec("cmd /c \"" + file.getAbsolutePath()+"\"");
+        } catch (IOException e) {
+            throw new BusinessException("打开二维码失败");
+        }
         long startTime = System.currentTimeMillis();
         String cookie = null;
         while (System.currentTimeMillis() - startTime < 180000 && StringUtils.isEmpty(cookie)) {
@@ -183,12 +197,12 @@ public class CLIApp {
             }
         };
         if (BuType.BACKUP.equals(buType)) {
-            upper = new BilibiliBackup(builders,new User(cookie), userInfoCallback).start();
+            upper = new BilibiliBackup(builders, new User(cookie), userInfoCallback).start();
         } else if (BuType.RESTORE.equals(buType)) {
             if (StringUtils.isEmpty(readJsonDir)) {
                 throw new BusinessException("备份文件为空");
             }
-            upper = new BilibiliRestore(builders,readJsonDir, new User(cookie), userInfoCallback).start();
+            upper = new BilibiliRestore(builders, readJsonDir, new User(cookie), userInfoCallback).start();
         } else if (BuType.READ_ALL_MSG.equals(buType)) {
             upper = new BilibiliReadAllMsg(new User(cookie), userInfoCallback).start();
         }
