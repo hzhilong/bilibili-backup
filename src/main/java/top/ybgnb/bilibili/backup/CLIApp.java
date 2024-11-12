@@ -95,6 +95,10 @@ public class CLIApp {
             String cookie = getCookie(buType, sc);
             // 开始处理
             List<ServiceBuilder> services = getServices(buType, sc);
+            while (services.isEmpty()) {
+                log.info("未选择任何项目，请重新选择");
+                services = getServices(buType, sc);
+            }
             startBusiness(buType, cookie, readJsonDir, services);
         } finally {
             if (sc != null) {
@@ -152,31 +156,35 @@ public class CLIApp {
 //        QRUtil.printQR(qrCode.getUrl());
 //        log.info("请使用手机哔哩哔哩扫码登录：");
         File dir = new File("qr");
-        if(!dir.exists()){
+        if (!dir.exists()) {
             dir.mkdir();
         }
         String filePath = "qr/" + System.currentTimeMillis() + ".png";
         File file = QRUtil.writeQRFile(qrCode.getUrl(), filePath);
-        Runtime runtime = Runtime.getRuntime();
         try {
-            runtime.exec("cmd /c \"" + file.getAbsolutePath()+"\"");
-        } catch (IOException e) {
-            throw new BusinessException("打开二维码失败");
-        }
-        long startTime = System.currentTimeMillis();
-        String cookie = null;
-        while (System.currentTimeMillis() - startTime < 180000 && StringUtils.isEmpty(cookie)) {
-            cookie = loginService.login(qrCode);
+            Runtime runtime = Runtime.getRuntime();
             try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
+                runtime.exec("cmd /c \"" + file.getAbsolutePath() + "\"");
+            } catch (IOException e) {
+                throw new BusinessException("打开二维码失败");
             }
+            long startTime = System.currentTimeMillis();
+            String cookie = null;
+            while (System.currentTimeMillis() - startTime < 180000 && StringUtils.isEmpty(cookie)) {
+                cookie = loginService.login(qrCode);
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                }
+            }
+            if (StringUtils.isEmpty(cookie)) {
+                throw new BusinessException("扫码超时");
+            }
+            log.info("登录成功");
+            return cookie;
+        } finally {
+            file.deleteOnExit();
         }
-        if (StringUtils.isEmpty(cookie)) {
-            throw new BusinessException("扫码超时");
-        }
-        log.info("登录成功");
-        return cookie;
     }
 
     @NotNull
