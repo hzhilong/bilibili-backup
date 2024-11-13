@@ -91,15 +91,18 @@ public class CLIApp {
                     throw new BusinessException("备份文件为空");
                 }
             }
-
             String cookie = getCookie(buType, sc);
             // 开始处理
-            List<ServiceBuilder> services = getServices(buType, sc);
-            while (services.isEmpty()) {
-                log.info("未选择任何项目，请重新选择");
-                services = getServices(buType, sc);
+            if (BuType.BACKUP.equals(buType) || BuType.RESTORE.equals(buType)) {
+                List<ServiceBuilder> services = getServices(buType, sc);
+                while (services.isEmpty()) {
+                    log.info("未选择任何项目，请重新选择");
+                    services = getServices(buType, sc);
+                }
+                startBusiness(buType, cookie, readJsonDir, services);
+            } else {
+                startBusiness(buType, cookie, null, null);
             }
-            startBusiness(buType, cookie, readJsonDir, services);
         } finally {
             if (sc != null) {
                 sc.close();
