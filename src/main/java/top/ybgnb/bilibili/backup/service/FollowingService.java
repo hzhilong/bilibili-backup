@@ -132,11 +132,12 @@ public class FollowingService extends RelationService {
                 modify(oldFollowing, RelationAct.FOLLOW);
             }
             // 处理该关注的关注分组
-            if (isFollowed) {
-                List<Long> oldFollowingTag = oldFollowing.getTag();
-                if (ListUtil.notEmpty(oldFollowingTag) && !oldIdMapNewId.isEmpty()) {
+            List<Long> oldFollowingTag = oldFollowing.getTag();
+            if (ListUtil.notEmpty(oldFollowingTag) && !oldIdMapNewId.isEmpty()) {
+                boolean isNeedUpdateTags = true;
+                if (isFollowed) {
+                    // 之前已关注
                     Relation newFollowed = mapNewFollowing.get(oldFollowing.getMid());
-                    boolean isNeedUpdateTags = true;
                     if (ListUtil.notEmpty(newFollowed.getTag()) && newFollowed.getTag().size() == oldFollowingTag.size()) {
                         for (Long newT : newFollowed.getTag()) {
                             if (!oldFollowingTag.contains(newT)) {
@@ -145,24 +146,26 @@ public class FollowingService extends RelationService {
                         }
                         isNeedUpdateTags = false;
                     }
-                    if (isNeedUpdateTags) {
-                        List<Long> newFollowingTag = new ArrayList<>(oldFollowingTag.size());
-                        for (Long tag : oldFollowingTag) {
-                            if (oldIdMapNewId.containsKey(tag)) {
-                                newFollowingTag.add(oldIdMapNewId.get(tag));
-                            }
+                } else {
+                    // 现在才关注
+                }
+                if (isNeedUpdateTags) {
+                    List<Long> newFollowingTag = new ArrayList<>(oldFollowingTag.size());
+                    for (Long tag : oldFollowingTag) {
+                        if (oldIdMapNewId.containsKey(tag)) {
+                            newFollowingTag.add(oldIdMapNewId.get(tag));
                         }
-                        if (!newFollowingTag.isEmpty()) {
-                            String newFollowingTagString = newFollowingTag.toString();
+                    }
+                    if (!newFollowingTag.isEmpty()) {
+                        String newFollowingTagString = newFollowingTag.toString();
 
-                            if (copyUsers.containsKey(newFollowingTagString)) {
-                                copyUsers.get(newFollowingTagString).addUser(oldFollowing);
-                            } else {
-                                CopyUser copyUser = new CopyUser();
-                                copyUser.tags = newFollowingTag;
-                                copyUser.addUser(oldFollowing);
-                                copyUsers.put(newFollowingTagString, copyUser);
-                            }
+                        if (copyUsers.containsKey(newFollowingTagString)) {
+                            copyUsers.get(newFollowingTagString).addUser(oldFollowing);
+                        } else {
+                            CopyUser copyUser = new CopyUser();
+                            copyUser.tags = newFollowingTag;
+                            copyUser.addUser(oldFollowing);
+                            copyUsers.put(newFollowingTagString, copyUser);
                         }
                     }
                 }
