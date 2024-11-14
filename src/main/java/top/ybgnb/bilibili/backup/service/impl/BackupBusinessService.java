@@ -13,9 +13,8 @@ import top.ybgnb.bilibili.backup.utils.CookieUtil;
 import top.ybgnb.bilibili.backup.utils.ItemChoiceUtil;
 
 import java.util.List;
-import java.util.Scanner;
 
-import static top.ybgnb.bilibili.backup.utils.CommonUtil.*;
+import static top.ybgnb.bilibili.backup.utils.CommonUtil.userCookieThreadLocal;
 
 /**
  * @author Dream
@@ -23,11 +22,8 @@ import static top.ybgnb.bilibili.backup.utils.CommonUtil.*;
 @Slf4j
 public class BackupBusinessService implements BaseBusinessService {
 
-    private String readJsonDir = null;
-
     @Override
-    public Object process(Object requestMsg) throws BusinessException {
-        Scanner sc = scannerThreadLocal.get();
+    public Upper process(Object requestMsg) throws BusinessException {
         CookieUtil.getCookie();
         // 开始处理
         List<ServiceBuilder> items = ItemChoiceUtil.getServices();
@@ -35,9 +31,7 @@ public class BackupBusinessService implements BaseBusinessService {
             log.info("未选择任何项目，请重新选择");
             items = ItemChoiceUtil.getServices();
         }
-        Upper upper = new BilibiliBackup(items, new User(userCookieThreadLocal.get()), new DefaultUserInfoCallback()).start();
-        log.info(String.format("成功%s[%s]", buTypeThreadLocal.get().getCnName(), upper.getName()));
-        return null;
+        return new BilibiliBackup(items, new User(userCookieThreadLocal.get()), new DefaultUserInfoCallback()).start();
     }
 
     @Override

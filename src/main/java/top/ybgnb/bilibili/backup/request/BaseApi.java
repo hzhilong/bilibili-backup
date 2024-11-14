@@ -25,7 +25,6 @@ import java.lang.reflect.Type;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiConsumer;
 
 /**
  * @ClassName BaseApi
@@ -116,12 +115,7 @@ public class BaseApi<D> implements AddQueryParams {
         }
         FormBody.Builder formBodyBuilder = new FormBody.Builder();
         if (formParams != null && !formParams.isEmpty()) {
-            formParams.forEach(new BiConsumer<String, String>() {
-                @Override
-                public void accept(String key, String value) {
-                    formBodyBuilder.add(key, value == null ? "" : value);
-                }
-            });
+            formParams.forEach((key, value) -> formBodyBuilder.add(key, value == null ? "" : value));
         }
         Request.Builder builder = new Request.Builder()
                 .url(url).post(formBodyBuilder.build());
@@ -209,14 +203,14 @@ public class BaseApi<D> implements AddQueryParams {
                     if (isParseBody) {
                         apiResponse.setApiResult(parseApiResult(this.dataClasses, result));
                     }
-                    log.debug(String.format("响应：(%s)", result));
+                    log.debug("响应：({})", result);
                     return apiResponse;
                 } else {
-                    log.error(String.format("响应为空(%s)", response.code()));
+                    log.error("响应为空({})", response.code());
                     throw new BusinessException(String.format("响应为空(%s)", response.code()));
                 }
             } else {
-                log.debug(String.format("请求失败，code：%s", response.code()));
+                log.debug("请求失败，code：{}", response.code());
                 throw new BusinessException(String.format("请求失败，code：%s", response.code()));
             }
         } catch (IOException e) {
@@ -226,22 +220,22 @@ public class BaseApi<D> implements AddQueryParams {
     }
 
     public ApiResponse<D> apiGetWithResponse() throws BusinessException {
-        log.debug(String.format("【apiGetResponse】url：%s", url));
+        log.debug("【apiGetResponse】url：{}", url);
         return apiRequest(null, true);
     }
 
     public ApiResult<D> apiGet() throws BusinessException {
-        log.debug(String.format("【apiGet】url：%s", url));
+        log.debug("【apiGet】url：{}", url);
         return apiRequest(null, true).getApiResult();
     }
 
     public ApiResult<D> apiPost(Map<String, String> formParams) throws BusinessException {
-        log.debug(String.format("【apiPost】url：%s", url));
+        log.debug("【apiPost】url：{}", url);
         return apiRequest(formParams, true).getApiResult();
     }
 
     public ApiResponse<D> htmlGet() throws BusinessException {
-        log.debug(String.format("【htmlGet】url：%s", url));
+        log.debug("【htmlGet】url：{}", url);
         return apiRequest(null, false);
     }
 

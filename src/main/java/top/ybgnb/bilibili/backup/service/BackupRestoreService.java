@@ -61,7 +61,7 @@ public abstract class BackupRestoreService extends BaseService {
     }
 
     protected <D> D backupData(String appendPath, String buName, BackupCallback<D> callback) throws BusinessException {
-        log.info(String.format("正在备份[%s]...", buName));
+        log.info("正在备份[{}]...", buName);
         D data = callback.getData();
         callback.processData(data);
         writeJsonFile(path + appendPath, buName, data);
@@ -88,28 +88,28 @@ public abstract class BackupRestoreService extends BaseService {
     }
 
     protected <D> List<D> restoreList(String appendPath, String buName, Class<D> dataClass, RestoreCallback<D> callback) throws BusinessException {
-        log.info(String.format("正在还原[%s]...", buName));
+        log.info("正在还原[{}]...", buName);
         List<D> oldList = JSONObject.parseObject(readJsonFile(path + appendPath, buName),
                 new TypeReference<List<D>>(dataClass) {
                 });
-        log.info(String.format("解析旧账号%s：%s条数据", buName, ListUtil.getSize(oldList)));
+        log.info("解析旧账号{}：{}条数据", buName, ListUtil.getSize(oldList));
         if (ListUtil.isEmpty(oldList)) {
-            log.info(buName + "为空，无需还原");
+            log.info("{}为空，无需还原", buName);
             return oldList;
         }
         List<D> newList = callback.getNewList();
-        log.info(String.format("获取新账号%s：%s条数据", buName, ListUtil.getSize(newList)));
+        log.info("获取新账号{}：{}条数据", buName, ListUtil.getSize(newList));
         Set<String> newListIds = new HashSet<>();
         for (D data : newList) {
             newListIds.add(callback.compareFlag(data));
         }
-        log.info(String.format("开始遍历旧账号%s...", buName));
+        log.info("开始遍历旧账号{}...", buName);
         List<D> restoredList = new ArrayList<>();
         // 反序还原
         Collections.reverse(oldList);
         for (D oldData : oldList) {
             if (newListIds.contains(callback.compareFlag(oldData))) {
-                log.info(String.format("%s已在新账号%s中", callback.dataName(oldData), buName));
+                log.info("{}已在新账号{}中", callback.dataName(oldData), buName);
             } else {
                 try {
                     Thread.sleep(2000);
@@ -117,10 +117,10 @@ public abstract class BackupRestoreService extends BaseService {
                 }
                 try {
                     callback.restoreData(oldData);
-                    log.info(String.format("%s还原成功", callback.dataName(oldData)));
+                    log.info("{}还原成功", callback.dataName(oldData));
                     restoredList.add(oldData);
                 } catch (BusinessException e) {
-                    log.info(String.format("%s还原失败：%s", callback.dataName(oldData), e.getMessage()));
+                    log.info("{}还原失败：{}", callback.dataName(oldData), e.getMessage());
                     if (e.isEndLoop()) {
                         break;
                     }

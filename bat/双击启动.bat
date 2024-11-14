@@ -7,9 +7,6 @@ start /max call %0 1
 exit
 )
 
-echo 按任意键继续
-pause >nul 2>&1
-
 set bin=%cd%\bin
 
 "%bin%\jre\bin\java" -jar "%bin%\bilibili-backup.jar"
