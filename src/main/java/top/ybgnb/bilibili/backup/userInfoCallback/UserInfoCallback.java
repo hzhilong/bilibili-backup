@@ -1,4 +1,4 @@
-package top.ybgnb.bilibili.backup.service;
+package top.ybgnb.bilibili.backup.userInfoCallback;
 
 import top.ybgnb.bilibili.backup.bean.Upper;
 import top.ybgnb.bilibili.backup.error.BusinessException;

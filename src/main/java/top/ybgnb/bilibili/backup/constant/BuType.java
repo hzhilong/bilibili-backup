@@ -1,4 +1,4 @@
-package top.ybgnb.bilibili.backup.business;
+package top.ybgnb.bilibili.backup.constant;
 
 /**
  * @ClassName BuType
@@ -52,7 +52,7 @@ public enum BuType {
         return this.name;
     }
 
-    public String _getLogName() {
+    public String getFunctionCnName() {
         return this.cnName;
     }
 }

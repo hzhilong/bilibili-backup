@@ -6,7 +6,7 @@ import top.ybgnb.bilibili.backup.bean.Upper;
 import top.ybgnb.bilibili.backup.error.BusinessException;
 import top.ybgnb.bilibili.backup.service.BackupRestoreService;
 import top.ybgnb.bilibili.backup.service.ServiceBuilder;
-import top.ybgnb.bilibili.backup.service.UserInfoCallback;
+import top.ybgnb.bilibili.backup.userInfoCallback.UserInfoCallback;
 import top.ybgnb.bilibili.backup.user.User;
 
 import java.text.SimpleDateFormat;
