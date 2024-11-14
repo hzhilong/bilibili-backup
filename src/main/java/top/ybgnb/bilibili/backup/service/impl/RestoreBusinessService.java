@@ -10,9 +10,8 @@ import top.ybgnb.bilibili.backup.service.BaseBusinessService;
 import top.ybgnb.bilibili.backup.service.ServiceBuilder;
 import top.ybgnb.bilibili.backup.user.User;
 import top.ybgnb.bilibili.backup.userInfoCallback.DefaultUserInfoCallback;
-import top.ybgnb.bilibili.backup.utils.CookieUtil;
+import top.ybgnb.bilibili.backup.utils.UserCountsUtil;
 import top.ybgnb.bilibili.backup.utils.ItemChoiceUtil;
-import top.ybgnb.bilibili.backup.utils.StringUtils;
 
 import java.io.File;
 import java.util.Arrays;
@@ -30,7 +29,7 @@ public class RestoreBusinessService implements BaseBusinessService {
     @Override
     public Object process(Object requestMsg) throws BusinessException {
         Scanner sc = scannerThreadLocal.get();
-        CookieUtil.getCookie();
+        UserCountsUtil.getCookie();
         File backupDir = new File(BilibiliBackup.PATH_PREFIX);
         if (!backupDir.exists() || !backupDir.isDirectory()) {
             throw new BusinessException("备份文件为空");

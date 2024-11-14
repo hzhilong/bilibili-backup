@@ -179,8 +179,8 @@ public class FollowingService extends RelationService {
                     ApiResult<Void> apiResult = new ModifyApi<Void>(client, user, "https://api.bilibili.com/x/relation/tags/copyUsers",
                             Void.class).modify(
                             new HashMap<String, String>() {{
-                                put("fids", ListUtil.listToString(idList, ','));
-                                put("tagids", ListUtil.listToString(copyUser.tags, ','));
+                                put("fids", ListUtil.listToString(idList, ","));
+                                put("tagids", ListUtil.listToString(copyUser.tags, ","));
                             }});
                     if (apiResult._isFail()) {
                         log.info(String.format("复制用户至分组[%s]:%s失败", copyUser.tags.toString(), idList.toString()));

@@ -8,7 +8,7 @@ import top.ybgnb.bilibili.backup.error.BusinessException;
 import top.ybgnb.bilibili.backup.service.BaseBusinessService;
 import top.ybgnb.bilibili.backup.user.User;
 import top.ybgnb.bilibili.backup.userInfoCallback.DefaultUserInfoCallback;
-import top.ybgnb.bilibili.backup.utils.CookieUtil;
+import top.ybgnb.bilibili.backup.utils.UserCountsUtil;
 
 import static top.ybgnb.bilibili.backup.utils.CommonUtil.buTypeThreadLocal;
 import static top.ybgnb.bilibili.backup.utils.CommonUtil.userCookieThreadLocal;
@@ -20,9 +20,8 @@ import static top.ybgnb.bilibili.backup.utils.CommonUtil.userCookieThreadLocal;
 public class ReadAllMsgBusinessService implements BaseBusinessService {
     @Override
     public Object process(Object requestMsg) throws BusinessException {
-        CookieUtil.getCookie();
+        UserCountsUtil.getCookie();
         Upper upper = new BilibiliReadAllMsg(new User(userCookieThreadLocal.get()), new DefaultUserInfoCallback()).start();
-
         log.info(String.format("成功%s[%s]", buTypeThreadLocal.get().getCnName(), upper.getName()));
         return null;
     }

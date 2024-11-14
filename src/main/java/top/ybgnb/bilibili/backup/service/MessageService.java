@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import top.ybgnb.bilibili.backup.bean.ApiResult;
 import top.ybgnb.bilibili.backup.bean.SessionPageData;
+import top.ybgnb.bilibili.backup.constant.URLConstant;
 import top.ybgnb.bilibili.backup.error.BusinessException;
 import top.ybgnb.bilibili.backup.request.AddQueryParams;
 import top.ybgnb.bilibili.backup.request.ModifyApi;
@@ -15,6 +16,7 @@ import top.ybgnb.bilibili.backup.utils.ListUtil;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 
 /**
  * @ClassName MessageService
@@ -30,10 +32,12 @@ public class MessageService extends BaseService {
         super(client, user);
     }
 
+
+    // todo 优化点 readAllSession 结构、可加进度条
     public void readAllSession() throws BusinessException {
         log.info("获取会话...");
         List<JSONObject> allSession = new PageApi<SessionPageData, JSONObject>(client, user,
-                "https://api.vc.bilibili.com/session_svr/v1/session_svr/get_sessions", new AddQueryParams() {
+                URLConstant.GET_SESSIONS, new AddQueryParams() {
             @Override
             public void addQueryParams(Map<String, String> queryParams) {
                 queryParams.put("session_type", "1");
@@ -53,6 +57,7 @@ public class MessageService extends BaseService {
             }
         });
 
+        // todo 优化点 readAllSession 感觉反复get unread_count逻辑不太对
         for (JSONObject session : allSession) {
             Integer unreadCount = session.getInteger("unread_count");
             if (unreadCount > 0) {

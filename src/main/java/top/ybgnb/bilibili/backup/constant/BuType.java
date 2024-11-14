@@ -14,9 +14,9 @@ public enum BuType {
     
     EXIT("exit", "退出程序");
 
-    private String name;
+    private final String name;
 
-    private String cnName;
+    private final String cnName;
 
     BuType(String name, String cnName) {
         this.name = name;
@@ -27,16 +27,8 @@ public enum BuType {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getCnName() {
         return cnName;
-    }
-
-    public void setCnName(String cnName) {
-        this.cnName = cnName;
     }
 
     public static BuType parse(String name) {
@@ -45,7 +37,7 @@ public enum BuType {
                 return buType;
             }
         }
-        return BuType.BACKUP;
+        return null;
     }
 
     @Override

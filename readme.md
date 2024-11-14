@@ -23,6 +23,8 @@
     - 稍后再看
 - 一键已读所有消息
 
+> 所有关注都恢复后开始恢复分组
+
 ## 使用方法
 下载[已发布的版本](https://github.com/hzhilong/bilibili-backup/releases)，解压后，打开对应功能的bat文件即可。
 

@@ -26,8 +26,10 @@ import static top.ybgnb.bilibili.backup.utils.CommonUtil.*;
  * @Time 2024/9/29
  * @Version 1.0
  */
+
+// todo 改造点，账号相关 可存多账号
 @Slf4j
-public class CookieUtil {
+public class UserCountsUtil {
 
     @Data
     @NoArgsConstructor
@@ -41,7 +43,7 @@ public class CookieUtil {
     public static void getCookie() throws BusinessException {
         try {
             Scanner sc = scannerThreadLocal.get();
-            CookieUtil.Cookie cookie = CookieUtil.read(buTypeThreadLocal.get());
+            UserCountsUtil.Cookie cookie = UserCountsUtil.read(buTypeThreadLocal.get());
             log.info("是否使用上次登录的用户：" + cookie.getUser().getName());
             log.info("输入Y：使用该用户；  输入其他：不使用");
             String nextLine = sc.nextLine();

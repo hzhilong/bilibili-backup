@@ -202,7 +202,7 @@ public class FavoritesService extends BackupRestoreService {
                         new HashMap<String, String>() {{
                             put("rid", String.valueOf(mediaId));
                             put("type", "2");
-                            put("add_media_ids", ListUtil.listToString(folderIds, ','));
+                            put("add_media_ids", ListUtil.listToString(folderIds, ","));
                             put("del_media_ids", "");
                             put("platform", "web");
                             put("eab_x", "1");

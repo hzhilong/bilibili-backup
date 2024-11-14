@@ -11,17 +11,11 @@ import java.util.List;
 public class ListUtil {
 
     public static boolean isEmpty(List list) {
-        if (list == null || list.size() == 0) {
-            return true;
-        }
-        return false;
+        return list == null || list.isEmpty();
     }
 
     public static boolean notEmpty(List list) {
-        if (list == null || list.size() == 0) {
-            return false;
-        }
-        return true;
+        return !isEmpty(list);
     }
 
     public static int getSize(List list) {
@@ -31,15 +25,13 @@ public class ListUtil {
         return list.size();
     }
 
-    public static String listToString(List list, char separator) {
-        if (list == null || list.size() == 0) {
-            return "";
-        }
+    public static String listToString(List list, String separator) {
+        if (isEmpty(list)) return "";
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < list.size(); i++) {
-            sb.append(list.get(i)).append(separator);
+        for (Object o : list) {
+            sb.append(o).append(separator);
         }
-        return sb.toString().substring(0, sb.toString().length() - 1);
+        return sb.substring(0, sb.toString().length() - separator.length());
     }
 
 }

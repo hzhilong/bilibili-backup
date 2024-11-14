@@ -4,7 +4,7 @@ import top.ybgnb.bilibili.backup.bean.Upper;
 import top.ybgnb.bilibili.backup.error.BusinessException;
 import top.ybgnb.bilibili.backup.user.User;
 import top.ybgnb.bilibili.backup.utils.CommonUtil;
-import top.ybgnb.bilibili.backup.utils.CookieUtil;
+import top.ybgnb.bilibili.backup.utils.UserCountsUtil;
 
 import static top.ybgnb.bilibili.backup.utils.CommonUtil.buTypeThreadLocal;
 
@@ -14,11 +14,11 @@ import static top.ybgnb.bilibili.backup.utils.CommonUtil.buTypeThreadLocal;
 public class DefaultUserInfoCallback implements UserInfoCallback {
     @Override
     public void success(Upper currUser) throws BusinessException {
-        CookieUtil.save(new CookieUtil.Cookie(buTypeThreadLocal.get(), currUser, CommonUtil.userCookieThreadLocal.get()));
+        UserCountsUtil.save(new UserCountsUtil.Cookie(buTypeThreadLocal.get(), currUser, CommonUtil.userCookieThreadLocal.get()));
     }
 
     @Override
     public void fail(User user) {
-        CookieUtil.delete(buTypeThreadLocal.get());
+        UserCountsUtil.delete(buTypeThreadLocal.get());
     }
 }

@@ -6,6 +6,7 @@ import okhttp3.OkHttpClient;
 import top.ybgnb.bilibili.backup.bean.ApiResult;
 import top.ybgnb.bilibili.backup.bean.LoginResult;
 import top.ybgnb.bilibili.backup.bean.QRCode;
+import top.ybgnb.bilibili.backup.constant.URLConstant;
 import top.ybgnb.bilibili.backup.error.BusinessException;
 import top.ybgnb.bilibili.backup.request.BaseApi;
 import top.ybgnb.bilibili.backup.utils.StringUtils;
@@ -37,9 +38,8 @@ public class LoginService extends BaseService {
      * @throws BusinessException
      */
     public QRCode generateQRCode() throws BusinessException {
-        ApiResult<QRCode> apiResult = new BaseApi<QRCode>(client, null,
-                "https://passport.bilibili.com/x/passport-login/web/qrcode/generate", false,
-                QRCode.class).apiGet();
+        ApiResult<QRCode> apiResult =
+                new BaseApi<QRCode>(client, null, URLConstant.QR_CODE, false, QRCode.class).apiGet();
         if (apiResult._isSuccess()) {
             return apiResult.getData();
         } else {
