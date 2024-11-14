@@ -23,7 +23,7 @@ import static top.ybgnb.bilibili.backup.utils.CommonUtil.*;
 public class BackupBusinessService implements BaseBusinessService {
 
     @Override
-    public Object process(Object requestMsg) throws BusinessException {
+    public Upper process(Object requestMsg) throws BusinessException {
 
         UserCountsUtil.getCookie();
         // 开始处理
@@ -32,9 +32,7 @@ public class BackupBusinessService implements BaseBusinessService {
             log.info("未选择任何项目，请重新选择功能!");
             return null;
         }
-        Upper upper = new BilibiliBackup(items, new User(userCookieThreadLocal.get()), new DefaultUserInfoCallback()).start();
-        log.info(String.format("成功%s[%s]", buTypeThreadLocal.get().getCnName(), upper.getName()));
-        return null;
+        return new BilibiliBackup(items, new User(userCookieThreadLocal.get()), new DefaultUserInfoCallback()).start();
     }
 
     @Override

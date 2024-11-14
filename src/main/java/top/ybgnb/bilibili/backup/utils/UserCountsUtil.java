@@ -44,16 +44,16 @@ public class UserCountsUtil {
         try {
             Scanner sc = scannerThreadLocal.get();
             UserCountsUtil.Cookie cookie = UserCountsUtil.read(buTypeThreadLocal.get());
-            log.info("是否使用上次登录的用户：" + cookie.getUser().getName());
+            log.info("是否使用上次登录的用户：{}", cookie.getUser().getName());
             log.info("输入Y：使用该用户；  输入其他：不使用");
             String nextLine = sc.nextLine();
             if ("Y".equals(nextLine) || "y".equals(nextLine)) {
                 userCookieThreadLocal.set(cookie.getCookie());
             }
         } catch (BusinessException e) {
-            log.info("获取登录用户失败，需扫码登录");
+            log.info("未登录，需扫码登录");
+            loginNewUser();
         }
-        loginNewUser();
     }
 
     private static void loginNewUser() throws BusinessException {
@@ -90,7 +90,7 @@ public class UserCountsUtil {
                 }
             }
             if (StringUtils.isEmpty(cookie)) {
-                throw new BusinessException("扫码超时");
+                throw new BusinessException("扫码超时\n");
             }
             log.info("登录成功");
             userCookieThreadLocal.set(cookie);
@@ -107,7 +107,7 @@ public class UserCountsUtil {
         return JSONObject.parseObject(FileUtil.readJsonFile("bin/cookies/", type.toString()), Cookie.class);
     }
 
-    public static void delete(BuType type){
-        new File("bin/cookies/"+type.toString()).delete();
+    public static void delete(BuType type) {
+        new File("bin/cookies/" + type.toString()).delete();
     }
 }

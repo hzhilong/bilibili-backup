@@ -18,36 +18,35 @@ import static top.ybgnb.bilibili.backup.utils.CommonUtil.*;
 @Slf4j
 public class CLIApp {
 
-    
     public static void main(String[] args) {
-        manuForBusinessChoice();
+        menuForBusinessChoice();
     }
 
-    private static void manuForBusinessChoice() {
+    private static void menuForBusinessChoice() {
         Scanner sc = new Scanner(System.in);
         scannerThreadLocal.set(sc);
         do {
             log.info("请选择对应功能的序号:");
             BuType[] buTypes = BuType.values();
             for (int i = 0; i < buTypes.length; i++) {
-                log.info(i + ": " + buTypes[i].getCnName());
+                log.info("{}: {}", i, buTypes[i].getCnName());
             }
-            
+
             String inputedData = sc.nextLine();
             if (inputDataIsInvalid(buTypes, inputedData)) continue;
-            BuType buType = buTypes[Integer.valueOf(inputedData)];
+            BuType buType = buTypes[Integer.parseInt(inputedData)];
             if (BuType.EXIT.equals(buType)) return;
-            
+
             buTypeThreadLocal.set(buType);
-            BusinessSelector.processBusiness(buType,null);
-            
-        } while(true);
+            BusinessSelector.processBusiness(buType, null);
+
+        } while (true);
     }
 
-    private static boolean inputDataIsInvalid(BuType[] buTypeLength, String inputedData) {
+    private static boolean inputDataIsInvalid(BuType[] buTypes, String inputedData) {
         try {
-            Integer integer = Integer.valueOf(inputedData);
-            if (integer > -1 && integer <= buTypeLength.length) {
+            int integer = Integer.parseInt(inputedData);
+            if (integer > -1 && integer <= buTypes.length) {
                 return false;
             } else {
                 log.info("输入错误，请重新选择");
@@ -58,6 +57,5 @@ public class CLIApp {
             return true;
         }
     }
-
 
 }

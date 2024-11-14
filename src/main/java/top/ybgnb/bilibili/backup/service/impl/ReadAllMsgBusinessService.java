@@ -10,7 +10,6 @@ import top.ybgnb.bilibili.backup.user.User;
 import top.ybgnb.bilibili.backup.userInfoCallback.DefaultUserInfoCallback;
 import top.ybgnb.bilibili.backup.utils.UserCountsUtil;
 
-import static top.ybgnb.bilibili.backup.utils.CommonUtil.buTypeThreadLocal;
 import static top.ybgnb.bilibili.backup.utils.CommonUtil.userCookieThreadLocal;
 
 /**
@@ -18,12 +17,11 @@ import static top.ybgnb.bilibili.backup.utils.CommonUtil.userCookieThreadLocal;
  */
 @Slf4j
 public class ReadAllMsgBusinessService implements BaseBusinessService {
+
     @Override
-    public Object process(Object requestMsg) throws BusinessException {
+    public Upper process(Object requestMsg) throws BusinessException {
         UserCountsUtil.getCookie();
-        Upper upper = new BilibiliReadAllMsg(new User(userCookieThreadLocal.get()), new DefaultUserInfoCallback()).start();
-        log.info(String.format("成功%s[%s]", buTypeThreadLocal.get().getCnName(), upper.getName()));
-        return null;
+        return new BilibiliReadAllMsg(new User(userCookieThreadLocal.get()), new DefaultUserInfoCallback()).start();
     }
 
     @Override

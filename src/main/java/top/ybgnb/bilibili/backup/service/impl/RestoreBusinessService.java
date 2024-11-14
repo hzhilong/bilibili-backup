@@ -19,15 +19,17 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 
-import static top.ybgnb.bilibili.backup.utils.CommonUtil.*;
+import static top.ybgnb.bilibili.backup.utils.CommonUtil.scannerThreadLocal;
+import static top.ybgnb.bilibili.backup.utils.CommonUtil.userCookieThreadLocal;
 
 /**
  * @author Dream
  */
 @Slf4j
 public class RestoreBusinessService implements BaseBusinessService {
+
     @Override
-    public Object process(Object requestMsg) throws BusinessException {
+    public Upper process(Object requestMsg) throws BusinessException {
         Scanner sc = scannerThreadLocal.get();
         UserCountsUtil.getCookie();
         File backupDir = new File(BilibiliBackup.PATH_PREFIX);
@@ -40,9 +42,9 @@ public class RestoreBusinessService implements BaseBusinessService {
         }
 
         Arrays.sort(userFiles, Comparator.comparingLong(File::lastModified));
-        log.info(String.format("总共有%s个备份文件，请输入前面的数字选择对应的备份", userFiles.length));
+        log.info("总共有{}个备份文件，请输入前面的数字选择对应的备份", userFiles.length);
         for (int i = 0; i < userFiles.length; i++) {
-            log.info(String.format("[%s]-[%s]", i, userFiles[i].getName()));
+            log.info("[{}]-[{}]", i, userFiles[i].getName());
         }
         int pos;
         while (true) {
@@ -54,16 +56,14 @@ public class RestoreBusinessService implements BaseBusinessService {
             }
         }
         String readJsonDir = BilibiliBackup.PATH_PREFIX + userFiles[pos].getName() + File.separator;
-        
+
         List<ServiceBuilder> items = ItemChoiceUtil.getServices();
         while (items.isEmpty()) {
             log.info("未选择任何项目，请重新选择");
             items = ItemChoiceUtil.getServices();
         }
 
-        Upper upper = new BilibiliRestore(items, readJsonDir,new User(userCookieThreadLocal.get()), new DefaultUserInfoCallback()).start();
-        log.info(String.format("成功%s[%s]", buTypeThreadLocal.get().getCnName(), upper.getName()));
-        return null;
+        return new BilibiliRestore(items, readJsonDir, new User(userCookieThreadLocal.get()), new DefaultUserInfoCallback()).start();
     }
 
     @Override
