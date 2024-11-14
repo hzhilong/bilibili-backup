@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import top.ybgnb.bilibili.backup.bean.Upper;
 import top.ybgnb.bilibili.backup.error.BusinessException;
 import top.ybgnb.bilibili.backup.service.MessageService;
-import top.ybgnb.bilibili.backup.service.UserInfoCallback;
+import top.ybgnb.bilibili.backup.userInfoCallback.UserInfoCallback;
 import top.ybgnb.bilibili.backup.user.User;
 
 /**

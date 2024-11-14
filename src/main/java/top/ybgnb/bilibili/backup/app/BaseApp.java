@@ -8,7 +8,7 @@ import top.ybgnb.bilibili.backup.error.BusinessException;
 import top.ybgnb.bilibili.backup.request.BaseApi;
 import top.ybgnb.bilibili.backup.request.ThrottlingInterceptor;
 import top.ybgnb.bilibili.backup.service.ServiceBuilder;
-import top.ybgnb.bilibili.backup.service.UserInfoCallback;
+import top.ybgnb.bilibili.backup.userInfoCallback.UserInfoCallback;
 import top.ybgnb.bilibili.backup.user.User;
 
 import java.util.List;

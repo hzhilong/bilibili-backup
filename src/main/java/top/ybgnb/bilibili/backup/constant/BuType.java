@@ -1,4 +1,4 @@
-package top.ybgnb.bilibili.backup.business;
+package top.ybgnb.bilibili.backup.constant;
 
 /**
  * @ClassName BuType
@@ -9,9 +9,10 @@ package top.ybgnb.bilibili.backup.business;
  */
 public enum BuType {
     BACKUP("backup", "备份"),
-
     RESTORE("restore", "还原"),
-    READ_ALL_MSG("read_all_msg", "已读所有消息");
+    READ_ALL_MSG("read_all_msg", "已读所有消息"),
+    
+    EXIT("exit", "退出程序");
 
     private String name;
 
@@ -52,7 +53,7 @@ public enum BuType {
         return this.name;
     }
 
-    public String _getLogName() {
+    public String getFunctionCnName() {
         return this.cnName;
     }
 }
