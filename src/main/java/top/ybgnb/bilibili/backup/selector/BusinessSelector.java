@@ -31,7 +31,7 @@ public class BusinessSelector {
         businessSelector.put(readAllMsgBusinessService.getRequestType(),readAllMsgBusinessService);
     }
     
-    public static Object processBusiness(BuType buType,Object requestMsg) {
+    public static Object processBusiness(BuType buType, Object requestMsg) {
         try {
             log.info("================【" + buType.getFunctionCnName() + "工具】================");
             BaseBusinessService baseBusinessService = businessSelector.get(buType);

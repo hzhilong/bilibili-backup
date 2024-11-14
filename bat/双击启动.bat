@@ -14,5 +14,6 @@ set bin=%cd%\bin
 
 "%bin%\jre\bin\java" -jar "%bin%\bilibili-backup.jar"
 
+echo 按任意键退出
 pause>nul
 exit

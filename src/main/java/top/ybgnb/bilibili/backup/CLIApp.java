@@ -1,26 +1,9 @@
 package top.ybgnb.bilibili.backup;
 
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
-import top.ybgnb.bilibili.backup.app.BilibiliBackup;
-import top.ybgnb.bilibili.backup.app.BilibiliReadAllMsg;
-import top.ybgnb.bilibili.backup.app.BilibiliRestore;
-import top.ybgnb.bilibili.backup.bean.Upper;
 import top.ybgnb.bilibili.backup.constant.BuType;
-import top.ybgnb.bilibili.backup.error.BusinessException;
 import top.ybgnb.bilibili.backup.selector.BusinessSelector;
-import top.ybgnb.bilibili.backup.service.ServiceBuilder;
-import top.ybgnb.bilibili.backup.userInfoCallback.UserInfoCallback;
-import top.ybgnb.bilibili.backup.userInfoCallback.DefaultUserInfoCallback;
-import top.ybgnb.bilibili.backup.user.User;
-import top.ybgnb.bilibili.backup.utils.CookieUtil;
-import top.ybgnb.bilibili.backup.utils.ItemChoiceUtil;
-import top.ybgnb.bilibili.backup.utils.StringUtils;
 
-import java.io.File;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
 import java.util.Scanner;
 
 import static top.ybgnb.bilibili.backup.utils.CommonUtil.*;
@@ -49,22 +32,22 @@ public class CLIApp {
             for (int i = 0; i < buTypes.length; i++) {
                 log.info(i + ": " + buTypes[i].getCnName());
             }
-            String inputedData = sc.nextLine();
-            if (inputDataIsInvalid(buTypes.length, inputedData)) {
-                continue;
-            }
-            BuType buType = buTypes[Integer.valueOf(inputedData)];
-            buTypeThreadLocal.set(buType);
             
+            String inputedData = sc.nextLine();
+            if (inputDataIsInvalid(buTypes, inputedData)) continue;
+            BuType buType = buTypes[Integer.valueOf(inputedData)];
+            if (BuType.EXIT.equals(buType)) return;
+            
+            buTypeThreadLocal.set(buType);
             BusinessSelector.processBusiness(buType,null);
             
         } while(true);
     }
 
-    private static boolean inputDataIsInvalid(int buTypeLength, String inputedData) {
+    private static boolean inputDataIsInvalid(BuType[] buTypeLength, String inputedData) {
         try {
             Integer integer = Integer.valueOf(inputedData);
-            if (integer > -1 && integer <= buTypeLength) {
+            if (integer > -1 && integer <= buTypeLength.length) {
                 return false;
             } else {
                 log.info("输入错误，请重新选择");
