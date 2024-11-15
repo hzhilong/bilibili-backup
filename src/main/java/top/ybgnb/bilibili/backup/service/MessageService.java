@@ -3,6 +3,7 @@ package top.ybgnb.bilibili.backup.service;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
+import org.jetbrains.annotations.NotNull;
 import top.ybgnb.bilibili.backup.bean.ApiResult;
 import top.ybgnb.bilibili.backup.bean.SessionPageData;
 import top.ybgnb.bilibili.backup.constant.URLConstant;
@@ -35,20 +36,8 @@ public class MessageService extends BaseService {
 
     // todo 优化点 readAllSession 结构、可加进度条
     public void readAllSession() throws BusinessException {
-        log.info("获取会话...");
-        List<JSONObject> allSession = new PageApi<SessionPageData, JSONObject>(client, user,
-                URLConstant.GET_SESSIONS, new AddQueryParams() {
-            @Override
-            public void addQueryParams(Map<String, String> queryParams) {
-                queryParams.put("session_type", "1");
-                queryParams.put("group_fold", "1");
-                queryParams.put("unfollow_fold", "0");
-                queryParams.put("sort_rule", "2");
-                queryParams.put("build", "0");
-                queryParams.put("mobi_app", "web");
-                queryParams.put("web_location", "333.1296");
-            }
-        }, SessionPageData.class, JSONObject.class).getAllData(new PageApi.SetNextPage<JSONObject>() {
+        log.info("获取聊天信息...");
+        List<JSONObject> allSession = new PageApi<SessionPageData, JSONObject>(client, user, URLConstant.GET_SESSIONS, addQueryParamsGetAllSeSSion(), SessionPageData.class, JSONObject.class).getAllData(new PageApi.SetNextPage<JSONObject>() {
             @Override
             public void setParams(List<JSONObject> allData, Map<String, String> queryParams) {
                 if (ListUtil.notEmpty(allData)) {
@@ -56,12 +45,11 @@ public class MessageService extends BaseService {
                 }
             }
         });
-
-        // todo 优化点 readAllSession 感觉反复get unread_count逻辑不太对
+        
         for (JSONObject session : allSession) {
             Integer unreadCount = session.getInteger("unread_count");
             if (unreadCount > 0) {
-                log.info("存在未读消息：" + session.getJSONObject("last_msg").getString("content"));
+                log.info("存在未读消息：" + session.getJSONObject("last_msg").getJSONObject("content").getString("title"));
                 ApiResult<Object> apiResult = new ModifyApi<Object>(client, user,
                         "https://api.vc.bilibili.com/session_svr/v1/session_svr/update_ack", Object.class).modify(
                         new HashMap<String, String>() {{
@@ -79,6 +67,19 @@ public class MessageService extends BaseService {
                 }
             }
         }
-        log.info("完成.");
+        log.info("执行完成");
+    }
+
+    @NotNull
+    private static AddQueryParams addQueryParamsGetAllSeSSion() {
+        return queryParams -> {
+            queryParams.put("session_type", "1");
+            queryParams.put("group_fold", "1");
+            queryParams.put("unfollow_fold", "0");
+            queryParams.put("sort_rule", "2");
+            queryParams.put("build", "0");
+            queryParams.put("mobi_app", "web");
+            queryParams.put("web_location", "333.1296");
+        };
     }
 }

@@ -8,8 +8,12 @@ import top.ybgnb.bilibili.backup.service.BackupRestoreService;
 import top.ybgnb.bilibili.backup.service.ServiceBuilder;
 import top.ybgnb.bilibili.backup.userInfoCallback.UserInfoCallback;
 import top.ybgnb.bilibili.backup.user.User;
+import top.ybgnb.bilibili.backup.utils.CommonUtil;
+import top.ybgnb.bilibili.backup.utils.UserCountsUtil;
 
 import java.util.List;
+
+import static top.ybgnb.bilibili.backup.utils.CommonUtil.okHttpClient;
 
 /**
  * @ClassName BilibiliRestore
@@ -19,21 +23,13 @@ import java.util.List;
  * @Version 1.0
  */
 @Slf4j
-public class BilibiliRestore extends BaseApp {
+public class BilibiliRestore {
 
-    private String oldPath;
-
-    public BilibiliRestore(List<ServiceBuilder> serviceBuilders, String oldPath, User user, UserInfoCallback userInfoCallback) {
-        super(serviceBuilders, user, userInfoCallback);
-        this.oldPath = oldPath;
-    }
-
-
-    @Override
-    public Upper start() throws BusinessException {
-        Upper upper = getUpper();
-        for (ServiceBuilder serviceBuilder : this.serviceBuilders) {
-            restore(serviceBuilder.build(client, user, oldPath));
+    public Upper restoreItemsBySelf(List<ServiceBuilder> serviceBuilders, String oldPath) throws BusinessException {
+        User user = CommonUtil.currentUserThreadLocal.get();
+        Upper upper = UserCountsUtil.getUpper(user);
+        for (ServiceBuilder serviceBuilder : serviceBuilders) {
+            restore(serviceBuilder.build(okHttpClient, user, oldPath));
         }
         return upper;
     }

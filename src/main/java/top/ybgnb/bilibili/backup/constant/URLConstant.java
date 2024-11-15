@@ -2,6 +2,9 @@ package top.ybgnb.bilibili.backup.constant;
 
 public class URLConstant {
 
+    /** 获取up信息 */
+    public static String MY_INFO = "https://api.bilibili.com/x/space/myinfo";
+    
     /** 获取登录二维码 */
     public static String QR_CODE = "https://passport.bilibili.com/x/passport-login/web/qrcode/generate";
     /** 获取会话消息 */

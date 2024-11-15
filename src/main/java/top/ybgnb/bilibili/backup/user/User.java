@@ -2,6 +2,7 @@ package top.ybgnb.bilibili.backup.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @ClassName User
@@ -11,6 +12,7 @@ import lombok.Data;
  * @Version 1.0
  */
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class User {
     private String uid;
@@ -24,4 +26,5 @@ public class User {
         tempIndex = cookie.lastIndexOf("bili_jct=");
         this.bili_jct = cookie.substring(tempIndex + 9, tempIndex + 41);
     }
+
 }

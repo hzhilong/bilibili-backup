@@ -6,17 +6,23 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
+import top.ybgnb.bilibili.backup.bean.ApiResult;
 import top.ybgnb.bilibili.backup.bean.QRCode;
 import top.ybgnb.bilibili.backup.bean.Upper;
 import top.ybgnb.bilibili.backup.constant.BuType;
 import top.ybgnb.bilibili.backup.error.BusinessException;
+import top.ybgnb.bilibili.backup.request.BaseApi;
 import top.ybgnb.bilibili.backup.request.ThrottlingInterceptor;
 import top.ybgnb.bilibili.backup.service.LoginService;
+import top.ybgnb.bilibili.backup.user.User;
+import top.ybgnb.bilibili.backup.userInfoCallback.DefaultUserInfoCallback;
+import top.ybgnb.bilibili.backup.userInfoCallback.UserInfoCallback;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
 
+import static top.ybgnb.bilibili.backup.constant.URLConstant.MY_INFO;
 import static top.ybgnb.bilibili.backup.utils.CommonUtil.*;
 
 /**
@@ -48,7 +54,7 @@ public class UserCountsUtil {
             log.info("输入Y：使用该用户；  输入其他：不使用");
             String nextLine = sc.nextLine();
             if ("Y".equals(nextLine) || "y".equals(nextLine)) {
-                userCookieThreadLocal.set(cookie.getCookie());
+                currentUserThreadLocal.set(new User(cookie.getCookie()));
             }
         } catch (BusinessException e) {
             log.info("未登录，需扫码登录");
@@ -93,11 +99,12 @@ public class UserCountsUtil {
                 throw new BusinessException("扫码超时\n");
             }
             log.info("登录成功");
-            userCookieThreadLocal.set(cookie);
+            currentUserThreadLocal.set(new User(cookie));
         } finally {
             file.deleteOnExit();
         }
     }
+    
 
     public static void save(Cookie cookie) throws BusinessException {
         FileUtil.writeJsonFile("bin/cookies/", cookie.getType().toString(), cookie);
@@ -109,5 +116,25 @@ public class UserCountsUtil {
 
     public static void delete(BuType type) {
         new File("bin/cookies/" + type.toString()).delete();
+    }
+
+
+
+    public static Upper getUpper(User user) throws BusinessException {
+        return getUpper(user, new DefaultUserInfoCallback());
+    }
+    public static Upper getUpper(User user, UserInfoCallback userInfoCallback) throws BusinessException {
+        ApiResult<Upper> userInfo = new BaseApi<Upper>(okHttpClient, user, MY_INFO, true, Upper.class).apiGet();
+        if (userInfo._isFail()) {
+            log.error(userInfo.getMessage());
+            if (userInfoCallback != null) {
+                userInfoCallback.fail(user);
+            }
+            throw new BusinessException("获取当前用户信息失败");
+        }
+        if (userInfoCallback != null) {
+            userInfoCallback.success(userInfo.getData());
+        }
+        return userInfo.getData();
     }
 }

@@ -8,8 +8,6 @@ import top.ybgnb.bilibili.backup.constant.BuType;
 import top.ybgnb.bilibili.backup.error.BusinessException;
 import top.ybgnb.bilibili.backup.service.BaseBusinessService;
 import top.ybgnb.bilibili.backup.service.ServiceBuilder;
-import top.ybgnb.bilibili.backup.user.User;
-import top.ybgnb.bilibili.backup.userInfoCallback.DefaultUserInfoCallback;
 import top.ybgnb.bilibili.backup.utils.UserCountsUtil;
 import top.ybgnb.bilibili.backup.utils.ItemChoiceUtil;
 
@@ -20,7 +18,6 @@ import java.util.List;
 import java.util.Scanner;
 
 import static top.ybgnb.bilibili.backup.utils.CommonUtil.scannerThreadLocal;
-import static top.ybgnb.bilibili.backup.utils.CommonUtil.userCookieThreadLocal;
 
 /**
  * @author Dream
@@ -63,7 +60,7 @@ public class RestoreBusinessService implements BaseBusinessService {
             items = ItemChoiceUtil.getServices();
         }
 
-        return new BilibiliRestore(items, readJsonDir, new User(userCookieThreadLocal.get()), new DefaultUserInfoCallback()).start();
+        return new BilibiliRestore().restoreItemsBySelf(items, readJsonDir);
     }
 
     @Override

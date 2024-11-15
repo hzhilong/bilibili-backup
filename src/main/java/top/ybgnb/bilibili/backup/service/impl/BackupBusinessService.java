@@ -32,7 +32,7 @@ public class BackupBusinessService implements BaseBusinessService {
             log.info("未选择任何项目，请重新选择功能!");
             return null;
         }
-        return new BilibiliBackup(items, new User(userCookieThreadLocal.get()), new DefaultUserInfoCallback()).start();
+        return new BilibiliBackup().BackupItemsBySelf(items);
     }
 
     @Override

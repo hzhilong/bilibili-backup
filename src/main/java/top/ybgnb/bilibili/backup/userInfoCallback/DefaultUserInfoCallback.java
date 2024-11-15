@@ -14,7 +14,7 @@ import static top.ybgnb.bilibili.backup.utils.CommonUtil.buTypeThreadLocal;
 public class DefaultUserInfoCallback implements UserInfoCallback {
     @Override
     public void success(Upper currUser) throws BusinessException {
-        UserCountsUtil.save(new UserCountsUtil.Cookie(buTypeThreadLocal.get(), currUser, CommonUtil.userCookieThreadLocal.get()));
+        UserCountsUtil.save(new UserCountsUtil.Cookie(buTypeThreadLocal.get(), currUser, CommonUtil.currentUserThreadLocal.get().getCookie()));
     }
 
     @Override
