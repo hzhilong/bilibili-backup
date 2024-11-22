@@ -1,0 +1,65 @@
+package top.ybgnb.bilibili.backup.app.menu;
+
+import lombok.extern.slf4j.Slf4j;
+import top.ybgnb.bilibili.backup.app.bean.SavedUser;
+import top.ybgnb.bilibili.backup.app.state.UserManager;
+import top.ybgnb.bilibili.backup.app.utils.MenuUtil;
+import top.ybgnb.bilibili.backup.biliapi.error.BusinessException;
+
+import java.util.List;
+import java.util.Scanner;
+
+/**
+ * @ClassName UserMenu
+ * @Description 用户选择菜单
+ * @Author hzhilong
+ * @Time 2024/11/22
+ * @Version 1.0
+ */
+@Slf4j
+public class UserMenu {
+
+    /**
+     * 选择用户
+     *
+     * @param scanner
+     * @param users
+     * @return
+     */
+    private static SavedUser chooseUser(Scanner scanner, List<SavedUser> users) {
+        log.info("总共登录{}个用户，请输入前面的数字选择对应的用户", users.size());
+        for (int i = 0; i < users.size(); i++) {
+            log.info("[{}]-[{}]", i, users.get(i).getName());
+        }
+        int pos = MenuUtil.checkInputPos(users.size(), scanner.nextLine());
+        return users.get(pos);
+    }
+
+    /**
+     * 选择已登录的用户
+     *
+     * @return 已登录的用户
+     */
+    public static SavedUser chooseLoggedUser(Scanner scanner, boolean isTip) throws BusinessException {
+        // 获取已经登录的用户
+        List<SavedUser> users = UserManager.readAllUser();
+        if (users == null) {
+            return null;
+        }
+        if (isTip) {
+            // 提示
+            log.info("是否使用之前登录的用户？");
+            log.info("输入Y：使用\t输入其他：不使用");
+            String nextLine = scanner.nextLine();
+            if ("Y".equals(nextLine) || "y".equals(nextLine)) {
+                // 选择用户
+                return chooseUser(scanner, users);
+            }
+        } else {
+            // 选择用户
+            return chooseUser(scanner, users);
+        }
+        return null;
+    }
+
+}

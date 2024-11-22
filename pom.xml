@@ -7,7 +7,7 @@
     <groupId>top.ybgnb</groupId>
     <artifactId>bilibili-backup</artifactId>
     <description>哔哩哔哩账号备份</description>
-    <version>1.0.4</version>
+    <version>1.0.5</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -65,7 +65,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>top.ybgnb.bilibili.backup.CLIApp</mainClass>
+                            <mainClass>top.ybgnb.bilibili.backup.app.CLIApp</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
