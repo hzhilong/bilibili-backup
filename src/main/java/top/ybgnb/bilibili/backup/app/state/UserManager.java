@@ -50,7 +50,7 @@ public class UserManager {
             return null;
         }
 
-        Arrays.sort(userFiles, Comparator.comparingLong(File::lastModified));
+        Arrays.sort(userFiles, Comparator.comparingLong(File::lastModified).reversed());
         List<SavedUser> savedUsers = new ArrayList<>(userFiles.length);
         for (File userFile : userFiles) {
             savedUsers.add(JSONObject.parseObject(FileUtil.readJsonFile(userFile), SavedUser.class));
