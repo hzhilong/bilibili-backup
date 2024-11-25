@@ -17,7 +17,7 @@ public class AppConstant {
     /**
      * 纯数字
      */
-    public static final Pattern NUM_PATTERN = Pattern.compile("[0-9]*");
+    public static final Pattern NUM_PATTERN = Pattern.compile("^[0-9]*$");
 
     /**
      * 已注销账号的昵称
