@@ -1,4 +1,4 @@
-package top.ybgnb.bilibili.backup.biliapi.service;
+package top.ybgnb.bilibili.backup.biliapi.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
@@ -8,6 +8,7 @@ import top.ybgnb.bilibili.backup.biliapi.bean.Bangumi;
 import top.ybgnb.bilibili.backup.biliapi.error.BusinessException;
 import top.ybgnb.bilibili.backup.biliapi.request.ModifyApi;
 import top.ybgnb.bilibili.backup.biliapi.request.PageApi;
+import top.ybgnb.bilibili.backup.biliapi.service.BackupRestoreService;
 import top.ybgnb.bilibili.backup.biliapi.user.User;
 
 import java.util.HashMap;
@@ -28,7 +29,7 @@ public class BangumiService extends BackupRestoreService {
     }
 
     public List<Bangumi> getList(String type) throws BusinessException {
-        return new PageApi<>(client, user, "https://api.bilibili.com/x/space/bangumi/follow/list",
+        return new PageApi<>(client, signUser(), "https://api.bilibili.com/x/space/bangumi/follow/list",
                 queryParams -> {
                     queryParams.put("vmid", user.getUid());
                     queryParams.put("type", type);

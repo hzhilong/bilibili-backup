@@ -1,4 +1,4 @@
-package top.ybgnb.bilibili.backup.biliapi.service;
+package top.ybgnb.bilibili.backup.biliapi.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
@@ -7,6 +7,7 @@ import top.ybgnb.bilibili.backup.biliapi.bean.FavCollected;
 import top.ybgnb.bilibili.backup.biliapi.error.BusinessException;
 import top.ybgnb.bilibili.backup.biliapi.request.ModifyApi;
 import top.ybgnb.bilibili.backup.biliapi.request.PageApi;
+import top.ybgnb.bilibili.backup.biliapi.service.BackupRestoreService;
 import top.ybgnb.bilibili.backup.biliapi.user.User;
 
 import java.util.HashMap;
@@ -27,7 +28,7 @@ public class FavCollectedService extends BackupRestoreService {
     }
 
     private List<FavCollected> getList() throws BusinessException {
-        return new PageApi<>(client, user, "https://api.bilibili.com/x/v3/fav/folder/collected/list",
+        return new PageApi<>(client, signUser(), "https://api.bilibili.com/x/v3/fav/folder/collected/list",
                 queryParams -> {
                     queryParams.put("up_mid", user.getUid());
                     queryParams.put("platform", "web");
@@ -42,7 +43,7 @@ public class FavCollectedService extends BackupRestoreService {
 
     @Override
     public void restore() throws BusinessException {
-        restoreList("收藏的视频合集", FavCollected.class,new RestoreCallback<FavCollected>() {
+        restoreList("收藏的视频合集", FavCollected.class, new RestoreCallback<FavCollected>() {
             @Override
             public List<FavCollected> getNewList() throws BusinessException {
                 return getList();

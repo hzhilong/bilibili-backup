@@ -6,7 +6,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import top.ybgnb.bilibili.backup.biliapi.bean.ApiResult;
-import top.ybgnb.bilibili.backup.biliapi.bean.PageData;
+import top.ybgnb.bilibili.backup.biliapi.bean.page.PageData;
 import top.ybgnb.bilibili.backup.biliapi.error.BusinessException;
 import top.ybgnb.bilibili.backup.biliapi.user.User;
 

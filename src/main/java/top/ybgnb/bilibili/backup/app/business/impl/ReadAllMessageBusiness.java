@@ -4,7 +4,7 @@ import top.ybgnb.bilibili.backup.app.bean.SavedUser;
 import top.ybgnb.bilibili.backup.app.business.BaseBusinessForLoginUser;
 import top.ybgnb.bilibili.backup.biliapi.bean.Upper;
 import top.ybgnb.bilibili.backup.biliapi.error.BusinessException;
-import top.ybgnb.bilibili.backup.biliapi.service.MessageService;
+import top.ybgnb.bilibili.backup.biliapi.service.impl.MessageService;
 import top.ybgnb.bilibili.backup.biliapi.user.User;
 
 import java.util.Scanner;

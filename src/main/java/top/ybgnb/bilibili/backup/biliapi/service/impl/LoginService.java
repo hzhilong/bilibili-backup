@@ -1,4 +1,4 @@
-package top.ybgnb.bilibili.backup.biliapi.service;
+package top.ybgnb.bilibili.backup.biliapi.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
@@ -8,6 +8,7 @@ import top.ybgnb.bilibili.backup.biliapi.bean.LoginResult;
 import top.ybgnb.bilibili.backup.biliapi.bean.QRCode;
 import top.ybgnb.bilibili.backup.biliapi.error.BusinessException;
 import top.ybgnb.bilibili.backup.biliapi.request.BaseApi;
+import top.ybgnb.bilibili.backup.biliapi.service.BaseService;
 import top.ybgnb.bilibili.backup.biliapi.utils.StringUtils;
 
 import java.util.List;

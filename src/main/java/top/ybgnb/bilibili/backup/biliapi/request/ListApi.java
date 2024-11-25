@@ -3,7 +3,7 @@ package top.ybgnb.bilibili.backup.biliapi.request;
 import lombok.EqualsAndHashCode;
 import okhttp3.OkHttpClient;
 import top.ybgnb.bilibili.backup.biliapi.bean.ApiResult;
-import top.ybgnb.bilibili.backup.biliapi.bean.ListData;
+import top.ybgnb.bilibili.backup.biliapi.bean.list.ListData;
 import top.ybgnb.bilibili.backup.biliapi.error.BusinessException;
 import top.ybgnb.bilibili.backup.biliapi.user.User;
 

@@ -25,4 +25,16 @@ public abstract class BaseService {
         this.user = user;
     }
 
+    /**
+     * 是否进行鉴权
+     *
+     * @return
+     */
+    protected User signUser() {
+        if (user != null && !user.isCancelledAccount()) {
+            return user;
+        }
+        return null;
+    }
+
 }

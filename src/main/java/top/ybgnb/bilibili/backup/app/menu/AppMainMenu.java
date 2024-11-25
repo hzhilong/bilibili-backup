@@ -16,7 +16,7 @@ import java.util.Scanner;
  * @Version 1.0
  */
 @Slf4j
-public class AppMainMenu {
+public class AppMainMenu extends BaseMenu{
 
     /**
      * 选择业务
@@ -28,6 +28,7 @@ public class AppMainMenu {
             for (int i = 0; i < businessTypes.length; i++) {
                 log.info("{}: {}", i, businessTypes[i].getName());
             }
+            log.info("\n");
 
             int pos = MenuUtil.checkInputPos(businessTypes.length, sc.nextLine());
             // 输入是否有效

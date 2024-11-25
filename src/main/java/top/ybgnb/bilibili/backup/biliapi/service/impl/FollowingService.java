@@ -1,4 +1,4 @@
-package top.ybgnb.bilibili.backup.biliapi.service;
+package top.ybgnb.bilibili.backup.biliapi.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -14,6 +14,7 @@ import top.ybgnb.bilibili.backup.biliapi.request.CreateApi;
 import top.ybgnb.bilibili.backup.biliapi.request.ListApi;
 import top.ybgnb.bilibili.backup.biliapi.request.ModifyApi;
 import top.ybgnb.bilibili.backup.biliapi.request.PageApi;
+import top.ybgnb.bilibili.backup.biliapi.service.RelationService;
 import top.ybgnb.bilibili.backup.biliapi.user.User;
 import top.ybgnb.bilibili.backup.biliapi.utils.ListUtil;
 
@@ -40,17 +41,23 @@ public class FollowingService extends RelationService {
 
     @Override
     public void backup() throws BusinessException {
-        backupData("关注分组", this::getRelationTags);
+        try {
+            backupData("关注分组", this::getRelationTags);
+        } catch (BusinessException be) {
+            if (!user.isCancelledAccount()) {
+                throw be;
+            }
+        }
         backupData("关注", this::getRelations);
     }
 
     private List<RelationTag> getRelationTags() throws BusinessException {
-        return new ListApi<List, RelationTag>(client, user, "https://api.bilibili.com/x/relation/tags",
+        return new ListApi<List, RelationTag>(client, signUser(), "https://api.bilibili.com/x/relation/tags",
                 List.class, RelationTag.class).getList();
     }
 
     private List<Relation> getRelations() throws BusinessException {
-        return new PageApi<>(client, user, "https://api.bilibili.com/x/relation/followings",
+        return new PageApi<>(client, signUser(), "https://api.bilibili.com/x/relation/followings",
                 queryParams -> {
                     queryParams.put("vmid", user.getUid());
                     queryParams.put("order", "desc");

@@ -1,15 +1,16 @@
-package top.ybgnb.bilibili.backup.biliapi.service;
+package top.ybgnb.bilibili.backup.biliapi.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import org.jetbrains.annotations.NotNull;
 import top.ybgnb.bilibili.backup.biliapi.bean.ApiResult;
-import top.ybgnb.bilibili.backup.biliapi.bean.SessionPageData;
+import top.ybgnb.bilibili.backup.biliapi.bean.page.SessionPageData;
 import top.ybgnb.bilibili.backup.biliapi.error.BusinessException;
 import top.ybgnb.bilibili.backup.biliapi.request.AddQueryParams;
 import top.ybgnb.bilibili.backup.biliapi.request.ModifyApi;
 import top.ybgnb.bilibili.backup.biliapi.request.PageApi;
+import top.ybgnb.bilibili.backup.biliapi.service.BaseService;
 import top.ybgnb.bilibili.backup.biliapi.user.User;
 import top.ybgnb.bilibili.backup.biliapi.utils.ListUtil;
 

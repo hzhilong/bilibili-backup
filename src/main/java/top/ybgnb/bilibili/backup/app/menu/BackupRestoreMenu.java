@@ -4,14 +4,14 @@ import lombok.extern.slf4j.Slf4j;
 import top.ybgnb.bilibili.backup.app.constant.AppConstant;
 import top.ybgnb.bilibili.backup.app.utils.MenuUtil;
 import top.ybgnb.bilibili.backup.biliapi.error.BusinessException;
-import top.ybgnb.bilibili.backup.biliapi.service.BangumiService;
-import top.ybgnb.bilibili.backup.biliapi.service.BlackService;
-import top.ybgnb.bilibili.backup.biliapi.service.FavCollectedService;
-import top.ybgnb.bilibili.backup.biliapi.service.FavOpusesService;
-import top.ybgnb.bilibili.backup.biliapi.service.FavoritesService;
-import top.ybgnb.bilibili.backup.biliapi.service.FollowingService;
+import top.ybgnb.bilibili.backup.biliapi.service.impl.BangumiService;
+import top.ybgnb.bilibili.backup.biliapi.service.impl.BlackService;
+import top.ybgnb.bilibili.backup.biliapi.service.impl.FavCollectedService;
+import top.ybgnb.bilibili.backup.biliapi.service.impl.FavOpusesService;
+import top.ybgnb.bilibili.backup.biliapi.service.impl.FavoritesService;
+import top.ybgnb.bilibili.backup.biliapi.service.impl.FollowingService;
 import top.ybgnb.bilibili.backup.biliapi.service.ServiceBuilder;
-import top.ybgnb.bilibili.backup.biliapi.service.ToViewService;
+import top.ybgnb.bilibili.backup.biliapi.service.impl.ToViewService;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -28,7 +28,7 @@ import java.util.Scanner;
  * @Version 1.0
  */
 @Slf4j
-public class BackupRestoreMenu {
+public class BackupRestoreMenu extends BaseMenu {
 
     /**
      * 选择服务项目

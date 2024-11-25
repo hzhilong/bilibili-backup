@@ -1,8 +1,10 @@
-package top.ybgnb.bilibili.backup.biliapi.bean;
+package top.ybgnb.bilibili.backup.biliapi.bean.page;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import top.ybgnb.bilibili.backup.biliapi.bean.FavInfo;
+import top.ybgnb.bilibili.backup.biliapi.bean.Media;
 
 import java.util.List;
 

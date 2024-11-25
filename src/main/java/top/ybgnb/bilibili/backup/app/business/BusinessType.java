@@ -1,6 +1,7 @@
 package top.ybgnb.bilibili.backup.app.business;
 
 import top.ybgnb.bilibili.backup.app.business.impl.BackupBusiness;
+import top.ybgnb.bilibili.backup.app.business.impl.CancelledAccountsBusiness;
 import top.ybgnb.bilibili.backup.app.business.impl.ReadAllMessageBusiness;
 import top.ybgnb.bilibili.backup.app.business.impl.RestoreBusiness;
 import top.ybgnb.bilibili.backup.app.business.impl.UserManageBusiness;
@@ -16,7 +17,7 @@ public enum BusinessType {
     BACKUP("备份", BackupBusiness.class),
     RESTORE("还原", RestoreBusiness.class),
     READ_ALL_MSG("已读所有消息", ReadAllMessageBusiness.class),
-//    SEARCH_CANCELLED_ACCOUNTS("查询已注销账号信息", BaseBusiness.class),
+    CANCELLED_ACCOUNTS("已注销账号数据", CancelledAccountsBusiness.class),
 
     USER_MANAGE("管理已登录账号", UserManageBusiness.class),
     EXIT("退出程序", null);

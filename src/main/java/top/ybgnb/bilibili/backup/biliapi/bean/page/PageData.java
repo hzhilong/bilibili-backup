@@ -1,4 +1,4 @@
-package top.ybgnb.bilibili.backup.biliapi.bean;
+package top.ybgnb.bilibili.backup.biliapi.bean.page;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

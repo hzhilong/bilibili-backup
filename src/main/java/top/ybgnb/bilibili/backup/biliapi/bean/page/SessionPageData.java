@@ -1,4 +1,4 @@
-package top.ybgnb.bilibili.backup.biliapi.bean;
+package top.ybgnb.bilibili.backup.biliapi.bean.page;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;

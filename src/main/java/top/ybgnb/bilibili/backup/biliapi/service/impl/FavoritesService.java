@@ -1,11 +1,11 @@
-package top.ybgnb.bilibili.backup.biliapi.service;
+package top.ybgnb.bilibili.backup.biliapi.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import top.ybgnb.bilibili.backup.biliapi.bean.ApiResult;
 import top.ybgnb.bilibili.backup.biliapi.bean.FavFolder;
-import top.ybgnb.bilibili.backup.biliapi.bean.FavPageData;
+import top.ybgnb.bilibili.backup.biliapi.bean.page.FavPageData;
 import top.ybgnb.bilibili.backup.biliapi.bean.Media;
 import top.ybgnb.bilibili.backup.biliapi.error.BusinessException;
 import top.ybgnb.bilibili.backup.biliapi.request.AddQueryParams;
@@ -13,6 +13,7 @@ import top.ybgnb.bilibili.backup.biliapi.request.BaseApi;
 import top.ybgnb.bilibili.backup.biliapi.request.ListApi;
 import top.ybgnb.bilibili.backup.biliapi.request.ModifyApi;
 import top.ybgnb.bilibili.backup.biliapi.request.PageApi;
+import top.ybgnb.bilibili.backup.biliapi.service.BackupRestoreService;
 import top.ybgnb.bilibili.backup.biliapi.user.User;
 import top.ybgnb.bilibili.backup.biliapi.utils.ListUtil;
 
@@ -39,7 +40,7 @@ public class FavoritesService extends BackupRestoreService {
     }
 
     private List<FavFolder> getFavFolders() throws BusinessException {
-        return new ListApi<>(client, user,
+        return new ListApi<>(client, signUser(),
                 "https://api.bilibili.com/x/v3/fav/folder/created/list-all",
                 queryParams -> {
                     queryParams.put("up_mid", user.getUid());
@@ -47,7 +48,7 @@ public class FavoritesService extends BackupRestoreService {
     }
 
     public FavPageData getFavData(String mediaId) throws BusinessException {
-        return new PageApi<>(client, user, "https://api.bilibili.com/x/v3/fav/resource/list",
+        return new PageApi<>(client, signUser(), "https://api.bilibili.com/x/v3/fav/resource/list",
                 queryParams -> {
                     queryParams.put("media_id", mediaId);
                     queryParams.put("order", "mtime");
@@ -72,8 +73,8 @@ public class FavoritesService extends BackupRestoreService {
             @Override
             public List<FavFolder> processData(List<FavFolder> list) throws BusinessException {
                 for (FavFolder favFolder : list) {
-                    log.info(String.format("获取收藏夹[%s]信息", favFolder.getTitle()));
-                    ApiResult<FavFolder> apiResult = new BaseApi<FavFolder>(client, user,
+                    log.info("获取收藏夹[{}]信息", favFolder.getTitle());
+                    ApiResult<FavFolder> apiResult = new BaseApi<FavFolder>(client, signUser(),
                             "https://api.bilibili.com/x/v3/fav/folder/info", new AddQueryParams() {
                         @Override
                         public void addQueryParams(Map<String, String> queryParams) {
@@ -97,7 +98,7 @@ public class FavoritesService extends BackupRestoreService {
 
     @Override
     public void restore() throws BusinessException {
-        log.info(String.format("正在还原收藏夹..."));
+        log.info("正在还原收藏夹...");
 
         restoreList("收藏夹/", "创建的收藏夹", FavFolder.class, new RestoreCallback<FavFolder>() {
             @Override
@@ -162,7 +163,7 @@ public class FavoritesService extends BackupRestoreService {
             String oldFolderTitle = oldFolder.getTitle();
             if (mapNewFolders.containsKey(oldFolderTitle)) {
                 Long newFolderId = mapNewFolders.get(oldFolderTitle).getId();
-                log.info("读取旧账号收藏夹列表：" + oldFolderTitle);
+                log.info("读取旧账号收藏夹列表：{}", oldFolderTitle);
                 FavPageData favData = JSONObject.parseObject(readJsonFile(path + "收藏夹/",
                         getFileName(oldFolder)), FavPageData.class);
                 if (favData != null && ListUtil.notEmpty(favData.getMedias())) {
@@ -182,7 +183,7 @@ public class FavoritesService extends BackupRestoreService {
                 }
             }
         }
-        log.info(String.format("即将收藏%s个视频", videoFavNewIds.size()));
+        log.info("即将收藏{}个视频", videoFavNewIds.size());
         for (Map.Entry<Long, List<Long>> entry : videoFavNewIds.entrySet()) {
             Long mediaId = entry.getKey();
             List<Long> folderIds = entry.getValue();
@@ -195,7 +196,7 @@ public class FavoritesService extends BackupRestoreService {
                 }
             }
             if (!isNeedAdd) {
-                log.info(String.format("[%s]已收藏", media.getTitle()));
+                log.info("[{}]已收藏", media.getTitle());
             } else {
                 ApiResult<Object> apiResult = new ModifyApi<>(client, user,
                         "https://api.bilibili.com/x/v3/fav/resource/deal", JSONObject.class).modify(
@@ -212,9 +213,9 @@ public class FavoritesService extends BackupRestoreService {
                         }}
                 );
                 if (apiResult._isFail()) {
-                    log.info(String.format("收藏[%s]失败：%s(%s)", media.getTitle(), apiResult.getMessage(), apiResult.getCode()));
+                    log.info("收藏[{}]失败：{}({})", media.getTitle(), apiResult.getMessage(), apiResult.getCode());
                 } else {
-                    log.info(String.format("收藏[%s]成功", media.getTitle()));
+                    log.info("收藏[{}]成功", media.getTitle());
                 }
                 try {
                     Thread.sleep(2000);

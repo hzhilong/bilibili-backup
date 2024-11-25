@@ -15,7 +15,7 @@ import okhttp3.Response;
 import org.jetbrains.annotations.NotNull;
 import top.ybgnb.bilibili.backup.biliapi.bean.ApiResult;
 import top.ybgnb.bilibili.backup.biliapi.error.BusinessException;
-import top.ybgnb.bilibili.backup.biliapi.service.SignService;
+import top.ybgnb.bilibili.backup.biliapi.service.impl.SignService;
 import top.ybgnb.bilibili.backup.biliapi.user.User;
 import top.ybgnb.bilibili.backup.biliapi.utils.StringUtils;
 
@@ -63,7 +63,11 @@ public class BaseApi<D> implements AddQueryParams {
         this.user = user;
         this.url = url;
         this.addQueryParams = addQueryParams;
-        this.isWbiSign = isWbiSign;
+        if (user == null) {
+            this.isWbiSign = false;
+        } else {
+            this.isWbiSign = isWbiSign;
+        }
         this.dataClasses = dataClasses;
         if (isWbiSign) {
             signService = new SignService(client, user);

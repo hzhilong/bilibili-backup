@@ -2,6 +2,7 @@ package top.ybgnb.bilibili.backup.app.menu;
 
 import lombok.extern.slf4j.Slf4j;
 import top.ybgnb.bilibili.backup.app.bean.SavedUser;
+import top.ybgnb.bilibili.backup.app.constant.AppConstant;
 import top.ybgnb.bilibili.backup.app.state.UserManager;
 import top.ybgnb.bilibili.backup.app.utils.MenuUtil;
 import top.ybgnb.bilibili.backup.biliapi.error.BusinessException;
@@ -17,7 +18,7 @@ import java.util.Scanner;
  * @Version 1.0
  */
 @Slf4j
-public class UserMenu {
+public class UserMenu extends BaseMenu {
 
     /**
      * 选择用户
@@ -62,4 +63,15 @@ public class UserMenu {
         return null;
     }
 
+    public static String inputUid(Scanner sc) {
+        log.info("请输入用户UID：");
+        String nextLine = null;
+        do {
+            if (nextLine != null) {
+                log.info("输入错误，请重新输入");
+            }
+            nextLine = sc.nextLine();
+        } while (!AppConstant.NUM_PATTERN.matcher(nextLine).find());
+        return nextLine;
+    }
 }

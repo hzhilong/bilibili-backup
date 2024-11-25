@@ -23,7 +23,7 @@ public class BusinessRunner {
      * @return 当前登录的UP信息
      */
     public static Upper processBusiness(BusinessType businessType, Scanner scanner) throws BusinessException {
-        log.info("================【{}工具】================", businessType.getName());
+        log.info("================【{}】================", businessType.getName());
         try {
             // 获取业务类
             Class<? extends BaseBusiness> businessClass = businessType.getBusinessClass();
@@ -38,6 +38,7 @@ public class BusinessRunner {
             if (upper != null) {
                 log.info("【{}】处理成功，当前用户：{}\n", businessType.getName(), upper.getName());
             }
+            Thread.sleep(2000);
             return upper;
         } catch (BusinessException ex) {
             log.info("【{}】处理失败，{}\n", businessType.getName(), ex.getMessage());

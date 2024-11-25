@@ -10,7 +10,7 @@ import top.ybgnb.bilibili.backup.biliapi.bean.QRCode;
 import top.ybgnb.bilibili.backup.biliapi.bean.Upper;
 import top.ybgnb.bilibili.backup.biliapi.error.BusinessException;
 import top.ybgnb.bilibili.backup.biliapi.request.BaseApi;
-import top.ybgnb.bilibili.backup.biliapi.service.LoginService;
+import top.ybgnb.bilibili.backup.biliapi.service.impl.LoginService;
 import top.ybgnb.bilibili.backup.biliapi.user.User;
 import top.ybgnb.bilibili.backup.biliapi.utils.QRUtil;
 import top.ybgnb.bilibili.backup.biliapi.utils.StringUtils;
