@@ -1,5 +1,7 @@
 # 哔哩哔哩账号备份
 
+[演示视频](https://www.bilibili.com/video/BV1gc1zY1EpV) 求点赞 T_T
+
 一键对B站账号进行数据备份和还原，方便账号数据迁移/快速转生。
 
 > 某些需要转生的原因：
@@ -26,6 +28,8 @@
 ## 使用方法
 
 下载[已发布的版本](https://github.com/hzhilong/bilibili-backup/releases)，解压后，打开对应功能的bat文件即可。
+
+[蓝奏云](https://ybgnb.lanzouj.com/b0016vm26f)，密码 `ybgnb`
 
 ## 注意事项
 
