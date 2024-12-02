@@ -13,6 +13,12 @@
 > - 账号部分功能受限
 > - ...（你来补充）
 
+## 支持的平台
+
+- Windows
+
+（其他平台可以自己下载源码，配置参数后自己打包一下，详情请看：[JavaPackager](https://github.com/fvarrui/JavaPackager)）
+
 ## 具体功能
 
 - 备份/还原
