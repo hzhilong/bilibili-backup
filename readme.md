@@ -17,7 +17,7 @@
 
 - Windows
 
-（其他平台可以自己下载源码，配置参数后自己打包一下，详情请看：[JavaPackager](https://github.com/fvarrui/JavaPackager)）
+（其他平台可以自己下载源码，配置参数后打包一下，详情请看：[JavaPackager](https://github.com/fvarrui/JavaPackager)）
 
 ## 具体功能
 
