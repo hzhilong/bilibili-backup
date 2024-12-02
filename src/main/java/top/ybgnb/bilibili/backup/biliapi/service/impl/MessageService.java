@@ -47,6 +47,7 @@ public class MessageService extends BaseService {
             return;
         }
         for (int i = 0; i < sessionCount; i++) {
+            handleInterrupt();
             log.info("解析中...{}%", (i + 1) * 100 / sessionCount);
             JSONObject session = allSession.get(i);
             Integer unreadCount = session.getInteger("unread_count");
@@ -69,7 +70,6 @@ public class MessageService extends BaseService {
                 }
             }
         }
-        log.info("执行完成");
     }
 
     @NotNull

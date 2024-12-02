@@ -36,7 +36,7 @@ public class BusinessRunner {
             // 处理业务
             Upper upper = business.process(scanner);
             if (upper != null) {
-                log.info("【{}】处理成功，当前用户：{}\n", businessType.getName(), upper.getName());
+                log.info("【{}】处理成功，当前账号：{}\n", businessType.getName(), upper.getName());
             }
             Thread.sleep(2000);
             return upper;

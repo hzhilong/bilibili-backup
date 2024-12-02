@@ -14,7 +14,7 @@ import java.util.List;
 
 /**
  * @ClassName UserManager
- * @Description 用户管理器(已登录)
+ * @Description 账号管理器(已登录)
  * @Author hzhilong
  * @Time 2024/11/22
  * @Version 1.0
@@ -22,21 +22,29 @@ import java.util.List;
 public class UserManager {
 
     /**
-     * 保存用户
+     * 保存账号
      */
     public static void save(SavedUser user) throws BusinessException {
         FileUtil.writeJsonFile(AppConstant.COOKIE_PATH_PREFIX, String.valueOf(user.getMid()), user);
     }
 
     /**
-     * 删除用户
+     * 删除账号
      */
     public static void delete(String uid) {
         new File(AppConstant.COOKIE_PATH_PREFIX + uid).delete();
     }
 
     /**
-     * 获取所有保存的用户
+     * 删除账号
+     */
+    public static void delete(Long uid) {
+        delete(String.valueOf(uid));
+    }
+
+
+    /**
+     * 获取所有保存的账号
      */
     public static List<SavedUser> readAllUser() throws BusinessException {
         File backupDir = new File(AppConstant.COOKIE_PATH_PREFIX);

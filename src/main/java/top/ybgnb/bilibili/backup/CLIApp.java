@@ -1,4 +1,4 @@
-package top.ybgnb.bilibili.backup.app;
+package top.ybgnb.bilibili.backup;
 
 import lombok.extern.slf4j.Slf4j;
 import top.ybgnb.bilibili.backup.app.menu.AppMainMenu;

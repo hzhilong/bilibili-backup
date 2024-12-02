@@ -6,13 +6,19 @@
 
     <groupId>top.ybgnb</groupId>
     <artifactId>bilibili-backup</artifactId>
-    <description>哔哩哔哩账号备份</description>
-    <version>1.0.6</version>
+    <name>哔哩哔哩账号备份</name>
+    <description>一键对B站账号进行数据备份和还原，方便账号数据迁移/快速转生(哗哩哗哩 bilibili)</description>
+    <version>2.0</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <app.author>hzhilong</app.author>
+        <app.email>hzhilong777@outlook.com</app.email>
+        <app.github>https://github.com/hzhilong/bilibili-backup</app.github>
+        <app.mainClass>top.ybgnb.bilibili.backup.App</app.mainClass>
+        <app.ico>assets/windows/${project.name}.ico</app.ico>
     </properties>
 
     <dependencies>
@@ -34,7 +40,7 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.7</version>
+            <version>2.14.0</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -52,11 +58,22 @@
             <artifactId>core</artifactId>
             <version>3.5.3</version>
         </dependency>
+        <dependency>
+            <groupId>com.formdev</groupId>
+            <artifactId>flatlaf</artifactId>
+            <version>3.5.2</version>
+        </dependency>
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
-            <plugin>
+            <!--<plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.1.0</version>
@@ -65,7 +82,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>top.ybgnb.bilibili.backup.app.CLIApp</mainClass>
+                            <mainClass>${app.mainClass}</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -77,21 +94,61 @@
                 <executions>
                     <execution>
                         <id>make-assembly</id>
-                        <!-- 绑定到package生命周期 -->
+                        &lt;!&ndash; 绑定到package生命周期 &ndash;&gt;
                         <phase>package</phase>
                         <goals>
-                            <!-- 只运行一次 -->
+                            &lt;!&ndash; 只运行一次 &ndash;&gt;
                             <goal>single</goal>
                         </goals>
                         <configuration>
                             <tarLongFileMode>gnu</tarLongFileMode>
                             <descriptors>
-                                <!-- 配置描述文件路径，一般使用相对目录即可 -->
+                                &lt;!&ndash; 配置描述文件路径，一般使用相对目录即可 &ndash;&gt;
                                 <descriptor>assembly.xml</descriptor>
                             </descriptors>
                             <outputDirectory>target</outputDirectory>
-                            <!-- 该标签默认为true，指定为false后包名将不会自动带上描述文件的id -->
+                            &lt;!&ndash; 该标签默认为true，指定为false后包名将不会自动带上描述文件的id &ndash;&gt;
                             <appendAssemblyId>true</appendAssemblyId>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>-->
+            <!-- https://github.com/fvarrui/JavaPackager -->
+            <plugin>
+                <groupId>io.github.fvarrui</groupId>
+                <artifactId>javapackager</artifactId>
+                <version>1.7.6</version>
+                <executions>
+                    <execution>
+                        <id>bundle-jre</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>package</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>${app.mainClass}</mainClass>
+                            <bundleJre>true</bundleJre>
+                            <jrePath>jre</jrePath>
+                            <generateInstaller>true</generateInstaller>
+                            <platform>windows</platform>
+
+                            <url>${app.github}</url>
+                            <organizationUrl>${app.github}</organizationUrl>
+                            <organizationName>${app.author}</organizationName>
+                            <organizationEmail>${app.email}</organizationEmail>
+
+                            <winConfig>
+                                <exeCreationTool>winrun4j</exeCreationTool>
+                                <!-- https://github.com/kira-96/Inno-Setup-Chinese-Simplified-Translation -->
+                                <setupLanguages>
+                                    <china>compiler:Languages\ChineseSimplified.isl</china>
+                                    <english>compiler:Default.isl</english>
+                                </setupLanguages>
+                                <generateMsi>false</generateMsi>
+                                <disableDirPage>false</disableDirPage>
+                                <disableFinishedPage>false</disableFinishedPage>
+                                <disableRunAfterInstall>false</disableRunAfterInstall>
+                            </winConfig>
                         </configuration>
                     </execution>
                 </executions>

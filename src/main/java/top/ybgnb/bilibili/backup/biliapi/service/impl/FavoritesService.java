@@ -5,8 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import top.ybgnb.bilibili.backup.biliapi.bean.ApiResult;
 import top.ybgnb.bilibili.backup.biliapi.bean.FavFolder;
-import top.ybgnb.bilibili.backup.biliapi.bean.page.FavPageData;
 import top.ybgnb.bilibili.backup.biliapi.bean.Media;
+import top.ybgnb.bilibili.backup.biliapi.bean.page.FavPageData;
 import top.ybgnb.bilibili.backup.biliapi.error.BusinessException;
 import top.ybgnb.bilibili.backup.biliapi.request.AddQueryParams;
 import top.ybgnb.bilibili.backup.biliapi.request.BaseApi;
@@ -17,6 +17,7 @@ import top.ybgnb.bilibili.backup.biliapi.service.BackupRestoreService;
 import top.ybgnb.bilibili.backup.biliapi.user.User;
 import top.ybgnb.bilibili.backup.biliapi.utils.ListUtil;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -160,6 +161,7 @@ public class FavoritesService extends BackupRestoreService {
         Map<Long, List<Long>> videoFavNewIds = new HashMap<>();
         Map<Long, Media> mapMedias = new HashMap<>();
         for (FavFolder oldFolder : oldFolders) {
+            handleInterrupt();
             String oldFolderTitle = oldFolder.getTitle();
             if (mapNewFolders.containsKey(oldFolderTitle)) {
                 Long newFolderId = mapNewFolders.get(oldFolderTitle).getId();
@@ -185,6 +187,7 @@ public class FavoritesService extends BackupRestoreService {
         }
         log.info("即将收藏{}个视频", videoFavNewIds.size());
         for (Map.Entry<Long, List<Long>> entry : videoFavNewIds.entrySet()) {
+            handleInterrupt();
             Long mediaId = entry.getKey();
             List<Long> folderIds = entry.getValue();
             Media media = mapMedias.get(mediaId);
@@ -227,4 +230,8 @@ public class FavoritesService extends BackupRestoreService {
     }
 
 
+    @Override
+    public int getBackupCount(File dir) throws BusinessException {
+        return getBackupListSize(dir, "收藏夹/创建的收藏夹");
+    }
 }

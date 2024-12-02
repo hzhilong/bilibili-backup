@@ -12,7 +12,7 @@ import java.util.Scanner;
 
 /**
  * @ClassName UserManagerBusiness
- * @Description 用户管理
+ * @Description 账号管理
  * @Author hzhilong
  * @Time 2024/11/22
  * @Version 1.0
@@ -22,10 +22,10 @@ public class UserManageBusiness extends BaseBusiness {
 
     @Override
     public Upper process(Scanner scanner) throws BusinessException {
-        // 选择登录过的用户
+        // 选择登录过的账号
         SavedUser savedUser = UserMenu.chooseLoggedUser(scanner, false);
         if (savedUser == null) {
-            log.info("未登录过用户\n");
+            log.info("未登录过账号\n");
             return null;
         }
         log.info("输入D：删除\t输入其他：返回");

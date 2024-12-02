@@ -102,7 +102,7 @@ public class PageApi<D extends PageData<L>, L> extends BaseApi<D> {
                     if (data.hasMore(list.size())) {
                         page++;
                         try {
-                            Thread.sleep(1000);
+                            Thread.sleep(1000 + page * 50L);
                         } catch (InterruptedException ignored) {
 
                         }
@@ -120,6 +120,7 @@ public class PageApi<D extends PageData<L>, L> extends BaseApi<D> {
     public D getAllPageData() throws BusinessException {
         return getAllPageData(null);
     }
+
     public D getAllPageData(SetNextPage<L> setNextPage) throws BusinessException {
         List<L> list = new ArrayList<>();
         AddQueryParams baseAddQueryParams = null;

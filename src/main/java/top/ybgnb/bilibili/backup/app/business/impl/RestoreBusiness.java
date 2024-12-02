@@ -26,7 +26,7 @@ public class RestoreBusiness extends BaseBusinessForLoginUser {
     public Upper process(Scanner scanner) throws BusinessException {
         // 1. 选择备份文件路径（父目录）
         String backupFilePath = BackupRestoreMenu.chooseBackupDir(scanner);
-        // 2. 登录/选择用户
+        // 2. 登录/选择账号
         SavedUser user = super.chooseUser(scanner);
         // 3. 选择操作项目
         List<ServiceBuilder> serviceItems = BackupRestoreMenu.chooseServiceItems(scanner);

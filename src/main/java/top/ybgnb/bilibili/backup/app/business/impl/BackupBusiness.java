@@ -27,7 +27,7 @@ public class BackupBusiness extends BaseBusinessForLoginUser {
 
     @Override
     public Upper process(Scanner scanner) throws BusinessException {
-        // 1. 登录/选择用户
+        // 1. 登录/选择账号
         SavedUser user = super.chooseUser(scanner);
         // 2. 选择操作项目
         List<ServiceBuilder> serviceItems = BackupRestoreMenu.chooseServiceItems(scanner);

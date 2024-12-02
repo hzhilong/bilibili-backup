@@ -52,7 +52,8 @@ public class SignService extends BaseService {
         String imgKey = imgUrl.substring(imgUrl.lastIndexOf("/") + 1, imgUrl.lastIndexOf("."));
         String subKey = subUrl.substring(subUrl.lastIndexOf("/") + 1, subUrl.lastIndexOf("."));
         String mixinKey = genMixinKey(imgKey, subKey);
-        log.info("获取mixinKey：" + mixinKey);
+//        log.info("获取mixinKey：{}", mixinKey);
+        log.info("初始化接口调用，请稍候...");
         return mixinKey;
     }
 
@@ -92,8 +93,7 @@ public class SignService extends BaseService {
 
     public String wbiSign(String mixinKey, Map<String, String> queryParams) {
         // 用TreeMap自动排序
-        TreeMap<String, String> sortMap = new TreeMap<>();
-        sortMap.putAll(queryParams);
+        TreeMap<String, String> sortMap = new TreeMap<>(queryParams);
         sortMap.put("wts", String.valueOf(System.currentTimeMillis() / 1000));
         String param = sortMap.entrySet().stream()
                 .map(it -> String.format("%s=%s", it.getKey(), encodeURIComponent(it.getValue())))

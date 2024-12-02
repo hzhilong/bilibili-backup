@@ -8,6 +8,8 @@ import top.ybgnb.bilibili.backup.biliapi.request.PageApi;
 import top.ybgnb.bilibili.backup.biliapi.service.BackupRestoreService;
 import top.ybgnb.bilibili.backup.biliapi.user.User;
 
+import java.io.File;
+
 /**
  * @ClassName FollowerService
  * @Description 粉丝
@@ -35,5 +37,10 @@ public class FollowerService extends BackupRestoreService {
     @Override
     public void restore() throws BusinessException {
         throw new BusinessException("粉丝数据仅可备份，不能还原 ( ﹁ ﹁ ) ~→");
+    }
+
+    @Override
+    public int getBackupCount(File dir) throws BusinessException {
+        return getBackupListSize(dir, "粉丝");
     }
 }

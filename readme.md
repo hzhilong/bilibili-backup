@@ -24,20 +24,28 @@
     - 收藏的视频合集
     - 稍后再看
 - 一键已读所有消息
-- 获取已注销账号信息
-    - 关注和粉丝数量
-    - 投稿的视频
-- 备份已注销账号数据
+- 查询已注销账号
+  - 获取信息
+      - 关注和粉丝数量
+      - 投稿的视频
+  - 备份数据
     - 收藏夹
     - 收藏的视频合集
     - 追番追剧
 
+## 软件截图
 
-## 使用方法
+![备份界面截图](./screenshot/app01.png "备份界面")
 
-下载[已发布的版本](https://github.com/hzhilong/bilibili-backup/releases)，解压后，打开对应功能的bat文件即可。
+![还原界面截图](./screenshot/app02.png "还原界面")
 
-[蓝奏云](https://ybgnb.lanzouj.com/b0016vm26f)，密码 `ybgnb`
+![已注销账号界面截图](./screenshot/app03.png "已注销账号界面")
+
+## 下载使用
+
+- [Github](https://github.com/hzhilong/bilibili-backup/releases/latest)
+
+- [蓝奏云](https://ybgnb.lanzouj.com/b0016vm26f)，密码 `ybgnb`
 
 ## 注意事项
 
@@ -47,3 +55,4 @@
 ## 感谢
 
 - [bilibili-API-collect](https://github.com/SocialSisterYi/bilibili-API-collect)
+- [FlatLaf](https://github.com/JFormDesigner/FlatLaf)  

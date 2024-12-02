@@ -5,11 +5,9 @@ import top.ybgnb.bilibili.backup.app.bean.SavedUser;
 import top.ybgnb.bilibili.backup.app.bean.UpperInfoCallback;
 import top.ybgnb.bilibili.backup.app.menu.UserMenu;
 import top.ybgnb.bilibili.backup.app.state.UserManager;
-import top.ybgnb.bilibili.backup.biliapi.bean.ApiResult;
 import top.ybgnb.bilibili.backup.biliapi.bean.QRCode;
 import top.ybgnb.bilibili.backup.biliapi.bean.Upper;
 import top.ybgnb.bilibili.backup.biliapi.error.BusinessException;
-import top.ybgnb.bilibili.backup.biliapi.request.BaseApi;
 import top.ybgnb.bilibili.backup.biliapi.service.impl.LoginService;
 import top.ybgnb.bilibili.backup.biliapi.user.User;
 import top.ybgnb.bilibili.backup.biliapi.utils.QRUtil;
@@ -21,7 +19,7 @@ import java.util.Scanner;
 
 /**
  * @ClassName BaseBusinessForLoginUser
- * @Description 登录用户的业务基类
+ * @Description 登录账号的业务基类
  * @Author hzhilong
  * @Time 2024/11/22
  * @Version 1.0
@@ -30,22 +28,22 @@ import java.util.Scanner;
 public abstract class BaseBusinessForLoginUser extends BaseBusiness {
 
     /**
-     * 选择用户
+     * 选择账号
      */
     protected SavedUser chooseUser(Scanner scanner) throws BusinessException {
-        // 选择登录过的用户
+        // 选择登录过的账号
         SavedUser savedUser = UserMenu.chooseLoggedUser(scanner, true);
         String cookie;
         if (savedUser != null) {
             //  之前登录过
             cookie = savedUser.getCookie();
         } else {
-            log.info("请使用扫码方式登录用户\n");
+            log.info("请使用扫码方式登录账号\n");
             cookie = loginUserByQR();
         }
 
         Upper upper = getUpper(new User(cookie),
-                // UP信息回调（在已登录用户失效时删除保存的cookie文件）
+                // UP信息回调（在已登录账号失效时删除保存的cookie文件）
                 new UpperInfoCallback() {
                     @Override
                     public void success(Upper upper) throws BusinessException {
@@ -61,7 +59,7 @@ public abstract class BaseBusinessForLoginUser extends BaseBusiness {
     }
 
     /**
-     * 使用二维码登录用户
+     * 使用二维码登录账号
      */
     private String loginUserByQR() throws BusinessException {
         LoginService loginService = new LoginService(client);
@@ -105,19 +103,6 @@ public abstract class BaseBusinessForLoginUser extends BaseBusiness {
      * 获取UP信息
      */
     public Upper getUpper(User user, UpperInfoCallback upperInfoCallback) throws BusinessException {
-        log.info("正在获取用户信息，请稍候...");
-        ApiResult<Upper> userInfo = new BaseApi<Upper>(client, new User(user.getCookie()),
-                "https://api.bilibili.com/x/space/myinfo", true, Upper.class).apiGet();
-        if (userInfo._isFail()) {
-            log.error(userInfo.getMessage());
-            if (upperInfoCallback != null) {
-                upperInfoCallback.fail(user);
-            }
-            throw new BusinessException("获取当前用户信息失败");
-        }
-        if (upperInfoCallback != null) {
-            upperInfoCallback.success(userInfo.getData());
-        }
-        return userInfo.getData();
+        return new LoginService(client).getUpper(user, upperInfoCallback);
     }
 }

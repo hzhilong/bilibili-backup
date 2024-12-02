@@ -11,6 +11,7 @@ import top.ybgnb.bilibili.backup.biliapi.request.PageApi;
 import top.ybgnb.bilibili.backup.biliapi.service.BackupRestoreService;
 import top.ybgnb.bilibili.backup.biliapi.user.User;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 
@@ -55,7 +56,7 @@ public class BangumiService extends BackupRestoreService {
 
     @Override
     public void restore() throws BusinessException {
-        restoreList("我的追番",Bangumi.class, new RestoreCallback<Bangumi>() {
+        restoreList("我的追番", Bangumi.class, new RestoreCallback<Bangumi>() {
             @Override
             public List<Bangumi> getNewList() throws BusinessException {
                 return getList("1");
@@ -77,7 +78,7 @@ public class BangumiService extends BackupRestoreService {
             }
         });
 
-        restoreList("我的追剧", Bangumi.class,new RestoreCallback<Bangumi>() {
+        restoreList("我的追剧", Bangumi.class, new RestoreCallback<Bangumi>() {
             @Override
             public List<Bangumi> getNewList() throws BusinessException {
                 return getList("2");
@@ -100,4 +101,8 @@ public class BangumiService extends BackupRestoreService {
         });
     }
 
+    @Override
+    public int getBackupCount(File dir) throws BusinessException {
+        return getBackupListSize(dir, "我的追番") + getBackupListSize(dir, "我的追剧");
+    }
 }

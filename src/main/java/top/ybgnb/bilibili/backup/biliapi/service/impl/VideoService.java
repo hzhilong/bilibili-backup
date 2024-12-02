@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @ClassName BangumiService
+ * @ClassName VideoService
  * @Description 投稿视频
  * @Author hzhilong
  * @Time 2024/9/26
@@ -37,6 +37,7 @@ public class VideoService extends BaseService {
      * @return
      */
     public List<Video> getVideos(String uid) throws BusinessException {
+        log.info("获取用户[{}]投稿视频中...", user.getUid());
         List<Video> videos = new ArrayList<>();
         List<JSONObject> list = new PageApi<>(client, signUser(), "https://app.bilibili.com/x/v2/space/archive/cursor", new AddQueryParams() {
             @Override

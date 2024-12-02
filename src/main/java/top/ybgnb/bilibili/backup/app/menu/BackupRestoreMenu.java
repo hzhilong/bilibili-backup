@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import top.ybgnb.bilibili.backup.app.constant.AppConstant;
 import top.ybgnb.bilibili.backup.app.utils.MenuUtil;
 import top.ybgnb.bilibili.backup.biliapi.error.BusinessException;
+import top.ybgnb.bilibili.backup.biliapi.service.BackupRestoreItem;
 import top.ybgnb.bilibili.backup.biliapi.service.impl.BangumiService;
 import top.ybgnb.bilibili.backup.biliapi.service.impl.BlackService;
 import top.ybgnb.bilibili.backup.biliapi.service.impl.FavCollectedService;
@@ -39,13 +40,9 @@ public class BackupRestoreMenu extends BaseMenu {
     public static List<ServiceBuilder> chooseServiceItems(Scanner sc) {
         List<ServiceBuilder> builders = new ArrayList<>();
         do {
-            chooseServiceItem(sc, builders, "关注", FollowingService::new);
-            chooseServiceItem(sc, builders, "我的追番/追剧", BangumiService::new);
-            chooseServiceItem(sc, builders, "收藏的专栏", FavOpusesService::new);
-            chooseServiceItem(sc, builders, "收藏的视频合集", FavCollectedService::new);
-            chooseServiceItem(sc, builders, "稍后再看", ToViewService::new);
-            chooseServiceItem(sc, builders, "收藏夹", FavoritesService::new);
-            chooseServiceItem(sc, builders, "黑名单", BlackService::new);
+            for (BackupRestoreItem item : BackupRestoreItem.values()) {
+                chooseServiceItem(sc, builders, item.getName(), item.getServiceBuilder());
+            }
             if (builders.isEmpty()) {
                 log.info("未选择任何项目，请重新选择！");
             }

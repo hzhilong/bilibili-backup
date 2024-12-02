@@ -18,6 +18,7 @@ import top.ybgnb.bilibili.backup.biliapi.service.RelationService;
 import top.ybgnb.bilibili.backup.biliapi.user.User;
 import top.ybgnb.bilibili.backup.biliapi.utils.ListUtil;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -91,9 +92,10 @@ public class FollowingService extends RelationService {
                 }
             }
             Collections.reverse(needCreateTags);
-            log.info("需要新建的关注分组：" + JSON.toJSONString(needCreateTags));
+            log.info("需要新建的关注分组：{}", JSON.toJSONString(needCreateTags));
             for (RelationTag needCreateTag : needCreateTags) {
-                log.info("正在新建关注分组：" + needCreateTag.getName());
+                handleInterrupt();
+                log.info("正在新建关注分组：{}", needCreateTag.getName());
                 ApiResult<RelationTag> apiResult = new CreateApi<RelationTag>(client, user, "https://api.bilibili.com/x/relation/tag/create", RelationTag.class)
                         .create(new HashMap<String, String>() {{
                             put("tag", needCreateTag.getName());
@@ -118,7 +120,7 @@ public class FollowingService extends RelationService {
         List<Relation> oldFollowings = JSONObject.parseObject(readJsonFile(path, "关注"),
                 new TypeReference<List<Relation>>() {
                 });
-        log.info("解析旧账号关注：" + JSON.toJSONString(oldFollowings.size()));
+        log.info("解析旧账号关注：{}", JSON.toJSONString(oldFollowings.size()));
         if (ListUtil.isEmpty(oldFollowings)) {
             log.info("关注为空，无需还原");
             return;
@@ -126,9 +128,10 @@ public class FollowingService extends RelationService {
         Map<String, CopyUser> copyUsers = new HashMap<>();
         Collections.reverse(oldFollowings);
         for (Relation oldFollowing : oldFollowings) {
+            handleInterrupt();
             boolean isFollowed = false;
             if (newFollowingIds.contains(oldFollowing.getMid())) {
-                log.info("已关注UP主：" + oldFollowing.getUname());
+                log.info("已关注UP主：{}", oldFollowing.getUname());
                 isFollowed = true;
             } else {
                 try {
@@ -182,7 +185,8 @@ public class FollowingService extends RelationService {
             for (Map.Entry<String, CopyUser> entry : copyUsers.entrySet()) {
                 CopyUser copyUser = entry.getValue();
                 for (List<Long> idList : copyUser.followingIdsList) {
-                    log.info(String.format("正在复制用户至分组[%s]:%s", copyUser.tags.toString(), idList.toString()));
+                    handleInterrupt();
+                    log.info("正在复制用户至分组[{}]:{}", copyUser.tags.toString(), idList.toString());
                     ApiResult<Void> apiResult = new ModifyApi<Void>(client, user, "https://api.bilibili.com/x/relation/tags/copyUsers",
                             Void.class).modify(
                             new HashMap<String, String>() {{
@@ -190,11 +194,16 @@ public class FollowingService extends RelationService {
                                 put("tagids", ListUtil.listToString(copyUser.tags, ","));
                             }});
                     if (apiResult._isFail()) {
-                        log.info(String.format("复制用户至分组[%s]:%s失败", copyUser.tags.toString(), idList.toString()));
+                        log.info("复制用户至分组[{}]:{}失败", copyUser.tags.toString(), idList.toString());
                     }
                 }
             }
         }
+    }
+
+    @Override
+    public int getBackupCount(File dir) throws BusinessException {
+        return getBackupListSize(dir, "关注");
     }
 
     public static class CopyUser {

@@ -1,8 +1,11 @@
 package top.ybgnb.bilibili.backup.biliapi.service;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
+import top.ybgnb.bilibili.backup.biliapi.error.BusinessException;
 import top.ybgnb.bilibili.backup.biliapi.user.User;
 
 /**
@@ -19,6 +22,13 @@ public abstract class BaseService {
     protected OkHttpClient client;
 
     protected final User user;
+
+    /**
+     * 是否中断
+     */
+    @Setter
+    @Getter
+    protected boolean interrupt;
 
     public BaseService(OkHttpClient client, User user) {
         this.client = client;
@@ -37,4 +47,12 @@ public abstract class BaseService {
         return null;
     }
 
+    /**
+     * 处理中断
+     */
+    protected void handleInterrupt() throws BusinessException {
+        if(isInterrupt()){
+            throw new BusinessException("任务中断");
+        }
+    }
 }

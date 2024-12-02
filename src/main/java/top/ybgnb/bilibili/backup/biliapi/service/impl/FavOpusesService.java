@@ -14,6 +14,7 @@ import top.ybgnb.bilibili.backup.biliapi.service.BackupRestoreService;
 import top.ybgnb.bilibili.backup.biliapi.user.User;
 import top.ybgnb.bilibili.backup.biliapi.utils.StringUtils;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -93,5 +94,10 @@ public class FavOpusesService extends BackupRestoreService {
                 }
             }
         });
+    }
+
+    @Override
+    public int getBackupCount(File dir) throws BusinessException {
+        return getBackupListSize(dir, "收藏的专栏");
     }
 }

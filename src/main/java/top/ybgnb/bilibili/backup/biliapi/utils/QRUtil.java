@@ -47,7 +47,7 @@ public class QRUtil {
         }
     }
 
-    public static File writeQRFile(String content, String filePath) throws BusinessException {
+    public static BufferedImage createQRImage(String content) throws BusinessException {
         // 设置字符集编码
         Map<EncodeHintType, Object> hints = new HashMap<>();
         hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
@@ -62,11 +62,17 @@ public class QRUtil {
                     bufferedImage.setRGB(i, j, bitMatrix.get(i, j) ? 0x000000 : 0xFFFFFF);
                 }
             }
-            File codeImgFile = new File(filePath);
-            ImageIO.write(bufferedImage, "png", codeImgFile);
-            return codeImgFile;
+            return bufferedImage;
         } catch (WriterException e) {
             throw new BusinessException("生成二维码失败");
+        }
+    }
+
+    public static File writeQRFile(String content, String filePath) throws BusinessException {
+        File codeImgFile = new File(filePath);
+        try {
+            ImageIO.write(createQRImage(content), "png", codeImgFile);
+            return codeImgFile;
         } catch (IOException e) {
             throw new BusinessException("保存二维码失败");
         }

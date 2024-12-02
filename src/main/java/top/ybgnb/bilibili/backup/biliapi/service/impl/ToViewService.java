@@ -10,6 +10,7 @@ import top.ybgnb.bilibili.backup.biliapi.request.ModifyApi;
 import top.ybgnb.bilibili.backup.biliapi.service.BackupRestoreService;
 import top.ybgnb.bilibili.backup.biliapi.user.User;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 
@@ -68,5 +69,10 @@ public class ToViewService extends BackupRestoreService {
                 }
             }
         });
+    }
+
+    @Override
+    public int getBackupCount(File dir) throws BusinessException {
+        return getBackupListSize(dir, "稍后再看");
     }
 }

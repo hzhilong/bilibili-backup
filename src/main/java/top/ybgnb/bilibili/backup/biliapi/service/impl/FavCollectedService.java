@@ -10,11 +10,12 @@ import top.ybgnb.bilibili.backup.biliapi.request.PageApi;
 import top.ybgnb.bilibili.backup.biliapi.service.BackupRestoreService;
 import top.ybgnb.bilibili.backup.biliapi.user.User;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 
 /**
- * @ClassName FavCollected
+ * @ClassName FavCollectedService
  * @Description 收藏的视频合集
  * @Author hzhilong
  * @Time 2024/9/26
@@ -73,5 +74,10 @@ public class FavCollectedService extends BackupRestoreService {
                 }
             }
         });
+    }
+
+    @Override
+    public int getBackupCount(File dir) throws BusinessException {
+        return getBackupListSize(dir, "收藏的视频合集");
     }
 }

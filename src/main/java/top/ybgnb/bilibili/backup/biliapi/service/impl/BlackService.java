@@ -9,6 +9,7 @@ import top.ybgnb.bilibili.backup.biliapi.request.PageApi;
 import top.ybgnb.bilibili.backup.biliapi.service.RelationService;
 import top.ybgnb.bilibili.backup.biliapi.user.User;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -65,4 +66,8 @@ public class BlackService extends RelationService {
         });
     }
 
+    @Override
+    public int getBackupCount(File dir) throws BusinessException {
+        return getBackupListSize(dir,"黑名单");
+    }
 }

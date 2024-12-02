@@ -3,12 +3,15 @@ package top.ybgnb.bilibili.backup.biliapi.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
+import top.ybgnb.bilibili.backup.app.bean.UpperInfoCallback;
 import top.ybgnb.bilibili.backup.biliapi.bean.ApiResult;
 import top.ybgnb.bilibili.backup.biliapi.bean.LoginResult;
 import top.ybgnb.bilibili.backup.biliapi.bean.QRCode;
+import top.ybgnb.bilibili.backup.biliapi.bean.Upper;
 import top.ybgnb.bilibili.backup.biliapi.error.BusinessException;
 import top.ybgnb.bilibili.backup.biliapi.request.BaseApi;
 import top.ybgnb.bilibili.backup.biliapi.service.BaseService;
+import top.ybgnb.bilibili.backup.biliapi.user.User;
 import top.ybgnb.bilibili.backup.biliapi.utils.StringUtils;
 
 import java.util.List;
@@ -24,7 +27,6 @@ import java.util.List;
 public class LoginService extends BaseService {
 
     protected OkHttpClient client;
-
 
     public LoginService(OkHttpClient client) {
         super(client, null);
@@ -82,5 +84,22 @@ public class LoginService extends BaseService {
         }
         JSONObject data = apiResult.getData();
         return String.format("%sbuvid3=%s; buvid4=%s; ", cookie, data.getString("b_3"), data.getString("b_4"));
+    }
+
+    public Upper getUpper(User user, UpperInfoCallback upperInfoCallback) throws BusinessException {
+        log.info("正在获取用户信息，请稍候...");
+        ApiResult<Upper> userInfo = new BaseApi<Upper>(client, new User(user.getCookie()),
+                "https://api.bilibili.com/x/space/myinfo", true, Upper.class).apiGet();
+        if (userInfo._isFail()) {
+            log.error(userInfo.getMessage());
+            if (upperInfoCallback != null) {
+                upperInfoCallback.fail(user);
+            }
+            throw new BusinessException("获取当前用户信息失败");
+        }
+        if (upperInfoCallback != null) {
+            upperInfoCallback.success(userInfo.getData());
+        }
+        return userInfo.getData();
     }
 }
