@@ -44,7 +44,6 @@ public class BackupFileUtil {
         put("关注分组", "RelationTags");
         put("关注", "Following");
         put("稍后再看", "ToView");
-        put("稍后再看", "ToView");
     }};
 
     public static String getEnName(String cnName) throws BusinessException {

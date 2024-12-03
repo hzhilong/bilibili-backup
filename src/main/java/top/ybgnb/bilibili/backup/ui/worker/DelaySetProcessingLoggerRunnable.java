@@ -22,7 +22,7 @@ public class DelaySetProcessingLoggerRunnable implements Runnable {
     @Override
     public void run() {
         try {
-            Thread.sleep(200);
+            Thread.sleep(500);
             GlobalState.setProcessingLogger(processingLogger);
         } catch (InterruptedException e) {
 
