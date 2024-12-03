@@ -21,9 +21,10 @@ public class FileUtil {
     public static void writeJsonFile(String path, String name, Object obj) throws BusinessException {
         File dir = new File(path);
         if (!dir.exists()) {
-            if (!dir.mkdirs()) {
-                throw new BusinessException("创建文件夹失败：" + path);
-            }
+            dir.mkdirs();
+//            if (!dir.mkdirs()) {
+//                throw new BusinessException("创建文件夹失败：" + path);
+//            }
         }
         String filePath = path + name;
         try {
