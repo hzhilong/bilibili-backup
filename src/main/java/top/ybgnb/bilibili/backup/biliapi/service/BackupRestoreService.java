@@ -112,13 +112,19 @@ public abstract class BackupRestoreService extends BaseService implements Backup
         log.info("获取新账号{}：{}条数据", buName, ListUtil.getSize(newList));
         Set<String> newListIds = new HashSet<>();
         for (D data : newList) {
-            newListIds.add(callback.compareFlag(data));
+            if(data != null){
+                newListIds.add(callback.compareFlag(data));
+            }
         }
         log.info("开始遍历旧账号{}...", buName);
         List<D> restoredList = new ArrayList<>();
         // 反序还原
         Collections.reverse(oldList);
         for (D oldData : oldList) {
+            if(oldData == null || "null".equals(callback.compareFlag(oldData))){
+                log.info("失效的{}，跳过还原", buName);
+                continue;
+            }
             if (newListIds.contains(callback.compareFlag(oldData))) {
                 log.info("{}已在新账号{}中", callback.dataName(oldData), buName);
             } else {

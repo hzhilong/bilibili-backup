@@ -67,7 +67,7 @@ public class FavOpusesService extends BackupRestoreService {
 
             @Override
             public void restoreData(Opus data) throws BusinessException {
-                log.info(String.format("获取%s信息...", dataName(data)));
+                log.info("获取{}信息...", dataName(data));
                 ApiResult<JSONObject> retInfo = new BaseApi<JSONObject>(client, user,
                         "https://api.bilibili.com/x/polymer/web-dynamic/v1/opus/detail",
                         new AddQueryParams() {
