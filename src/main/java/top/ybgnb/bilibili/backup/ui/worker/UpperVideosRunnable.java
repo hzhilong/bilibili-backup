@@ -2,11 +2,14 @@ package top.ybgnb.bilibili.backup.ui.worker;
 
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
+import top.ybgnb.bilibili.backup.app.constant.AppConstant;
 import top.ybgnb.bilibili.backup.biliapi.bean.Video;
 import top.ybgnb.bilibili.backup.biliapi.error.BusinessException;
 import top.ybgnb.bilibili.backup.biliapi.service.impl.VideoService;
 import top.ybgnb.bilibili.backup.biliapi.user.User;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -34,7 +37,16 @@ public class UpperVideosRunnable extends BaseRunnable {
         boolean onceSuccessful = false;
         List<Video> result = null;
         try {
-            result = new VideoService(client, new User(uid)).getVideos(uid);
+            VideoService videoService = new VideoService(client, new User(uid));
+            result = videoService.getVideos(uid);
+            // 设置当前备份目录
+            String path = String.format("%s%s_%s_%s/", AppConstant.BACKUP_PATH_PREFIX, AppConstant.CANCELLED_ACCOUNT_NAME, uid,
+                    new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date()));
+            try {
+                videoService.backup(path, result);
+            } catch (BusinessException e) {
+                log.info("保存备份文件失败：{}", e.getMessage());
+            }
             onceSuccessful = true;
         } catch (BusinessException e) {
             log.info("操作失败，{}\n", e.getMessage());

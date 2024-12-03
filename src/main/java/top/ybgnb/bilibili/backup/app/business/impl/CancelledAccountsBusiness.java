@@ -17,7 +17,6 @@ import top.ybgnb.bilibili.backup.biliapi.service.impl.FavCollectedService;
 import top.ybgnb.bilibili.backup.biliapi.service.impl.FavoritesService;
 import top.ybgnb.bilibili.backup.biliapi.service.impl.VideoService;
 import top.ybgnb.bilibili.backup.biliapi.user.User;
-import top.ybgnb.bilibili.backup.biliapi.utils.FileUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -87,13 +86,14 @@ public class CancelledAccountsBusiness extends BaseBusiness {
 
     private void getUserVideos(String uid, String path) throws BusinessException {
         log.info("正在获取该用户投稿的视频，请稍候...");
-        List<Video> videos = new VideoService(client, new User(uid)).getVideos(uid);
+        VideoService videoService = new VideoService(client, new User(uid));
+        List<Video> videos = videoService.getVideos(uid);
         log.info("该用户共投稿{}个视频。", videos.size());
         for (int i = 0; i < videos.size(); i++) {
             Video video = videos.get(i);
             log.info("{}.{} {}", i + 1, video.getBvid(), video.getTitle());
         }
-        FileUtil.writeJsonFile(path, "投稿的视频.json", videos);
+        videoService.backup(path, videos);
     }
 
     private void backupData(String uid, String path) {

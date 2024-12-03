@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @ClassName OpusesService
+ * @ClassName FavOpusesService
  * @Description 收藏的专栏
  * @Author hzhilong
  * @Time 2024/9/26
@@ -98,6 +98,6 @@ public class FavOpusesService extends BackupRestoreService {
 
     @Override
     public int getBackupCount(File dir) throws BusinessException {
-        return getBackupListSize(dir, "收藏的专栏");
+        return getBackupListSize(dir, "", "收藏的专栏");
     }
 }

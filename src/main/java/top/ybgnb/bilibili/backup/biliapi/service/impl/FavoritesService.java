@@ -59,13 +59,18 @@ public class FavoritesService extends BackupRestoreService {
                 FavPageData.class, Media.class).getAllPageData();
     }
 
-    private String getFileName(FavFolder favFolder) {
+    private String getOldFileName(FavFolder favFolder) {
         return favFolder.getTitle() + "-" + favFolder.getId();
+    }
+
+    private String getFileName(FavFolder favFolder) {
+//        return favFolder.getTitle() + "-" + favFolder.getId();
+        return String.valueOf(favFolder.getId());
     }
 
     @Override
     public void backup() throws BusinessException {
-        List<FavFolder> favFolders = backupData("收藏夹/", "创建的收藏夹", new BackupCallback<List<FavFolder>>() {
+        List<FavFolder> favFolders = backupData("收藏夹", "创建的收藏夹", new BackupCallback<List<FavFolder>>() {
             @Override
             public List<FavFolder> getData() throws BusinessException {
                 return getFavFolders();
@@ -92,7 +97,7 @@ public class FavoritesService extends BackupRestoreService {
             }
         });
         for (FavFolder favFolder : favFolders) {
-            backupData("收藏夹/", getFileName(favFolder),
+            backupData("收藏夹", getFileName(favFolder),
                     () -> getFavData(String.valueOf(favFolder.getId())));
         }
     }
@@ -101,7 +106,7 @@ public class FavoritesService extends BackupRestoreService {
     public void restore() throws BusinessException {
         log.info("正在还原收藏夹...");
 
-        restoreList("收藏夹/", "创建的收藏夹", FavFolder.class, new RestoreCallback<FavFolder>() {
+        restoreList("收藏夹", "创建的收藏夹", FavFolder.class, new RestoreCallback<FavFolder>() {
             @Override
             public List<FavFolder> getNewList() throws BusinessException {
                 return getFavFolders();
@@ -138,7 +143,7 @@ public class FavoritesService extends BackupRestoreService {
         });
 
 
-        List<FavFolder> oldFolders = JSONObject.parseArray(readJsonFile(path + "收藏夹/", "创建的收藏夹"), FavFolder.class);
+        List<FavFolder> oldFolders = JSONObject.parseArray(readJsonFile(path, "收藏夹", "创建的收藏夹"), FavFolder.class);
         List<FavFolder> newFolders = getFavFolders();
 
         Map<String, FavFolder> mapNewFolders = new HashMap<>();
@@ -166,8 +171,14 @@ public class FavoritesService extends BackupRestoreService {
             if (mapNewFolders.containsKey(oldFolderTitle)) {
                 Long newFolderId = mapNewFolders.get(oldFolderTitle).getId();
                 log.info("读取旧账号收藏夹列表：{}", oldFolderTitle);
-                FavPageData favData = JSONObject.parseObject(readJsonFile(path + "收藏夹/",
-                        getFileName(oldFolder)), FavPageData.class);
+                FavPageData favData;
+                try {
+                    favData = JSONObject.parseObject(readJsonFile(path, "收藏夹",
+                            getFileName(oldFolder)), FavPageData.class);
+                } catch (BusinessException ex) {
+                    favData = JSONObject.parseObject(readJsonFile(path, "收藏夹",
+                            getOldFileName(oldFolder)), FavPageData.class);
+                }
                 if (favData != null && ListUtil.notEmpty(favData.getMedias())) {
                     Collections.reverse(favData.getMedias());
                     for (Media media : favData.getMedias()) {
@@ -232,6 +243,6 @@ public class FavoritesService extends BackupRestoreService {
 
     @Override
     public int getBackupCount(File dir) throws BusinessException {
-        return getBackupListSize(dir, "收藏夹/创建的收藏夹");
+        return getBackupListSize(dir, "收藏夹", "创建的收藏夹");
     }
 }

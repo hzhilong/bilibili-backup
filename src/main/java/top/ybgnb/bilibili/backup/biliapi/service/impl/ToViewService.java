@@ -73,6 +73,6 @@ public class ToViewService extends BackupRestoreService {
 
     @Override
     public int getBackupCount(File dir) throws BusinessException {
-        return getBackupListSize(dir, "稍后再看");
+        return getBackupListSize(dir, "", "稍后再看");
     }
 }

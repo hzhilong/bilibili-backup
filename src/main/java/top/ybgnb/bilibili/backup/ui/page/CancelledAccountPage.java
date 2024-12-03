@@ -12,7 +12,6 @@ import top.ybgnb.bilibili.backup.biliapi.service.ServiceBuilder;
 import top.ybgnb.bilibili.backup.biliapi.service.impl.BangumiService;
 import top.ybgnb.bilibili.backup.biliapi.service.impl.FavCollectedService;
 import top.ybgnb.bilibili.backup.biliapi.service.impl.FavoritesService;
-import top.ybgnb.bilibili.backup.biliapi.utils.FileUtil;
 import top.ybgnb.bilibili.backup.biliapi.utils.StringUtils;
 import top.ybgnb.bilibili.backup.ui.component.PagePanel;
 import top.ybgnb.bilibili.backup.ui.state.GlobalState;
@@ -28,8 +27,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -180,14 +177,6 @@ public class CancelledAccountPage extends PagePanel {
                     for (int i = 0; i < videos.size(); i++) {
                         Video video = videos.get(i);
                         log.info("{}.{} {}", i + 1, video.getBvid(), video.getTitle());
-                    }
-                    // 设置当前备份目录
-                    String path = String.format("%s%s_%s_%s/", AppConstant.BACKUP_PATH_PREFIX, AppConstant.CANCELLED_ACCOUNT_NAME, uid,
-                            new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date()));
-                    try {
-                        FileUtil.writeJsonFile(path, "投稿的视频.json", videos);
-                    } catch (BusinessException e) {
-                        log.info("保存备份文件失败：{}", e.getMessage());
                     }
                     setBusyStatus(1, false);
                 }

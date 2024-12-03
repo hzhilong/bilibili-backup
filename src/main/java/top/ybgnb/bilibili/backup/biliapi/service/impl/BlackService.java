@@ -43,7 +43,7 @@ public class BlackService extends RelationService {
 
     @Override
     public void restore() throws BusinessException {
-        restoreList("黑名单", Relation.class,new RestoreCallback<Relation>() {
+        restoreList("黑名单", Relation.class, new RestoreCallback<Relation>() {
             @Override
             public List<Relation> getNewList() throws BusinessException {
                 return getList();
@@ -68,6 +68,6 @@ public class BlackService extends RelationService {
 
     @Override
     public int getBackupCount(File dir) throws BusinessException {
-        return getBackupListSize(dir,"黑名单");
+        return getBackupListSize(dir, "", "黑名单");
     }
 }

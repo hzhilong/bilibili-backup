@@ -3,9 +3,11 @@ package top.ybgnb.bilibili.backup.ui.utils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import top.ybgnb.bilibili.backup.app.constant.AppConstant;
+import top.ybgnb.bilibili.backup.biliapi.error.BusinessException;
 import top.ybgnb.bilibili.backup.biliapi.service.BackupRestoreItem;
 import top.ybgnb.bilibili.backup.biliapi.service.BackupRestoreService;
 import top.ybgnb.bilibili.backup.biliapi.utils.ListUtil;
+import top.ybgnb.bilibili.backup.biliapi.utils.StringUtils;
 import top.ybgnb.bilibili.backup.ui.bean.BackupDir;
 import top.ybgnb.bilibili.backup.ui.bean.BackupFile;
 import top.ybgnb.bilibili.backup.ui.config.AppData;
@@ -15,6 +17,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -28,6 +31,36 @@ import java.util.List;
 public class BackupFileUtil {
 
     private static final AppData APP_DATA = AppData.getInstance();
+
+    public static final HashMap<String, String> cn2En = new HashMap<String, String>() {{
+        put("我的追番", "Bangumi1");
+        put("我的追剧", "Bangumi2");
+        put("黑名单", "Black");
+        put("收藏的视频合集", "FavCollected");
+        put("收藏的专栏", "FavOpuses");
+        put("收藏夹", "Favorites");
+        put("创建的收藏夹", "CreatedFavorites");
+        put("粉丝", "Follower");
+        put("关注分组", "RelationTags");
+        put("关注", "Following");
+        put("稍后再看", "ToView");
+        put("稍后再看", "ToView");
+    }};
+
+    public static String getEnName(String cnName) throws BusinessException {
+        if (cn2En.containsKey(cnName)) {
+            return cn2En.get(cnName);
+        } else {
+            throw new BusinessException("未找到英文名称");
+        }
+    }
+
+    public static String getPathEnName(String cnPathName) {
+        if (StringUtils.isEmpty(cnPathName)) {
+            return "";
+        }
+        return cn2En.getOrDefault(cnPathName, cnPathName) + "/";
+    }
 
     /**
      * 获取所有的备份文件信息

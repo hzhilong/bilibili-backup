@@ -78,6 +78,6 @@ public class FavCollectedService extends BackupRestoreService {
 
     @Override
     public int getBackupCount(File dir) throws BusinessException {
-        return getBackupListSize(dir, "收藏的视频合集");
+        return getBackupListSize(dir, "", "收藏的视频合集");
     }
 }

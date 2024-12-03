@@ -10,7 +10,9 @@ import top.ybgnb.bilibili.backup.biliapi.request.AddQueryParams;
 import top.ybgnb.bilibili.backup.biliapi.request.PageApi;
 import top.ybgnb.bilibili.backup.biliapi.service.BaseService;
 import top.ybgnb.bilibili.backup.biliapi.user.User;
+import top.ybgnb.bilibili.backup.biliapi.utils.FileUtil;
 import top.ybgnb.bilibili.backup.biliapi.utils.ListUtil;
+import top.ybgnb.bilibili.backup.ui.utils.BackupFileUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,4 +65,8 @@ public class VideoService extends BaseService {
         return videos;
     }
 
+    public void backup(String path, List<Video> videos) throws BusinessException {
+        String fileName = BackupFileUtil.getEnName("投稿的视频") + ".json";
+        FileUtil.writeJsonFile(path, fileName, videos);
+    }
 }

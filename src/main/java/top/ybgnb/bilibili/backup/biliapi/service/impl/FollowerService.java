@@ -41,6 +41,6 @@ public class FollowerService extends BackupRestoreService {
 
     @Override
     public int getBackupCount(File dir) throws BusinessException {
-        return getBackupListSize(dir, "粉丝");
+        return getBackupListSize(dir, "", "粉丝");
     }
 }

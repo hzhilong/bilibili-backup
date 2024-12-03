@@ -103,6 +103,7 @@ public class BangumiService extends BackupRestoreService {
 
     @Override
     public int getBackupCount(File dir) throws BusinessException {
-        return getBackupListSize(dir, "我的追番") + getBackupListSize(dir, "我的追剧");
+        return getBackupListSize(dir, "", "我的追番")
+                + getBackupListSize(dir, "", "我的追剧");
     }
 }

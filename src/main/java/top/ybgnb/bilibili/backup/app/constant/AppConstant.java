@@ -1,6 +1,5 @@
 package top.ybgnb.bilibili.backup.app.constant;
 
-import java.util.HashMap;
 import java.util.regex.Pattern;
 
 public class AppConstant {
@@ -25,7 +24,4 @@ public class AppConstant {
      */
     public static final String CANCELLED_ACCOUNT_NAME = "账号已注销";
 
-    public static final HashMap<String, String> cn2En = new HashMap<String, String>(){{
-       put("","");
-    }};
 }

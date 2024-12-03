@@ -69,7 +69,7 @@ public class FollowingService extends RelationService {
     @Override
     public void restore() throws BusinessException {
         log.info("正在还原[关注]...");
-        List<RelationTag> oldTags = JSONObject.parseObject(readJsonFile(path, "关注分组"),
+        List<RelationTag> oldTags = JSONObject.parseObject(readJsonFile(path, "", "关注分组"),
                 new TypeReference<List<RelationTag>>() {
                 });
         log.info("解析旧账号关注分组...");
@@ -117,7 +117,7 @@ public class FollowingService extends RelationService {
             mapNewFollowing.put(newFollowing.getMid(), newFollowing);
         }
 
-        List<Relation> oldFollowings = JSONObject.parseObject(readJsonFile(path, "关注"),
+        List<Relation> oldFollowings = JSONObject.parseObject(readJsonFile(path, "", "关注"),
                 new TypeReference<List<Relation>>() {
                 });
         log.info("解析旧账号关注：{}", JSON.toJSONString(oldFollowings.size()));
@@ -203,7 +203,7 @@ public class FollowingService extends RelationService {
 
     @Override
     public int getBackupCount(File dir) throws BusinessException {
-        return getBackupListSize(dir, "关注");
+        return getBackupListSize(dir, "", "关注");
     }
 
     public static class CopyUser {
