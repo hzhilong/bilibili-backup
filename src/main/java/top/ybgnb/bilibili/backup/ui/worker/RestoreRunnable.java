@@ -23,7 +23,7 @@ public class RestoreRunnable extends BackupRestoreRunnable {
 
     public RestoreRunnable(OkHttpClient client, SavedUser user, LinkedHashSet<ServiceBuilder> serviceBuilders, String backupDirPath, BuCallback<Void> buCallback) {
         super(client, user, serviceBuilders, buCallback);
-        this.backupDirPath = backupDirPath;
+        this.backupDirPath = backupDirPath.endsWith("/") ? backupDirPath : (backupDirPath + "/");
     }
 
     @Override

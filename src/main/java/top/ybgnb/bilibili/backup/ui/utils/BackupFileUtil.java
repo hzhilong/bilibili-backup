@@ -48,11 +48,7 @@ public class BackupFileUtil {
     }};
 
     public static String getEnName(String cnName) throws BusinessException {
-        if (cn2En.containsKey(cnName)) {
-            return cn2En.get(cnName);
-        } else {
-            throw new BusinessException("未找到英文名称");
-        }
+        return cn2En.getOrDefault(cnName, cnName);
     }
 
     public static String getPathEnName(String cnPathName) {

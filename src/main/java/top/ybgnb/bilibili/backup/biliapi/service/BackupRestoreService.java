@@ -39,22 +39,17 @@ public abstract class BackupRestoreService extends BaseService implements Backup
     public abstract void restore() throws BusinessException;
 
     public void writeJsonFile(String path, String appendDir, String name, Object obj) throws BusinessException {
-        try {
-            FileUtil.writeJsonFile(path + BackupFileUtil.getPathEnName(appendDir), BackupFileUtil.getEnName(name) + ".json", obj);
-        } catch (BusinessException e) {
-            // 兼容旧版本数据
-            FileUtil.writeJsonFile(path, name + ".json", obj);
-        }
+        FileUtil.writeJsonFile(path + BackupFileUtil.getPathEnName(appendDir), BackupFileUtil.getEnName(name) + ".json", obj);
     }
 
     public String readJsonFile(String path, String appendDir, String name) throws BusinessException {
-        String appendPathEnName = BackupFileUtil.getPathEnName(appendDir);
         try {
             // 兼容旧版本数据 中 + 中
             return FileUtil.readJsonFile(path + appendDir + "/", name + ".json");
         } catch (BusinessException e1) {
             try {
-                return FileUtil.readJsonFile(path + appendPathEnName, BackupFileUtil.getEnName(name) + ".json");
+                return FileUtil.readJsonFile(path + BackupFileUtil.getPathEnName(appendDir),
+                        BackupFileUtil.getEnName(name) + ".json");
             } catch (BusinessException ex) {
                 throw new BusinessException(String.format("[%s]备份文件为空", name));
             }
