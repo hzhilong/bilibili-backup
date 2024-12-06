@@ -79,10 +79,15 @@ public class FavOpusesService extends BackupRestoreService {
                 if (retInfo._isFail()) {
                     throw new BusinessException(retInfo);
                 }
-                String id = retInfo.getData().getJSONObject("fallback").getString("id");
+                JSONObject retInfoData = retInfo.getData();
+                if (retInfoData == null || !retInfoData.containsKey("fallback")) {
+                    throw new BusinessException(String.format("获取%s信息失败", dataName(data)));
+                }
+                String id = retInfoData.getJSONObject("fallback").getString("id");
                 if (StringUtils.isEmpty(id)) {
                     throw new BusinessException(String.format("获取%s信息失败", dataName(data)));
                 }
+
                 ApiResult<JSONObject> apiResult = new ModifyApi<JSONObject>(client, user,
                         "https://api.bilibili.com/x/article/favorites/add",
                         JSONObject.class)

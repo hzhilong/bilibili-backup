@@ -37,8 +37,12 @@ public class BackupRunnable extends BackupRestoreRunnable {
                 currBackupRestoreService = item.build(client, new User(user.getCookie()), path);
                 currBackupRestoreService.backup();
                 onceSuccessful = true;
-            } catch (BusinessException ex) {
-                log.info("操作失败，{}\n", ex.getMessage());
+            } catch (Exception e) {
+                if (e instanceof BusinessException) {
+                    log.info("操作失败，{}\n", e.getMessage());
+                } else {
+                    log.error("操作失败，{}\n", e.getMessage(), e);
+                }
             }
             if (interrupt) {
                 log.info("已中断任务");

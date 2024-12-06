@@ -34,8 +34,12 @@ public class CancelledAccountInfoRunnable extends BaseRunnable {
         try {
             info = new CancelledAccountService(client, new User(uid)).getInfo();
             onceSuccessful = true;
-        } catch (BusinessException e) {
-            log.info("操作失败，{}\n", e.getMessage());
+        } catch (Exception e) {
+            if (e instanceof BusinessException) {
+                log.info("操作失败，{}\n", e.getMessage());
+            } else {
+                log.error("操作失败，{}\n", e.getMessage(), e);
+            }
         } finally {
             if (buCallback != null) {
                 if (interrupt) {

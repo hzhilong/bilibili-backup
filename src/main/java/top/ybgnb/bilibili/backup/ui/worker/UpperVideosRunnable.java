@@ -44,8 +44,12 @@ public class UpperVideosRunnable extends BaseRunnable {
                     new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date()));
             try {
                 videoService.backup(path, result);
-            } catch (BusinessException e) {
-                log.info("保存备份文件失败：{}", e.getMessage());
+            } catch (Exception e) {
+                if (e instanceof BusinessException) {
+                    log.info("保存备份文件失败，{}\n", e.getMessage());
+                } else {
+                    log.error("保存备份文件失败，{}\n", e.getMessage(), e);
+                }
             }
             onceSuccessful = true;
         } catch (BusinessException e) {

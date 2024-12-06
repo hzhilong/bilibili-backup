@@ -29,6 +29,7 @@ public abstract class BackupRestoreRunnable extends BaseRunnable {
         this.buCallback = buCallback;
     }
 
+    @Override
     public void setInterrupt(boolean interrupt) {
         this.interrupt = interrupt;
         if (currBackupRestoreService != null) {
