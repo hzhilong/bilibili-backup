@@ -25,8 +25,8 @@ public class MainFrame extends JFrame implements ComponentInit {
 
     private AppProperties appProperties;
     private AppData appData;
-    private final Dimension mixSize = new Dimension(900, 700);
-    private Dimension defaultSize = new Dimension(900, 700);
+    private final Dimension mixSize = new Dimension(1010, 700);
+    private Dimension defaultSize = new Dimension(1010, 700);
     private Dimension defaultLocation;
 
     @Override

@@ -36,9 +36,12 @@ public class MessageService extends BaseService {
         log.info("获取[我的消息]...");
         List<JSONObject> allSession = new PageApi<>(client, user, "https://api.vc.bilibili.com/session_svr/v1/session_svr/get_sessions",
                 addQueryParamsGetAllSeSSion(), SessionPageData.class, JSONObject.class)
-                .getAllData((allData, queryParams) -> {
-                    if (ListUtil.notEmpty(allData)) {
-                        queryParams.put("end_ts", String.valueOf(allData.get(allData.size() - 1).getLong("session_ts")));
+                .getAllData((pageData, queryParams) -> {
+                    if (pageData != null) {
+                        List<JSONObject> allData = pageData._getList();
+                        if (ListUtil.notEmpty(allData)) {
+                            queryParams.put("end_ts", String.valueOf(allData.get(allData.size() - 1).getLong("session_ts")));
+                        }
                     }
                 });
         int sessionCount = allSession.size();

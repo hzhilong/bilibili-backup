@@ -202,6 +202,12 @@ public class FollowingService extends RelationService {
     }
 
     @Override
+    public void initFileName(Map<String, String> fileNames) {
+        fileNames.put("关注分组", "RelationTags");
+        fileNames.put("关注", "Following");
+    }
+
+    @Override
     public int getBackupCount(File dir) throws BusinessException {
         return getBackupListSize(dir, "", "关注");
     }

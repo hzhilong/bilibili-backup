@@ -14,6 +14,7 @@ import top.ybgnb.bilibili.backup.biliapi.user.User;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @ClassName BangumiService
@@ -99,6 +100,12 @@ public class BangumiService extends BackupRestoreService {
                 addData(data);
             }
         });
+    }
+
+    @Override
+    public void initFileName(Map<String, String> fileNames) {
+        fileNames.put("我的追番", "Bangumi1");
+        fileNames.put("我的追剧", "Bangumi2");
     }
 
     @Override

@@ -240,6 +240,12 @@ public class FavoritesService extends BackupRestoreService {
         }
     }
 
+    @Override
+    public void initFileName(Map<String, String> fileNames) {
+        fileNames.put("收藏夹", "Favorites");
+        fileNames.put("创建的收藏夹", "CreatedFavorites");
+    }
+
 
     @Override
     public int getBackupCount(File dir) throws BusinessException {

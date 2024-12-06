@@ -12,7 +12,6 @@ import top.ybgnb.bilibili.backup.biliapi.service.BaseService;
 import top.ybgnb.bilibili.backup.biliapi.user.User;
 import top.ybgnb.bilibili.backup.biliapi.utils.FileUtil;
 import top.ybgnb.bilibili.backup.biliapi.utils.ListUtil;
-import top.ybgnb.bilibili.backup.ui.utils.BackupFileUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,9 +46,12 @@ public class VideoService extends BaseService {
                 queryParams.put("vmid", uid);
             }
         }, CursorPageData.class, JSONObject.class)
-                .getAllData((allData, queryParams) -> {
-                    if (ListUtil.notEmpty(allData)) {
-                        queryParams.put("aid", String.valueOf(allData.get(allData.size() - 1).getString("param")));
+                .getAllData((pageData, queryParams) -> {
+                    if (pageData != null) {
+                        List<JSONObject> allData = pageData._getList();
+                        if (ListUtil.notEmpty(allData)) {
+                            queryParams.put("aid", String.valueOf(allData.get(allData.size() - 1).getString("param")));
+                        }
                     }
                 });
         if (ListUtil.isEmpty(list)) {
@@ -66,7 +68,7 @@ public class VideoService extends BaseService {
     }
 
     public void backup(String path, List<Video> videos) throws BusinessException {
-        String fileName = BackupFileUtil.getEnName("投稿的视频") + ".json";
+        String fileName = "投稿的视频.json";
         FileUtil.writeJsonFile(path, fileName, videos);
     }
 }

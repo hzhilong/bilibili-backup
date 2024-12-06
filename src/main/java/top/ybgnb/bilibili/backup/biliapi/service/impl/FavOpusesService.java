@@ -102,6 +102,11 @@ public class FavOpusesService extends BackupRestoreService {
     }
 
     @Override
+    public void initFileName(Map<String, String> fileNames) {
+        fileNames.put("收藏的专栏", "FavOpuses");
+    }
+
+    @Override
     public int getBackupCount(File dir) throws BusinessException {
         return getBackupListSize(dir, "", "收藏的专栏");
     }

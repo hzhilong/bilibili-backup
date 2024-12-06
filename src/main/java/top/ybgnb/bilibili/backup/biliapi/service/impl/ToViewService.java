@@ -13,6 +13,7 @@ import top.ybgnb.bilibili.backup.biliapi.user.User;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @ClassName ToViewService
@@ -69,6 +70,11 @@ public class ToViewService extends BackupRestoreService {
                 }
             }
         });
+    }
+
+    @Override
+    public void initFileName(Map<String, String> fileNames) {
+        fileNames.put("稍后再看", "ToView");
     }
 
     @Override

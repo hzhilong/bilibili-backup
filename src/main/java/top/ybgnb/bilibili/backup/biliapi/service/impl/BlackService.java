@@ -11,6 +11,7 @@ import top.ybgnb.bilibili.backup.biliapi.user.User;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @ClassName BlackService
@@ -64,6 +65,11 @@ public class BlackService extends RelationService {
                 modify(data, RelationAct.BLOCK);
             }
         });
+    }
+
+    @Override
+    public void initFileName(Map<String, String> fileNames) {
+        fileNames.put("黑名单", "Black");
     }
 
     @Override

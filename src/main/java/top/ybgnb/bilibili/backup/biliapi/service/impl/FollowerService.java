@@ -9,6 +9,7 @@ import top.ybgnb.bilibili.backup.biliapi.service.BackupRestoreService;
 import top.ybgnb.bilibili.backup.biliapi.user.User;
 
 import java.io.File;
+import java.util.Map;
 
 /**
  * @ClassName FollowerService
@@ -37,6 +38,11 @@ public class FollowerService extends BackupRestoreService {
     @Override
     public void restore() throws BusinessException {
         throw new BusinessException("粉丝数据仅可备份，不能还原 ( ﹁ ﹁ ) ~→");
+    }
+
+    @Override
+    public void initFileName(Map<String, String> fileNames) {
+        fileNames.put("粉丝", "Follower");
     }
 
     @Override

@@ -15,6 +15,7 @@ import javax.swing.event.EventListenerList;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -48,6 +49,11 @@ public class BackupFileSelector extends JPanel implements ComponentInit {
      */
     @Getter
     private JComboBox<BackupDir> cmbBackupDir;
+
+    /**
+     * 打开按钮
+     */
+    private JButton btnOpen;
 
     /**
      * 删除按钮
@@ -103,11 +109,14 @@ public class BackupFileSelector extends JPanel implements ComponentInit {
         this.cmbBackupDir = new JComboBox<>();
         LayoutUtil.addGridBar(contentPanel, cmbBackupDir, 0, 1);
 
+        this.btnOpen = new JButton("打开");
+        this.btnOpen.setVisible(false);
+        LayoutUtil.addGridBar(contentPanel, btnOpen, 1, 1);
         this.btnDelete = new JButton("删除");
         this.btnDelete.setVisible(false);
-        LayoutUtil.addGridBar(contentPanel, btnDelete, 1, 1);
+        LayoutUtil.addGridBar(contentPanel, btnDelete, 2, 1);
         this.btnRefresh = new JButton("刷新");
-        LayoutUtil.addGridBar(contentPanel, btnRefresh, 2, 1);
+        LayoutUtil.addGridBar(contentPanel, btnRefresh, 3, 1);
 
         backupDirInfoPanel = new JPanel();
         backupDirInfoPanel.setLayout(new GridBagLayout());
@@ -129,11 +138,22 @@ public class BackupFileSelector extends JPanel implements ComponentInit {
             @Override
             public void actionPerformed(ActionEvent e) {
                 currBackupDir = (BackupDir) cmbBackupDir.getSelectedItem();
+                btnOpen.setVisible(currBackupDir != null);
                 btnDelete.setVisible(currBackupDir != null);
                 if (!resetting) {
                     refreshBackupDirInfo();
                     fireActionEvent();
                 }
+            }
+        });
+        btnOpen.addActionListener(e -> {
+            if (currBackupDir == null) {
+                JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this), "请先选择备份文件！", "提示", JOptionPane.OK_OPTION);
+                return;
+            }
+            try {
+                Desktop.getDesktop().open(currBackupDir.getDirFile());
+            } catch (IOException ex) {
             }
         });
         btnRefresh.addActionListener(e -> {
@@ -202,6 +222,7 @@ public class BackupFileSelector extends JPanel implements ComponentInit {
             }
         }
         resetting = false;
+        btnOpen.setVisible(defaultItem != null);
         btnDelete.setVisible(defaultItem != null);
         cmbBackupDir.setSelectedItem(defaultItem);
     }
@@ -210,6 +231,7 @@ public class BackupFileSelector extends JPanel implements ComponentInit {
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
         cmbBackupDir.setEnabled(enabled);
+        btnOpen.setEnabled(enabled);
         btnRefresh.setEnabled(enabled);
         btnDelete.setEnabled(enabled);
     }

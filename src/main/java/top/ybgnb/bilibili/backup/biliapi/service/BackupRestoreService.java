@@ -8,13 +8,15 @@ import top.ybgnb.bilibili.backup.biliapi.error.BusinessException;
 import top.ybgnb.bilibili.backup.biliapi.user.User;
 import top.ybgnb.bilibili.backup.biliapi.utils.FileUtil;
 import top.ybgnb.bilibili.backup.biliapi.utils.ListUtil;
-import top.ybgnb.bilibili.backup.ui.utils.BackupFileUtil;
+import top.ybgnb.bilibili.backup.biliapi.utils.StringUtils;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -29,9 +31,13 @@ public abstract class BackupRestoreService extends BaseService implements Backup
 
     protected final String path;
 
+    private final HashMap<String, String> mapFileName;
+
     public BackupRestoreService(OkHttpClient client, User user, String path) {
         super(client, user);
         this.path = path;
+        this.mapFileName = new HashMap<>(2);
+        this.initFileName(mapFileName);
     }
 
     public abstract void backup() throws BusinessException;
@@ -39,7 +45,7 @@ public abstract class BackupRestoreService extends BaseService implements Backup
     public abstract void restore() throws BusinessException;
 
     public void writeJsonFile(String path, String appendDir, String name, Object obj) throws BusinessException {
-        FileUtil.writeJsonFile(path + BackupFileUtil.getPathEnName(appendDir), BackupFileUtil.getEnName(name) + ".json", obj);
+        FileUtil.writeJsonFile(path + getEnFilePathName(appendDir), getEnFileName(name) + ".json", obj);
     }
 
     public String readJsonFile(String path, String appendDir, String name) throws BusinessException {
@@ -48,8 +54,8 @@ public abstract class BackupRestoreService extends BaseService implements Backup
             return FileUtil.readJsonFile(path + appendDir + "/", name + ".json");
         } catch (BusinessException e1) {
             try {
-                return FileUtil.readJsonFile(path + BackupFileUtil.getPathEnName(appendDir),
-                        BackupFileUtil.getEnName(name) + ".json");
+                return FileUtil.readJsonFile(path + getEnFilePathName(appendDir),
+                        getEnFileName(name) + ".json");
             } catch (BusinessException ex) {
                 throw new BusinessException(String.format("[%s]备份文件为空", name));
             }
@@ -164,4 +170,33 @@ public abstract class BackupRestoreService extends BaseService implements Backup
         return ListUtil.getSize(getBackupList(dir.getPath() + "/", appendDir, buName, JSONObject.class));
     }
 
+    public abstract void initFileName(Map<String, String> fileNames);
+
+    /**
+     * 获取英文文件名称
+     *
+     * @param cnName 中文名称
+     * @return
+     */
+    protected String getEnFileName(String cnName) {
+        return mapFileName.getOrDefault(cnName, cnName);
+    }
+
+    /**
+     * 获取英文路径名称
+     *
+     * @param cnPathName
+     * @return
+     */
+    private String getEnFilePathName(String cnPathName) {
+        if (StringUtils.isEmpty(cnPathName)) {
+            return "";
+        }
+        String enPathName = getEnFileName(cnPathName);
+        if (StringUtils.isEmpty(enPathName)) {
+            return cnPathName + "/";
+        } else {
+            return enPathName + "/";
+        }
+    }
 }

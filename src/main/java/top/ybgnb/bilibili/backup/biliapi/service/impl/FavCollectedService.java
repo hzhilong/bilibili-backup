@@ -13,6 +13,7 @@ import top.ybgnb.bilibili.backup.biliapi.user.User;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @ClassName FavCollectedService
@@ -74,6 +75,11 @@ public class FavCollectedService extends BackupRestoreService {
                 }
             }
         });
+    }
+
+    @Override
+    public void initFileName(Map<String, String> fileNames) {
+        fileNames.put("收藏的视频合集", "FavCollected");
     }
 
     @Override

@@ -6,6 +6,7 @@ import top.ybgnb.bilibili.backup.biliapi.service.impl.FavCollectedService;
 import top.ybgnb.bilibili.backup.biliapi.service.impl.FavOpusesService;
 import top.ybgnb.bilibili.backup.biliapi.service.impl.FavoritesService;
 import top.ybgnb.bilibili.backup.biliapi.service.impl.FollowingService;
+import top.ybgnb.bilibili.backup.biliapi.service.impl.HistoryService;
 import top.ybgnb.bilibili.backup.biliapi.service.impl.ToViewService;
 
 /**
@@ -23,6 +24,7 @@ public enum BackupRestoreItem {
     FAV_OPUSES("收藏的专栏", FavOpusesService::new),
     BANGUMI("我的追番/追剧", BangumiService::new),
     FAV_COLLECTED("收藏的视频合集", FavCollectedService::new),
+    HISTORY("历史记录", HistoryService::new),
     ;
 
     /**

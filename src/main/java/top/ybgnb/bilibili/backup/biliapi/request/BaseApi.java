@@ -100,6 +100,7 @@ public class BaseApi<D> implements AddQueryParams {
     }
 
     protected Request getPOSTRequest(String url, Map<String, String> queryParams, Map<String, String> formParams) {
+        log.debug("post表单：{}", formParams);
         if (queryParams != null) {
             StringBuilder urlBuilder = new StringBuilder(url);
             boolean flag = false;
@@ -177,7 +178,7 @@ public class BaseApi<D> implements AddQueryParams {
                 queryParams.put("w_rid", signService.wbiSign(MIXIN_KEY, queryParams));
             }
         }
-
+        log.debug("请求参数：{}", queryParams);
         if (formParams == null) {
             return getGETRequest(this.url, queryParams);
         } else {
@@ -195,7 +196,6 @@ public class BaseApi<D> implements AddQueryParams {
     }
 
     public ApiResponse<D> apiRequest(Map<String, String> formParams, boolean isParseBody) throws BusinessException {
-
         Call call = client.newCall(this.getRequest(formParams));
         try (Response response = call.execute()) {
             if (response.isSuccessful() && response.body() != null) {

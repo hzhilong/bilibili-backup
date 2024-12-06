@@ -6,13 +6,16 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import top.ybgnb.bilibili.backup.biliapi.bean.ApiResult;
+import top.ybgnb.bilibili.backup.biliapi.bean.page.PageCallback;
 import top.ybgnb.bilibili.backup.biliapi.bean.page.PageData;
 import top.ybgnb.bilibili.backup.biliapi.error.BusinessException;
 import top.ybgnb.bilibili.backup.biliapi.user.User;
+import top.ybgnb.bilibili.backup.biliapi.utils.ListUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * @ClassName PageApi
@@ -25,27 +28,50 @@ import java.util.Map;
 @Slf4j
 public class PageApi<D extends PageData<L>, L> extends BaseApi<D> {
 
+    public final static int MAX_DELAY_TIME = 5 * 1000;
+
     @Getter
     @Setter
     private int page;
 
+    /**
+     * 接口响应的数据类
+     */
     protected Class<D> dataClass;
 
+    /**
+     * 分页子项数据类
+     */
     protected Class<L> listItemClass;
 
+    /**
+     * 是否中断
+     */
+    @Setter
+    @Getter
+    protected boolean interrupt;
+
+    protected PageCallback pageCallback;
+
+    private final Random random;
+
     public PageApi(OkHttpClient client, User user, String url, Class<L> listItemClass) {
-        this(client, user, url, null, null, listItemClass);
+        this(client, user, url, null, null, listItemClass, null);
     }
 
     public PageApi(OkHttpClient client, User user, String url, AddQueryParams addQueryParams, Class<L> listItemClass) {
-        this(client, user, url, addQueryParams, null, listItemClass);
+        this(client, user, url, addQueryParams, null, listItemClass, null);
     }
 
     public PageApi(OkHttpClient client, User user, String url, Class<D> dataClass, Class<L> listItemClass) {
-        this(client, user, url, null, dataClass, listItemClass);
+        this(client, user, url, null, dataClass, listItemClass, null);
     }
 
     public PageApi(OkHttpClient client, User user, String url, AddQueryParams addQueryParams, Class<D> dataClass, Class<L> listItemClass) {
+        this(client, user, url, addQueryParams, dataClass, listItemClass, null);
+    }
+
+    public PageApi(OkHttpClient client, User user, String url, AddQueryParams addQueryParams, Class<D> dataClass, Class<L> listItemClass, PageCallback pageCallback) {
         super(client, user, url, addQueryParams, true, (Class<?>) null);
         this.dataClass = dataClass;
         this.listItemClass = listItemClass;
@@ -54,6 +80,12 @@ public class PageApi<D extends PageData<L>, L> extends BaseApi<D> {
         } else {
             dataClasses = new Class[]{dataClass, listItemClass};
         }
+        if (pageCallback == null) {
+            this.pageCallback = (page, currPageSize, totalSize) -> log.info("已获取第{}页{}条数据，总数据量：{}", page, currPageSize, totalSize);
+        } else {
+            this.pageCallback = pageCallback;
+        }
+        random = new Random();
     }
 
     @Override
@@ -62,85 +94,45 @@ public class PageApi<D extends PageData<L>, L> extends BaseApi<D> {
         queryParams.put("ps", "20");
     }
 
-    public interface SetNextPage<L> {
-        void setParams(List<L> allData, Map<String, String> queryParams);
+    public interface SetNextPage<D> {
+        void setParams(D pageData, Map<String, String> queryParams);
     }
 
     public List<L> getAllData() throws BusinessException {
         return getAllData(null);
     }
 
-    public List<L> getAllData(SetNextPage<L> setNextPage) throws BusinessException {
-        List<L> list = new ArrayList<>();
-        AddQueryParams baseAddQueryParams = null;
-        if (setNextPage != null) {
-            baseAddQueryParams = this.addQueryParams;
+    public List<L> getAllData(SetNextPage<D> setNextPage) throws BusinessException {
+        D pageData = getAllPageData(setNextPage);
+        if (pageData == null) {
+            return null;
         }
-        int page = 1;
-        while (true) {
-            this.setPage(page);
-            if (setNextPage != null) {
-                AddQueryParams finalBaseAddQueryParams = baseAddQueryParams;
-                this.addQueryParams = new AddQueryParams() {
-                    @Override
-                    public void addQueryParams(Map<String, String> queryParams) {
-                        if (finalBaseAddQueryParams != null) {
-                            finalBaseAddQueryParams.addQueryParams(queryParams);
-                        }
-                        setNextPage.setParams(list, queryParams);
-                    }
-                };
-            }
-            ApiResult<D> apiResult = apiGet();
-            if (setNextPage != null) {
-                this.addQueryParams = baseAddQueryParams;
-            }
-            if (apiResult._isSuccess()) {
-                D data = apiResult.getData();
-                if (data != null && data._getList() != null) {
-                    list.addAll(data._getList());
-                    if (data.hasMore(list.size())) {
-                        page++;
-                        try {
-                            Thread.sleep(1000 + page * 50L);
-                        } catch (InterruptedException ignored) {
-
-                        }
-                        continue;
-                    }
-                }
-            } else {
-                throw new BusinessException(apiResult.getMessage());
-            }
-            break;
-        }
-        return list;
+        return pageData._getList();
     }
 
     public D getAllPageData() throws BusinessException {
         return getAllPageData(null);
     }
 
-    public D getAllPageData(SetNextPage<L> setNextPage) throws BusinessException {
+    public D getAllPageData(SetNextPage<D> setNextPage) throws BusinessException {
         List<L> list = new ArrayList<>();
         AddQueryParams baseAddQueryParams = null;
         if (setNextPage != null) {
             baseAddQueryParams = this.addQueryParams;
         }
         int page = 1;
-        D page1Data = null;
+        D pageData = null;
         while (true) {
+            handleInterrupt();
             this.setPage(page);
             if (setNextPage != null) {
                 AddQueryParams finalBaseAddQueryParams = baseAddQueryParams;
-                this.addQueryParams = new AddQueryParams() {
-                    @Override
-                    public void addQueryParams(Map<String, String> queryParams) {
-                        if (finalBaseAddQueryParams != null) {
-                            finalBaseAddQueryParams.addQueryParams(queryParams);
-                        }
-                        setNextPage.setParams(list, queryParams);
+                D finalPageData = pageData;
+                this.addQueryParams = queryParams -> {
+                    if (finalBaseAddQueryParams != null) {
+                        finalBaseAddQueryParams.addQueryParams(queryParams);
                     }
+                    setNextPage.setParams(finalPageData, queryParams);
                 };
             }
             ApiResult<D> apiResult = apiGet();
@@ -148,19 +140,16 @@ public class PageApi<D extends PageData<L>, L> extends BaseApi<D> {
                 this.addQueryParams = baseAddQueryParams;
             }
             if (apiResult._isSuccess()) {
-                D data = apiResult.getData();
-                if (page1Data == null) {
-                    page1Data = data;
-                }
-                if (data != null && data._getList() != null) {
-                    list.addAll(data._getList());
-                    if (data.hasMore(list.size())) {
+                pageData = apiResult.getData();
+                if (pageData != null && pageData._getList() != null) {
+                    list.addAll(pageData._getList());
+                    if (pageCallback != null) {
+                        pageCallback.page(this.getPage(), ListUtil.getSize(pageData._getList()), list.size());
+                    }
+                    pageData._setList(list);
+                    if (pageData.hasMore(list.size())) {
                         page++;
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException ignored) {
-
-                        }
+                        sleep(page);
                         continue;
                     }
                 }
@@ -169,10 +158,26 @@ public class PageApi<D extends PageData<L>, L> extends BaseApi<D> {
             }
             break;
         }
-        if (page1Data != null) {
-            page1Data._setList(list);
+        if (pageData != null) {
+            pageData._setList(list);
         }
-        return page1Data;
+        return pageData;
     }
 
+
+    /**
+     * 处理中断
+     */
+    protected void handleInterrupt() throws BusinessException {
+        if (isInterrupt()) {
+            throw new BusinessException("任务中断");
+        }
+    }
+
+    private void sleep(int page) {
+        try {
+            Thread.sleep((1000 + 1000 * Integer.toString(page).length() + random.nextInt(3000)) % MAX_DELAY_TIME);
+        } catch (InterruptedException ignored) {
+        }
+    }
 }
