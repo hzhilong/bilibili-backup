@@ -2,6 +2,7 @@ package top.ybgnb.bilibili.backup.biliapi.bean.page;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import top.ybgnb.bilibili.backup.biliapi.utils.ListUtil;
 
 import java.util.List;
 
@@ -39,7 +40,7 @@ public class PageData<L> {
      */
     public boolean hasMore(int currentTotal) {
         if (this.has_more == null) {
-            return this.getTotal() > currentTotal;
+            return ListUtil.notEmpty(_getList()) && this.getTotal() > currentTotal;
         } else {
             return this.has_more;
         }

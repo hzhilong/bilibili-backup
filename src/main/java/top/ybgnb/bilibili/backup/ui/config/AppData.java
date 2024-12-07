@@ -1,6 +1,9 @@
 package top.ybgnb.bilibili.backup.ui.config;
 
+import top.ybgnb.bilibili.backup.app.business.BusinessType;
+import top.ybgnb.bilibili.backup.biliapi.service.BackupRestoreItem;
 import top.ybgnb.bilibili.backup.biliapi.utils.StringUtils;
+import top.ybgnb.bilibili.backup.ui.segment.SegmentConfig;
 
 import java.awt.*;
 import java.io.File;
@@ -115,26 +118,24 @@ public class AppData extends Properties {
     }
 
     /**
-     * 是否存在未完成的分段备份
-     *
-     * @param dirName  备份目录
-     * @param itemName 备份项目名称
-     * @return
+     * 获取存在的分段处理配置
      */
-    public int getBackupSegment(String dirName, String itemName) {
-        String property = getProperty(getBackupSegmentKey(dirName, itemName));
+    public SegmentConfig getSegmentConfig(String uid, BusinessType businessType, BackupRestoreItem backupRestoreItem) {
+        String property = getProperty(SegmentConfig.getAppPropertyKey(uid, businessType, backupRestoreItem));
         if (StringUtils.isEmpty(property)) {
-            return -1;
+            return null;
         }
-        return Integer.parseInt(property);
+        return SegmentConfig.parse(uid, businessType, backupRestoreItem, property);
     }
 
-    public void setBackupSegment(String dirName, String itemName, int nextPageNum) {
-        setProperty(getBackupSegmentKey(dirName, itemName), String.valueOf(nextPageNum));
+    public void setSegmentConfig(SegmentConfig segmentConfig) {
+        setProperty(segmentConfig.getAppPropertyKey(), segmentConfig.getAppPropertyValue());
         saveData();
     }
 
-    private String getBackupSegmentKey(String dirName, String itemName) {
-        return KEY_BACKUP_SEGMENT + dirName + "." + itemName;
+    public void delSegmentConfig(SegmentConfig segmentConfig) {
+        remove(segmentConfig.getAppPropertyKey());
+        saveData();
     }
+
 }

@@ -12,6 +12,10 @@ import java.util.List;
  */
 public class StringUtils {
 
+    public static boolean notEmpty(String str) {
+        return str != null && !str.isEmpty();
+    }
+
     public static boolean isEmpty(String str) {
         return str == null || str.isEmpty();
     }

@@ -15,7 +15,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @ClassName BackupFileUtil
@@ -28,6 +30,15 @@ import java.util.List;
 public class BackupFileUtil {
 
     private static final AppData APP_DATA = AppData.getInstance();
+
+    public static final Map<BackupRestoreItem, BackupRestoreService> getBackupCount = new HashMap<>(BackupRestoreItem.values().length);
+
+    static {
+        for (BackupRestoreItem item : BackupRestoreItem.values()) {
+            BackupRestoreService service = item.getServiceBuilder().build(null, null, null);
+            getBackupCount.put(item, service);
+        }
+    }
 
     /**
      * 获取所有的备份文件信息
@@ -55,9 +66,7 @@ public class BackupFileUtil {
                 try {
                     BackupFile backupFile = new BackupFile();
                     backupFile.setItem(item);
-                    BackupRestoreService service = item.getServiceBuilder().build(null, null, null);
-                    backupFile.setCount(service.getBackupCount(dir));
-                    backupFile.setSegment(APP_DATA.getBackupSegment(dir.getName(), item.getName()) > 0);
+                    backupFile.setCount(getBackupCount.get(item).getBackupCount(dir));
                     backupFiles.add(backupFile);
                 } catch (Exception ignored) {
 

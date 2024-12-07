@@ -5,10 +5,12 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
+import top.ybgnb.bilibili.backup.app.business.BusinessType;
 import top.ybgnb.bilibili.backup.biliapi.bean.ApiResult;
 import top.ybgnb.bilibili.backup.biliapi.bean.Relation;
 import top.ybgnb.bilibili.backup.biliapi.bean.RelationAct;
 import top.ybgnb.bilibili.backup.biliapi.bean.RelationTag;
+import top.ybgnb.bilibili.backup.biliapi.bean.page.PageData;
 import top.ybgnb.bilibili.backup.biliapi.error.BusinessException;
 import top.ybgnb.bilibili.backup.biliapi.request.CreateApi;
 import top.ybgnb.bilibili.backup.biliapi.request.ListApi;
@@ -36,8 +38,16 @@ import java.util.Map;
 @Slf4j
 public class FollowingService extends RelationService {
 
+    private PageApi<PageData<Relation>, Relation> pageApi;
+
     public FollowingService(OkHttpClient client, User user, String path) {
         super(client, user, path);
+        pageApi = new PageApi<>(client, signUser(), "https://api.bilibili.com/x/relation/followings",
+                queryParams -> {
+                    queryParams.put("vmid", user.getUid());
+                    queryParams.put("order", "desc");
+                },
+                Relation.class);
     }
 
     @Override
@@ -49,7 +59,17 @@ public class FollowingService extends RelationService {
                 throw be;
             }
         }
-        backupData("关注", this::getRelations);
+        backupData("关注", new BackupCallback<List<Relation>>() {
+            @Override
+            public List<Relation> getData() throws BusinessException {
+                return getRelations(BusinessType.BACKUP);
+            }
+
+            @Override
+            public void finished(List<Relation> data) throws BusinessException {
+                callbackBackupSegment(pageApi, data);
+            }
+        }, getSegmentBackupPageNo() > 1);
     }
 
     private List<RelationTag> getRelationTags() throws BusinessException {
@@ -57,13 +77,11 @@ public class FollowingService extends RelationService {
                 List.class, RelationTag.class).getList();
     }
 
-    private List<Relation> getRelations() throws BusinessException {
-        return new PageApi<>(client, signUser(), "https://api.bilibili.com/x/relation/followings",
-                queryParams -> {
-                    queryParams.put("vmid", user.getUid());
-                    queryParams.put("order", "desc");
-                },
-                Relation.class).getAllData();
+    private List<Relation> getRelations(BusinessType businessType) throws BusinessException {
+        if (BusinessType.BACKUP.equals(businessType)) {
+            return pageApi.getAllData(getSegmentBackupPageNo(), getSegmentBackupMaxSize());
+        }
+        return pageApi.getAllData();
     }
 
     @Override
@@ -109,7 +127,7 @@ public class FollowingService extends RelationService {
         }
 
         log.info("获取新账号关注...");
-        List<Relation> newFollowings = getRelations();
+        List<Relation> newFollowings = getRelations(BusinessType.RESTORE);
         HashSet<Long> newFollowingIds = new HashSet<>();
         HashMap<Long, Relation> mapNewFollowing = new HashMap<>();
         for (Relation newFollowing : newFollowings) {
@@ -127,6 +145,16 @@ public class FollowingService extends RelationService {
         }
         Map<String, CopyUser> copyUsers = new HashMap<>();
         Collections.reverse(oldFollowings);
+
+        int page = getSegmentRestorePageNo();
+        int pageSize = getSegmentRestoreMaxSize();
+        // 截取旧数据
+        if (pageSize > 0 && page > 0) {
+            log.info("正在还原第{}页，分页大小：{}", page, pageSize);
+            int start = (page - 1) * pageSize;
+            oldFollowings = oldFollowings.subList(start, Math.min(start + pageSize, oldFollowings.size()));
+        }
+
         for (Relation oldFollowing : oldFollowings) {
             handleInterrupt();
             boolean isFollowed = false;
@@ -199,6 +227,7 @@ public class FollowingService extends RelationService {
                 }
             }
         }
+        callbackRestoreSegment(oldFollowings);
     }
 
     @Override

@@ -3,24 +3,29 @@ package top.ybgnb.bilibili.backup.ui.page;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import top.ybgnb.bilibili.backup.app.bean.SavedUser;
+import top.ybgnb.bilibili.backup.app.business.BusinessType;
 import top.ybgnb.bilibili.backup.biliapi.error.BusinessException;
-import top.ybgnb.bilibili.backup.biliapi.service.ServiceBuilder;
+import top.ybgnb.bilibili.backup.biliapi.service.BackupRestoreItem;
 import top.ybgnb.bilibili.backup.ui.bean.BackupDir;
 import top.ybgnb.bilibili.backup.ui.component.BackupFileSelector;
 import top.ybgnb.bilibili.backup.ui.component.BackupRestoreItemSelector;
 import top.ybgnb.bilibili.backup.ui.component.LoadingDialog;
 import top.ybgnb.bilibili.backup.ui.component.PagePanel;
 import top.ybgnb.bilibili.backup.ui.component.UserSelector;
+import top.ybgnb.bilibili.backup.ui.segment.SegmentUtil;
 import top.ybgnb.bilibili.backup.ui.state.GlobalState;
+import top.ybgnb.bilibili.backup.ui.utils.LayoutUtil;
 import top.ybgnb.bilibili.backup.ui.worker.BackupRestoreRunnable;
 import top.ybgnb.bilibili.backup.ui.worker.BuCallback;
 import top.ybgnb.bilibili.backup.ui.worker.DelaySetProcessingLoggerRunnable;
 import top.ybgnb.bilibili.backup.ui.worker.RestoreRunnable;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.LinkedHashSet;
+import java.util.List;
 
 /**
  * @ClassName RestorePage
@@ -43,6 +48,8 @@ public class RestorePage extends PagePanel {
     private BackupRestoreItemSelector backupRestoreItemSelector;
 
     private JButton btnRestore;
+
+    private List<JRadioButton> segmentButtons;
 
     private JTextArea txtLog;
 
@@ -77,8 +84,16 @@ public class RestorePage extends PagePanel {
         backupRestoreItemSelector = new BackupRestoreItemSelector(null);
         addDynamicContent(backupRestoreItemSelector, 0, posY++);
 
+
+        JPanel btnPanel = new JPanel();
+        btnPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        GridBagConstraints temp = LayoutUtil.getSeparatorConstraints(0, posY++, 1);
+        addDynamicContent(btnPanel, temp);
+
         btnRestore = new JButton(ACTIVE_BTN_NAME);
-        addDynamicContent(btnRestore, 0, posY++);
+        btnPanel.add(btnRestore);
+        btnPanel.add(new JLabel("  分段还原的数量："));
+        segmentButtons = SegmentUtil.createSegmentButtons(btnPanel);
 
         scrollPaneLog = addTxtLogToDynamic(0, posY++);
         txtLog = (JTextArea) scrollPaneLog.getViewport().getView();
@@ -140,7 +155,7 @@ public class RestorePage extends PagePanel {
                 JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this), "请选择新账号！", "提示", JOptionPane.OK_OPTION);
                 return;
             }
-            LinkedHashSet<ServiceBuilder> items = backupRestoreItemSelector.getSelectedItems();
+            LinkedHashSet<BackupRestoreItem> items = backupRestoreItemSelector.getSelectedItems();
             if (items.isEmpty()) {
                 JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this), "请至少选择一项！", "提示", JOptionPane.OK_OPTION);
                 return;
@@ -149,7 +164,7 @@ public class RestorePage extends PagePanel {
                     "是否开始" + BU_NAME + "？", "提示",
                     JOptionPane.YES_NO_OPTION);
             if (result == JOptionPane.YES_OPTION) {
-                restore();
+                restore(items);
             }
         } else {
             int result = JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(this),
@@ -178,10 +193,9 @@ public class RestorePage extends PagePanel {
         GlobalState.setProcessing(flag);
     }
 
-    private void restore() {
+    private void restore(LinkedHashSet<BackupRestoreItem> items) {
         setBusyStatus(true);
-        restoreRunnable = new RestoreRunnable(client, userSelector.getCurrUser(),
-                backupRestoreItemSelector.getSelectedItems(),
+        restoreRunnable = new RestoreRunnable(client, userSelector.getCurrUser(), items,
                 backupFileSelector.getCurrBackupDir().getDirFile().getPath(),
                 new BuCallback<Void>() {
                     @Override
@@ -199,6 +213,8 @@ public class RestorePage extends PagePanel {
                         setBusyStatus(false);
                     }
                 });
+        // 分段处理
+        SegmentUtil.handle(this, BusinessType.RESTORE, restoreRunnable, segmentButtons);
         new Thread(restoreRunnable).start();
     }
 

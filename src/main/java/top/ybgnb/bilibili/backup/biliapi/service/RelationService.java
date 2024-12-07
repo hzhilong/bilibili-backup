@@ -23,7 +23,7 @@ import java.util.Map;
  * @Version 1.0
  */
 @Slf4j
-public abstract class RelationService extends BackupRestoreService {
+public abstract class RelationService extends SegmentableBackupRestoreService {
 
     private int modifyCount;
 
@@ -39,7 +39,7 @@ public abstract class RelationService extends BackupRestoreService {
      * @throws BusinessException
      */
     protected void preventRiskCtrl(Relation relation) throws BusinessException {
-        log.info(String.format("搜索UP主[%s](防止风控)", relation.getUname()));
+        log.info("搜索UP主[{}](防止风控)", relation.getUname());
         new BaseApi<JSONObject>(client, user,
                 "https://api.bilibili.com/x/web-interface/wbi/search/all/v2", new AddQueryParams() {
             @Override
@@ -83,11 +83,7 @@ public abstract class RelationService extends BackupRestoreService {
                 queryParams.put("vmid", String.valueOf(relation.getMid()));
             }
         }, true, JSONObject.class).apiGet();
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-
-        }
+        sleep(0);
     }
 
     /**
@@ -110,9 +106,9 @@ public abstract class RelationService extends BackupRestoreService {
                     put("extend_content", "{\"entity\":\"query\",\"entity_id\":\"" + relation.getUname() + "\"}");
                 }});
         if (apiResult._isSuccess()) {
-            log.info(String.format("成功%s用户：%s", act.getName(), relation.getUname()));
+            log.info("成功{}用户：{}", act.getName(), relation.getUname());
         } else {
-            log.info(String.format("无法%s用户：[%s](%s)", act.getName(), relation.getUname(), apiResult.getMessage()));
+            log.info("无法{}用户：[{}]({})", act.getName(), relation.getUname(), apiResult.getMessage());
             if (22001 == apiResult.getCode()) {
                 log.info("不能对自己进行此操作");
             } else if (22002 == apiResult.getCode()) {
@@ -133,7 +129,7 @@ public abstract class RelationService extends BackupRestoreService {
         }
         modifyCount++;
         if (modifyCount % 100 == 0) {
-            log.info(String.format("已操作[%s]100次，请休息10分钟（我也不知道要等多久，反正短时间内频繁操作容易风控 －_－b）", act.getName()));
+            log.info("已操作[{}]100次，请休息10分钟（我也不知道要等多久，反正短时间内频繁操作容易风控 －_－b）", act.getName());
             try {
                 Thread.sleep(10 * 60 * 1000);
             } catch (InterruptedException e) {

@@ -1,7 +1,10 @@
 package top.ybgnb.bilibili.backup.biliapi.service;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import top.ybgnb.bilibili.backup.biliapi.error.BusinessException;
@@ -17,6 +20,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 /**
@@ -29,14 +33,24 @@ import java.util.Set;
 @Slf4j
 public abstract class BackupRestoreService extends BaseService implements BackupRestoreItemInfo {
 
-    protected final String path;
+    /**
+     * 最长的延迟时间 毫秒
+     */
+    public final static int MAX_DELAY_TIME = 5 * 1000;
+
+    @Setter
+    @Getter
+    public String path;
 
     private final HashMap<String, String> mapFileName;
+
+    private final Random random;
 
     public BackupRestoreService(OkHttpClient client, User user, String path) {
         super(client, user);
         this.path = path;
         this.mapFileName = new HashMap<>(2);
+        this.random = new Random();
         this.initFileName(mapFileName);
     }
 
@@ -44,14 +58,25 @@ public abstract class BackupRestoreService extends BaseService implements Backup
 
     public abstract void restore() throws BusinessException;
 
-    public void writeJsonFile(String path, String appendDir, String name, Object obj) throws BusinessException {
-        FileUtil.writeJsonFile(path + getEnFilePathName(appendDir), getEnFileName(name) + ".json", obj);
+    public void writeJsonFile(String path, String appendDir, String name, Object obj, boolean isAppendData) throws BusinessException {
+        Object content = obj;
+        if (obj instanceof List) {
+            try {
+                String jsonFile = readJsonFile(path, appendDir, name);
+                JSONArray jsonArrayOld = JSONArray.parseArray(jsonFile);
+                JSONArray jsonArrayNew = JSONArray.parseArray(JSONObject.toJSONString(obj));
+                jsonArrayOld.addAll(jsonArrayNew);
+                content = jsonArrayOld;
+            } catch (Exception e) {
+            }
+        }
+        FileUtil.writeJsonFile(path + getEnFilePathName(appendDir), getEnFileName(name) + ".json", content);
     }
 
     public String readJsonFile(String path, String appendDir, String name) throws BusinessException {
         try {
             // 兼容旧版本数据 中 + 中
-            return FileUtil.readJsonFile(path + appendDir + "/", name + ".json");
+            return FileUtil.readJsonFile(path + appendDir + File.separator, name + ".json");
         } catch (BusinessException e1) {
             try {
                 return FileUtil.readJsonFile(path + getEnFilePathName(appendDir),
@@ -68,26 +93,36 @@ public abstract class BackupRestoreService extends BaseService implements Backup
         default D processData(D data) throws BusinessException {
             return data;
         }
+
+        default void finished(D data) throws BusinessException {
+        }
     }
 
     protected <D> D backupData(String buName, BackupCallback<D> callback) throws BusinessException {
-        return backupData("", buName, callback);
+        return backupData(buName, callback, false);
+    }
+
+    protected <D> D backupData(String buName, BackupCallback<D> callback, boolean isAppendData) throws BusinessException {
+        return backupData("", buName, callback, isAppendData);
     }
 
     protected <D> D backupData(String appendDir, String buName, BackupCallback<D> callback) throws BusinessException {
-        if (isInterrupt()) {
-            return null;
-        }
+        return backupData(appendDir, buName, callback, false);
+    }
+
+    protected <D> D backupData(String appendDir, String buName, BackupCallback<D> callback, boolean isAppendData) throws BusinessException {
+        handleInterrupt();
         log.info("正在备份[{}]...", buName);
         D data = callback.getData();
         callback.processData(data);
-        writeJsonFile(path, appendDir, buName, data);
+        writeJsonFile(path, appendDir, buName, data, isAppendData);
         if (List.class.isAssignableFrom(data.getClass())) {
             List list = (List) data;
             log.info("成功备份{}条[{}]数据", list.size(), buName);
         } else {
             log.info("成功备份[{}]", buName);
         }
+        callback.finished(data);
         return data;
     }
 
@@ -104,16 +139,25 @@ public abstract class BackupRestoreService extends BaseService implements Backup
         String dataName(D data);
 
         void restoreData(D data) throws BusinessException;
+
+        default void finished(List<D> oldData) throws BusinessException {
+        }
     }
 
     protected <D> List<D> restoreList(String buName, Class<D> dataClass, RestoreCallback<D> callback) throws BusinessException {
         return restoreList("", buName, dataClass, callback);
     }
 
+    protected <D> List<D> restoreList(String buName, Class<D> dataClass, int page, int pageSize, RestoreCallback<D> callback) throws BusinessException {
+        return restoreList("", buName, dataClass, page, pageSize, callback);
+    }
+
     protected <D> List<D> restoreList(String appendDir, String buName, Class<D> dataClass, RestoreCallback<D> callback) throws BusinessException {
-        if (isInterrupt()) {
-            return null;
-        }
+        return restoreList(appendDir, buName, dataClass, 1, -1, callback);
+    }
+
+    protected <D> List<D> restoreList(String appendDir, String buName, Class<D> dataClass, int page, int pageSize, RestoreCallback<D> callback) throws BusinessException {
+        handleInterrupt();
         log.info("正在还原[{}]...", buName);
         List<D> oldList = getBackupList(path, appendDir, buName, dataClass);
         log.info("解析旧账号{}：{}条数据", buName, ListUtil.getSize(oldList));
@@ -121,6 +165,7 @@ public abstract class BackupRestoreService extends BaseService implements Backup
             log.info("{}为空，无需还原", buName);
             return oldList;
         }
+        log.info("获取新账号{}...", buName);
         List<D> newList = callback.getNewList();
         log.info("获取新账号{}：{}条数据", buName, ListUtil.getSize(newList));
         Set<String> newListIds = new HashSet<>();
@@ -133,30 +178,36 @@ public abstract class BackupRestoreService extends BaseService implements Backup
         List<D> restoredList = new ArrayList<>();
         // 反序还原
         Collections.reverse(oldList);
+        // 截取旧数据
+        if (pageSize > 0 && page > 0) {
+            log.info("正在还原第{}页，分页大小：{}", page, pageSize);
+            int start = (page - 1) * pageSize;
+            oldList = oldList.subList(start, Math.min(start + pageSize, oldList.size()));
+        }
         for (D oldData : oldList) {
+            handleInterrupt();
             if (oldData == null || "null".equals(callback.compareFlag(oldData))) {
                 log.info("失效的{}，跳过还原", buName);
                 continue;
             }
+            String dataName = callback.dataName(oldData);
             if (newListIds.contains(callback.compareFlag(oldData))) {
-                log.info("{}已在新账号{}中", callback.dataName(oldData), buName);
+                log.info("{}已在新账号{}中", dataName, buName);
             } else {
                 try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                }
-                try {
                     callback.restoreData(oldData);
-                    log.info("{}还原成功", callback.dataName(oldData));
+                    log.info("{}还原成功", dataName);
                     restoredList.add(oldData);
+                    sleep(restoredList.size());
                 } catch (BusinessException e) {
-                    log.info("{}还原失败：{}", callback.dataName(oldData), e.getMessage());
+                    log.info("{}还原失败：{}", dataName, e.getMessage());
                     if (e.isEndLoop()) {
                         break;
                     }
                 }
             }
         }
+        callback.finished(oldList);
         return restoredList;
     }
 
@@ -167,7 +218,7 @@ public abstract class BackupRestoreService extends BaseService implements Backup
     }
 
     protected int getBackupListSize(File dir, String appendDir, String buName) throws BusinessException {
-        return ListUtil.getSize(getBackupList(dir.getPath() + "/", appendDir, buName, JSONObject.class));
+        return ListUtil.getSize(getBackupList(dir.getPath() + File.separator, appendDir, buName, JSONObject.class));
     }
 
     public abstract void initFileName(Map<String, String> fileNames);
@@ -194,9 +245,17 @@ public abstract class BackupRestoreService extends BaseService implements Backup
         }
         String enPathName = getEnFileName(cnPathName);
         if (StringUtils.isEmpty(enPathName)) {
-            return cnPathName + "/";
+            return cnPathName + File.separator;
         } else {
-            return enPathName + "/";
+            return enPathName + File.separator;
         }
     }
+
+    public void sleep(int count) {
+        try {
+            Thread.sleep((1000 + 1000 * Integer.toString(count).length() + random.nextInt(2000)) % MAX_DELAY_TIME);
+        } catch (InterruptedException ignored) {
+        }
+    }
+
 }

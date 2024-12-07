@@ -8,10 +8,7 @@ import top.ybgnb.bilibili.backup.biliapi.bean.CancelledAccountInfo;
 import top.ybgnb.bilibili.backup.biliapi.bean.Upper;
 import top.ybgnb.bilibili.backup.biliapi.bean.Video;
 import top.ybgnb.bilibili.backup.biliapi.error.BusinessException;
-import top.ybgnb.bilibili.backup.biliapi.service.ServiceBuilder;
-import top.ybgnb.bilibili.backup.biliapi.service.impl.BangumiService;
-import top.ybgnb.bilibili.backup.biliapi.service.impl.FavCollectedService;
-import top.ybgnb.bilibili.backup.biliapi.service.impl.FavoritesService;
+import top.ybgnb.bilibili.backup.biliapi.service.BackupRestoreItem;
 import top.ybgnb.bilibili.backup.biliapi.utils.StringUtils;
 import top.ybgnb.bilibili.backup.ui.component.PagePanel;
 import top.ybgnb.bilibili.backup.ui.state.GlobalState;
@@ -242,13 +239,13 @@ public class CancelledAccountPage extends PagePanel {
 
     private void backup(String uid) {
         setBusyStatus(3, true);
-        LinkedHashSet<ServiceBuilder> serviceBuilders = new LinkedHashSet<>();
-        serviceBuilders.add(FavoritesService::new);
-        serviceBuilders.add(FavCollectedService::new);
-        serviceBuilders.add(BangumiService::new);
+        LinkedHashSet<BackupRestoreItem> items = new LinkedHashSet<>();
+        items.add(BackupRestoreItem.FAVORITES);
+        items.add(BackupRestoreItem.FAV_COLLECTED);
+        items.add(BackupRestoreItem.BANGUMI);
 
         SavedUser user = new SavedUser(new Upper(Long.valueOf(uid), AppConstant.CANCELLED_ACCOUNT_NAME, ""), uid);
-        backupRunnable = new BackupRunnable(client, user, serviceBuilders,
+        backupRunnable = new BackupRunnable(client, user, items,
                 new BuCallback<Void>() {
                     @Override
                     public void success(Void data) {

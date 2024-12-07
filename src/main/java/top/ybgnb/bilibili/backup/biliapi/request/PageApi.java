@@ -28,11 +28,20 @@ import java.util.Random;
 @Slf4j
 public class PageApi<D extends PageData<L>, L> extends BaseApi<D> {
 
+    public final static int MAX_SIZE = -1;
+
+    /**
+     * 最长的延迟时间 毫秒
+     */
     public final static int MAX_DELAY_TIME = 5 * 1000;
 
     @Getter
     @Setter
     private int page;
+
+    @Setter
+    @Getter
+    private int pageSize;
 
     /**
      * 接口响应的数据类
@@ -51,6 +60,9 @@ public class PageApi<D extends PageData<L>, L> extends BaseApi<D> {
     @Getter
     protected boolean interrupt;
 
+    /**
+     * 分页查询回调方法
+     */
     protected PageCallback pageCallback;
 
     private final Random random;
@@ -85,13 +97,14 @@ public class PageApi<D extends PageData<L>, L> extends BaseApi<D> {
         } else {
             this.pageCallback = pageCallback;
         }
-        random = new Random();
+        this.random = new Random();
+        this.pageSize = 20;
     }
 
     @Override
     public void addQueryParams(Map<String, String> queryParams) {
         queryParams.put("pn", String.valueOf(this.getPage()));
-        queryParams.put("ps", "20");
+        queryParams.put("ps", String.valueOf(this.getPageSize()));
     }
 
     public interface SetNextPage<D> {
@@ -99,11 +112,27 @@ public class PageApi<D extends PageData<L>, L> extends BaseApi<D> {
     }
 
     public List<L> getAllData() throws BusinessException {
-        return getAllData(null);
+        return getAllData(1);
+    }
+
+    public List<L> getAllData(int startPage) throws BusinessException {
+        return getAllData(startPage, MAX_SIZE);
+    }
+
+    public List<L> getAllData(int startPage, int maxSize) throws BusinessException {
+        return getAllData(null, startPage, maxSize);
     }
 
     public List<L> getAllData(SetNextPage<D> setNextPage) throws BusinessException {
-        D pageData = getAllPageData(setNextPage);
+        return getAllData(setNextPage, 1);
+    }
+
+    public List<L> getAllData(SetNextPage<D> setNextPage, int startPage) throws BusinessException {
+        return getAllData(setNextPage, startPage, MAX_SIZE);
+    }
+
+    public List<L> getAllData(SetNextPage<D> setNextPage, int startPage, int maxSize) throws BusinessException {
+        D pageData = getAllPageData(setNextPage, startPage, maxSize);
         if (pageData == null) {
             return null;
         }
@@ -111,16 +140,28 @@ public class PageApi<D extends PageData<L>, L> extends BaseApi<D> {
     }
 
     public D getAllPageData() throws BusinessException {
-        return getAllPageData(null);
+        return getAllPageData(1);
+    }
+
+    public D getAllPageData(int startPage) throws BusinessException {
+        return getAllPageData(null, startPage);
     }
 
     public D getAllPageData(SetNextPage<D> setNextPage) throws BusinessException {
+        return getAllPageData(setNextPage, 1);
+    }
+
+    public D getAllPageData(SetNextPage<D> setNextPage, int startPage) throws BusinessException {
+        return getAllPageData(setNextPage, startPage, MAX_SIZE);
+    }
+
+    public D getAllPageData(SetNextPage<D> setNextPage, int startPage, int maxSize) throws BusinessException {
         List<L> list = new ArrayList<>();
         AddQueryParams baseAddQueryParams = null;
         if (setNextPage != null) {
             baseAddQueryParams = this.addQueryParams;
         }
-        int page = 1;
+        int page = startPage;
         D pageData = null;
         while (true) {
             handleInterrupt();
@@ -144,10 +185,13 @@ public class PageApi<D extends PageData<L>, L> extends BaseApi<D> {
                 if (pageData != null && pageData._getList() != null) {
                     list.addAll(pageData._getList());
                     if (pageCallback != null) {
-                        pageCallback.page(this.getPage(), ListUtil.getSize(pageData._getList()), list.size());
+                        pageCallback.page(page, ListUtil.getSize(pageData._getList()), list.size());
                     }
                     pageData._setList(list);
-                    if (pageData.hasMore(list.size())) {
+                    if (ListUtil.notEmpty(list) && maxSize > 0 && list.size() >= maxSize) {
+                        log.info("暂停获取，目前总数：{}，允许的最大内容数：{}", list.size(), maxSize);
+                        break;
+                    } else if (pageData.hasMore(list.size())) {
                         page++;
                         sleep(page);
                         continue;
@@ -180,4 +224,5 @@ public class PageApi<D extends PageData<L>, L> extends BaseApi<D> {
         } catch (InterruptedException ignored) {
         }
     }
+
 }

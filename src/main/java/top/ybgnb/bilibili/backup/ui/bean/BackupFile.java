@@ -28,8 +28,4 @@ public class BackupFile {
      */
     private int count;
 
-    /**
-     * 是否存在未完成的分段备份
-     */
-    private boolean segment = false;
 }

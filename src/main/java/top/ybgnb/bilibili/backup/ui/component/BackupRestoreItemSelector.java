@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import top.ybgnb.bilibili.backup.biliapi.error.BusinessException;
 import top.ybgnb.bilibili.backup.biliapi.service.BackupRestoreItem;
-import top.ybgnb.bilibili.backup.biliapi.service.ServiceBuilder;
 import top.ybgnb.bilibili.backup.ui.bean.BackupDir;
 import top.ybgnb.bilibili.backup.ui.utils.BackupFileUtil;
 import top.ybgnb.bilibili.backup.ui.utils.LayoutUtil;
@@ -31,20 +30,20 @@ public class BackupRestoreItemSelector extends JPanel implements ComponentInit {
 
     private JLabel lblTitle;
 
-    private LinkedHashMap<String, ServiceBuilder> items;
+    private LinkedHashMap<String, BackupRestoreItem> items;
     @Getter
-    private LinkedHashSet<ServiceBuilder> selectedItems;
+    private LinkedHashSet<BackupRestoreItem> selectedItems;
     private java.util.List<JCheckBox> defaultChkItems = new ArrayList<>();
     private java.util.List<GridBagConstraints> defaultChkItemsConstraints = new ArrayList<>();
     private JPanel itemsPanel;
     private int numberOfRows;
 
-    public BackupRestoreItemSelector(LinkedHashMap<String, ServiceBuilder> items) {
+    public BackupRestoreItemSelector(LinkedHashMap<String, BackupRestoreItem> items) {
         this.items = items;
         this.numberOfRows = BackupRestoreItem.values().length;
     }
 
-    public BackupRestoreItemSelector(LinkedHashMap<String, ServiceBuilder> items, int numberOfRows) {
+    public BackupRestoreItemSelector(LinkedHashMap<String, BackupRestoreItem> items, int numberOfRows) {
         this.items = items;
         this.numberOfRows = numberOfRows;
     }
@@ -65,7 +64,7 @@ public class BackupRestoreItemSelector extends JPanel implements ComponentInit {
         }
         if (items != null) {
             for (BackupRestoreItem item : items) {
-                this.items.put(item.getName(), item.getServiceBuilder());
+                this.items.put(item.getName(), item);
             }
         }
     }
@@ -78,7 +77,7 @@ public class BackupRestoreItemSelector extends JPanel implements ComponentInit {
         }
         if (items != null) {
             for (BackupRestoreItem item : items) {
-                this.items.put(item.getName(), item.getServiceBuilder());
+                this.items.put(item.getName(), item);
             }
         }
     }
