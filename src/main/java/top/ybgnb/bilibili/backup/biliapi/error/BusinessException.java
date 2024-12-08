@@ -12,8 +12,6 @@ import top.ybgnb.bilibili.backup.biliapi.bean.BuResult;
  */
 public class BusinessException extends Exception {
 
-    private boolean isEndLoop = false;
-
     public BusinessException(String message) {
         super(message);
     }
@@ -30,26 +28,4 @@ public class BusinessException extends Exception {
         super(String.format("%s(%s)", apiResult.getMessage(), apiResult.getCode()));
     }
 
-    public BusinessException(String message, boolean isEndLoop) {
-        super(message);
-        this.isEndLoop = isEndLoop;
-    }
-
-    public BusinessException(BuResult<?> result, boolean isEndLoop) {
-        super(String.format("%s(%s)", result.getMsg(), result.getCode()));
-        this.isEndLoop = isEndLoop;
-    }
-
-    public BusinessException(ApiResult<?> apiResult, boolean isEndLoop) {
-        super(String.format("%s(%s)", apiResult.getMessage(), apiResult.getCode()));
-        this.isEndLoop = isEndLoop;
-    }
-
-    public boolean isEndLoop() {
-        return isEndLoop;
-    }
-
-    public void setEndLoop(boolean endLoop) {
-        isEndLoop = endLoop;
-    }
 }

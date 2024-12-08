@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import top.ybgnb.bilibili.backup.biliapi.error.BusinessException;
+import top.ybgnb.bilibili.backup.biliapi.error.EndLoopBusinessException;
 import top.ybgnb.bilibili.backup.biliapi.user.User;
 import top.ybgnb.bilibili.backup.biliapi.utils.FileUtil;
 import top.ybgnb.bilibili.backup.biliapi.utils.ListUtil;
@@ -201,7 +202,7 @@ public abstract class BackupRestoreService extends BaseService implements Backup
                     sleep(restoredList.size());
                 } catch (BusinessException e) {
                     log.info("{}还原失败：{}", dataName, e.getMessage());
-                    if (e.isEndLoop()) {
+                    if (e instanceof EndLoopBusinessException) {
                         break;
                     }
                 }

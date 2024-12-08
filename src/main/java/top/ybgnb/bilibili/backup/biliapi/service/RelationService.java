@@ -7,6 +7,7 @@ import top.ybgnb.bilibili.backup.biliapi.bean.ApiResult;
 import top.ybgnb.bilibili.backup.biliapi.bean.Relation;
 import top.ybgnb.bilibili.backup.biliapi.bean.RelationAct;
 import top.ybgnb.bilibili.backup.biliapi.error.BusinessException;
+import top.ybgnb.bilibili.backup.biliapi.error.EndLoopBusinessException;
 import top.ybgnb.bilibili.backup.biliapi.request.AddQueryParams;
 import top.ybgnb.bilibili.backup.biliapi.request.BaseApi;
 import top.ybgnb.bilibili.backup.biliapi.request.ModifyApi;
@@ -124,7 +125,7 @@ public abstract class RelationService extends SegmentableBackupRestoreService {
             } else if (40061 == apiResult.getCode()) {
                 log.info("用户不存在");
             } else {
-                throw new BusinessException("操作失败，可能被风控，建议晚点再试", true);
+                throw new EndLoopBusinessException("操作失败，可能被风控，建议晚点再试");
             }
         }
         modifyCount++;
