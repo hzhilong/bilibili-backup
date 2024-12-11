@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -163,7 +164,7 @@ public class FavoritesService extends BackupRestoreService {
 
 
         log.info("正在解析需要收藏的视频...");
-        Map<Long, List<Long>> videoFavNewIds = new HashMap<>();
+        Map<Long, List<Long>> videoFavNewIds = new LinkedHashMap<>();
         Map<Long, Media> mapMedias = new HashMap<>();
         for (FavFolder oldFolder : oldFolders) {
             handleInterrupt();
