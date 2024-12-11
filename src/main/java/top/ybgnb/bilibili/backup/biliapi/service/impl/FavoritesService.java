@@ -98,8 +98,13 @@ public class FavoritesService extends BackupRestoreService {
             }
         });
         for (FavFolder favFolder : favFolders) {
-            backupData("收藏夹", getFileName(favFolder),
-                    () -> getFavData(String.valueOf(favFolder.getId())));
+            try {
+                backupData("收藏夹", getFileName(favFolder),
+                        () -> FavoritesService.this.getFavData(String.valueOf(favFolder.getId())));
+                log.info("成功备份[{}]", favFolder.getTitle());
+            } catch (BusinessException e) {
+                log.info("收藏夹[{}]备份失败：{}", favFolder.getTitle(), e.getMessage());
+            }
         }
     }
 
