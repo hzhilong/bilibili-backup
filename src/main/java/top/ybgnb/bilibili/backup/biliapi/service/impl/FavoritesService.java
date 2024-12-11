@@ -101,7 +101,7 @@ public class FavoritesService extends BackupRestoreService {
             try {
                 backupData("收藏夹", getFileName(favFolder),
                         () -> FavoritesService.this.getFavData(String.valueOf(favFolder.getId())));
-                log.info("成功备份[{}]", favFolder.getTitle());
+                log.info("成功备份收藏夹[{}]", favFolder.getTitle());
             } catch (BusinessException e) {
                 log.info("收藏夹[{}]备份失败：{}", favFolder.getTitle(), e.getMessage());
             }
