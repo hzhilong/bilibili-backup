@@ -1,17 +1,17 @@
 package io.github.hzhilong.bilibili.backup.app.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import lombok.extern.slf4j.Slf4j;
-import okhttp3.OkHttpClient;
+import io.github.hzhilong.base.error.BusinessException;
+import io.github.hzhilong.base.utils.ListUtil;
 import io.github.hzhilong.bilibili.backup.api.bean.ApiResult;
 import io.github.hzhilong.bilibili.backup.api.bean.page.SessionPageData;
 import io.github.hzhilong.bilibili.backup.api.request.AddQueryParams;
 import io.github.hzhilong.bilibili.backup.api.request.ModifyApi;
 import io.github.hzhilong.bilibili.backup.api.request.PageApi;
-import io.github.hzhilong.bilibili.backup.app.service.BaseService;
 import io.github.hzhilong.bilibili.backup.api.user.User;
-import io.github.hzhilong.base.utils.ListUtil;
-import io.github.hzhilong.base.error.BusinessException;
+import io.github.hzhilong.bilibili.backup.app.service.BaseService;
+import lombok.extern.slf4j.Slf4j;
+import okhttp3.OkHttpClient;
 
 import java.util.HashMap;
 import java.util.List;
@@ -27,13 +27,15 @@ import java.util.Map;
 @Slf4j
 public class MessageService extends BaseService {
 
+    PageApi<SessionPageData, JSONObject> pageApi;
+
     public MessageService(OkHttpClient client, User user) {
         super(client, user);
     }
 
     public void readAllSession() throws BusinessException {
         log.info("获取[我的消息]...");
-        List<JSONObject> allSession = new PageApi<>(client, user,
+        pageApi = new PageApi<>(client, user,
                 "https://api.vc.bilibili.com/session_svr/v1/session_svr/get_sessions",
                 new AddQueryParams() {
                     @Override
@@ -46,7 +48,8 @@ public class MessageService extends BaseService {
                         queryParams.put("mobi_app", "web");
                         queryParams.put("web_location", "333.1296");
                     }
-                }, SessionPageData.class, JSONObject.class)
+                }, SessionPageData.class, JSONObject.class);
+        List<JSONObject> allSession = pageApi
                 .getAllData((pageData, queryParams) -> {
                     if (pageData != null) {
                         List<JSONObject> allData = pageData.getList();
@@ -84,6 +87,14 @@ public class MessageService extends BaseService {
                 }
             }
         }
+    }
+
+    @Override
+    public void setInterrupt(boolean interrupt) {
+        if (pageApi != null) {
+            pageApi.setInterrupt(interrupt);
+        }
+        super.setInterrupt(interrupt);
     }
 
 }

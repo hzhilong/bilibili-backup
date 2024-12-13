@@ -1,28 +1,28 @@
-package io.github.hzhilong.bilibili.backup.gui.worker;
+package io.github.hzhilong.bilibili.backup.gui.worker.tools;
 
-import io.github.hzhilong.base.bean.BuCallback;
+import io.github.hzhilong.base.error.BusinessException;
+import io.github.hzhilong.bilibili.backup.app.bean.SavedUser;
+import io.github.hzhilong.bilibili.backup.app.service.BaseService;
+import io.github.hzhilong.bilibili.backup.gui.worker.BaseRunnable;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
-import io.github.hzhilong.bilibili.backup.app.bean.SavedUser;
-import io.github.hzhilong.base.error.BusinessException;
-import io.github.hzhilong.bilibili.backup.app.service.impl.MessageService;
-import io.github.hzhilong.bilibili.backup.api.user.User;
 
 /**
- * 已读所有消息的线程
+ * 工具箱的线程
  *
  * @author hzhilong
  * @version 1.0
  */
 @Slf4j
-public class ReadAllSessionRunnable extends BaseRunnable {
+public abstract class ToolRunnable<S extends BaseService, D> extends BaseRunnable {
 
-    private final SavedUser user;
-    private final BuCallback<Void> buCallback;
+    protected final SavedUser user;
 
-    private MessageService messageService;
+    private final ToolBuCallback<D> buCallback;
 
-    public ReadAllSessionRunnable(OkHttpClient client, SavedUser user, BuCallback<Void> buCallback) {
+    private S service;
+
+    public ToolRunnable(OkHttpClient client, SavedUser user, ToolBuCallback<D> buCallback) {
         super(client);
         this.user = user;
         this.buCallback = buCallback;
@@ -31,17 +31,22 @@ public class ReadAllSessionRunnable extends BaseRunnable {
     @Override
     public void setInterrupt(boolean interrupt) {
         this.interrupt = interrupt;
-        if (messageService != null) {
-            messageService.setInterrupt(interrupt);
+        if (service != null) {
+            service.setInterrupt(interrupt);
         }
     }
+
+    protected abstract S getService();
+
+    protected abstract D runService(S service) throws BusinessException;
 
     @Override
     public void run() {
         boolean onceSuccessful = false;
+        D result = null;
         try {
-            messageService = new MessageService(client, new User(user.getCookie()));
-            messageService.readAllSession();
+            service = getService();
+            result = runService(service);
             onceSuccessful = true;
         } catch (Exception e) {
             if (e instanceof BusinessException) {
@@ -57,7 +62,7 @@ public class ReadAllSessionRunnable extends BaseRunnable {
                 } else {
                     if (onceSuccessful) {
                         log.info("操作成功！");
-                        buCallback.success(null);
+                        buCallback.success(result);
                     } else {
                         log.info("操作失败！");
                         buCallback.fail("操作失败！");

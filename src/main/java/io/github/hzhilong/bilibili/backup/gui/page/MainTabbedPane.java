@@ -23,8 +23,8 @@ public class MainTabbedPane extends JTabbedPane {
         OkHttpClient client = GlobalState.CLIENT;
         addView("备份", new BackupPage(client));
         addView("还原", new RestorePage(client));
-        addView("已读所有消息", new ReadAllMessagePage(client));
         addView("已注销账号数据", new CancelledAccountPage(client));
+        addView("其他工具", new ToolsPage(client));
     }
 
     private void addView(String title, PagePanel page) {
