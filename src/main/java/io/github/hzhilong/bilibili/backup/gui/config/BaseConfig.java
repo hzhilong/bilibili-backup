@@ -25,9 +25,10 @@ public abstract class BaseConfig {
         if (value != null) {
             return value;
         }
-        for (AppDataItem<D> defaultValue : defaultValues) {
+        for (AppDataItem<D> item : defaultValues) {
+            D defaultValue = item.getValue();
             if (defaultValue != null) {
-                return defaultValue.getValue();
+                return defaultValue;
             }
         }
         return null;
