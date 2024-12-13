@@ -6,7 +6,7 @@ import io.github.hzhilong.bilibili.backup.app.business.BaseBusinessForLoginUser;
 import io.github.hzhilong.bilibili.backup.app.cli.BackupRestoreMenu;
 import io.github.hzhilong.bilibili.backup.api.bean.Upper;
 import io.github.hzhilong.base.error.BusinessException;
-import io.github.hzhilong.bilibili.backup.api.service.ServiceBuilder;
+import io.github.hzhilong.bilibili.backup.app.service.ServiceBuilder;
 import io.github.hzhilong.bilibili.backup.api.user.User;
 
 import java.util.List;

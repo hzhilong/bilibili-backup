@@ -3,7 +3,7 @@ package io.github.hzhilong.bilibili.backup.app.bean;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import io.github.hzhilong.bilibili.backup.api.service.BackupRestoreItem;
+import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreItem;
 
 /**
  * 备份文件

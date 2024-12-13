@@ -3,7 +3,7 @@ package io.github.hzhilong.bilibili.backup.gui.worker;
 import io.github.hzhilong.base.bean.BuCallback;
 import io.github.hzhilong.base.error.BusinessException;
 import io.github.hzhilong.bilibili.backup.api.bean.Video;
-import io.github.hzhilong.bilibili.backup.api.service.impl.VideoService;
+import io.github.hzhilong.bilibili.backup.app.service.impl.VideoService;
 import io.github.hzhilong.bilibili.backup.api.user.User;
 import io.github.hzhilong.bilibili.backup.app.constant.AppConstant;
 import lombok.extern.slf4j.Slf4j;

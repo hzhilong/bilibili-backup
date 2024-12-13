@@ -19,7 +19,7 @@ public class AppUIConfig extends BaseConfig {
         ThemeConfig.init();
     }
 
-    public static void initAppIcon(Window window){
+    public static void initAppIcon(Window window) {
         window.setIconImages(FlatSVGUtils.createWindowIconImages("/icon/app_logo.svg"));
     }
 }

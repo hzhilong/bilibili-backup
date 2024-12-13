@@ -1,4 +1,4 @@
-package io.github.hzhilong.bilibili.backup.api.service;
+package io.github.hzhilong.bilibili.backup.app.service;
 
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;

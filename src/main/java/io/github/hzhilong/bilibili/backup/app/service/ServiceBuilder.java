@@ -1,4 +1,4 @@
-package io.github.hzhilong.bilibili.backup.api.service;
+package io.github.hzhilong.bilibili.backup.app.service;
 
 import okhttp3.OkHttpClient;
 import io.github.hzhilong.bilibili.backup.api.user.User;

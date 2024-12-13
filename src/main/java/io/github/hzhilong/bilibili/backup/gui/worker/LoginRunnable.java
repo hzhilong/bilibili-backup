@@ -5,7 +5,7 @@ import io.github.hzhilong.base.utils.StringUtils;
 import io.github.hzhilong.bilibili.backup.api.bean.QRCode;
 import io.github.hzhilong.bilibili.backup.api.bean.Upper;
 import io.github.hzhilong.bilibili.backup.api.bean.UpperInfoCallback;
-import io.github.hzhilong.bilibili.backup.api.service.impl.LoginService;
+import io.github.hzhilong.bilibili.backup.app.service.impl.LoginService;
 import io.github.hzhilong.bilibili.backup.api.user.User;
 import io.github.hzhilong.bilibili.backup.app.bean.SavedUser;
 import io.github.hzhilong.bilibili.backup.gui.dialog.LoginUserDialog;

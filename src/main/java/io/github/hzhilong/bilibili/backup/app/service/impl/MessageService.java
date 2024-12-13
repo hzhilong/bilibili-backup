@@ -1,4 +1,4 @@
-package io.github.hzhilong.bilibili.backup.api.service.impl;
+package io.github.hzhilong.bilibili.backup.app.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
@@ -8,7 +8,7 @@ import io.github.hzhilong.bilibili.backup.api.bean.page.SessionPageData;
 import io.github.hzhilong.bilibili.backup.api.request.AddQueryParams;
 import io.github.hzhilong.bilibili.backup.api.request.ModifyApi;
 import io.github.hzhilong.bilibili.backup.api.request.PageApi;
-import io.github.hzhilong.bilibili.backup.api.service.BaseService;
+import io.github.hzhilong.bilibili.backup.app.service.BaseService;
 import io.github.hzhilong.bilibili.backup.api.user.User;
 import io.github.hzhilong.base.utils.ListUtil;
 import io.github.hzhilong.base.error.BusinessException;

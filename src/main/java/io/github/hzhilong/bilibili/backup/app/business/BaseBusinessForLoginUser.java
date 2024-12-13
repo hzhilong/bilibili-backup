@@ -8,7 +8,7 @@ import io.github.hzhilong.bilibili.backup.app.state.UserManager;
 import io.github.hzhilong.bilibili.backup.api.bean.QRCode;
 import io.github.hzhilong.bilibili.backup.api.bean.Upper;
 import io.github.hzhilong.base.error.BusinessException;
-import io.github.hzhilong.bilibili.backup.api.service.impl.LoginService;
+import io.github.hzhilong.bilibili.backup.app.service.impl.LoginService;
 import io.github.hzhilong.bilibili.backup.api.user.User;
 import io.github.hzhilong.base.utils.QRUtil;
 import io.github.hzhilong.base.utils.StringUtils;

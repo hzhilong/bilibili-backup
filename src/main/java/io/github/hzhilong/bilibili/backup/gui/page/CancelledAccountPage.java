@@ -5,7 +5,7 @@ import io.github.hzhilong.base.utils.StringUtils;
 import io.github.hzhilong.bilibili.backup.api.bean.CancelledAccountInfo;
 import io.github.hzhilong.bilibili.backup.api.bean.Upper;
 import io.github.hzhilong.bilibili.backup.api.bean.Video;
-import io.github.hzhilong.bilibili.backup.api.service.BackupRestoreItem;
+import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreItem;
 import io.github.hzhilong.bilibili.backup.app.bean.SavedUser;
 import io.github.hzhilong.bilibili.backup.gui.component.PagePanel;
 import io.github.hzhilong.bilibili.backup.app.constant.AppConstant;

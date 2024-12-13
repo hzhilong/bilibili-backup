@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import io.github.hzhilong.bilibili.backup.api.bean.CancelledAccountInfo;
 import io.github.hzhilong.base.error.BusinessException;
-import io.github.hzhilong.bilibili.backup.api.service.impl.CancelledAccountService;
+import io.github.hzhilong.bilibili.backup.app.service.impl.CancelledAccountService;
 import io.github.hzhilong.bilibili.backup.api.user.User;
 
 /**

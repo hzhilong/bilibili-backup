@@ -1,4 +1,4 @@
-package io.github.hzhilong.bilibili.backup.api.service.impl;
+package io.github.hzhilong.bilibili.backup.app.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
@@ -8,7 +8,7 @@ import io.github.hzhilong.bilibili.backup.api.bean.LoginResult;
 import io.github.hzhilong.bilibili.backup.api.bean.QRCode;
 import io.github.hzhilong.bilibili.backup.api.bean.Upper;
 import io.github.hzhilong.bilibili.backup.api.request.BaseApi;
-import io.github.hzhilong.bilibili.backup.api.service.BaseService;
+import io.github.hzhilong.bilibili.backup.app.service.BaseService;
 import io.github.hzhilong.bilibili.backup.api.user.User;
 import io.github.hzhilong.base.utils.StringUtils;
 import io.github.hzhilong.bilibili.backup.api.bean.UpperInfoCallback;

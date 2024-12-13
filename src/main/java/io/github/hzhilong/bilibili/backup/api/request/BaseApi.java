@@ -16,7 +16,7 @@ import okhttp3.Response;
 import org.jetbrains.annotations.NotNull;
 import io.github.hzhilong.bilibili.backup.api.bean.ApiResult;
 import io.github.hzhilong.base.error.BusinessException;
-import io.github.hzhilong.bilibili.backup.api.service.impl.SignService;
+import io.github.hzhilong.bilibili.backup.app.service.impl.SignService;
 import io.github.hzhilong.bilibili.backup.api.user.User;
 import io.github.hzhilong.base.utils.StringUtils;
 

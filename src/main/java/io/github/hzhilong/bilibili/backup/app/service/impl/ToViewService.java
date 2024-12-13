@@ -1,4 +1,4 @@
-package io.github.hzhilong.bilibili.backup.api.service.impl;
+package io.github.hzhilong.bilibili.backup.app.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
@@ -6,7 +6,7 @@ import io.github.hzhilong.bilibili.backup.api.bean.ApiResult;
 import io.github.hzhilong.bilibili.backup.api.bean.Video;
 import io.github.hzhilong.bilibili.backup.api.request.ListApi;
 import io.github.hzhilong.bilibili.backup.api.request.ModifyApi;
-import io.github.hzhilong.bilibili.backup.api.service.BackupRestoreService;
+import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreService;
 import io.github.hzhilong.bilibili.backup.api.user.User;
 import io.github.hzhilong.base.error.BusinessException;
 

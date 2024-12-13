@@ -1,4 +1,4 @@
-package io.github.hzhilong.bilibili.backup.api.service.impl;
+package io.github.hzhilong.bilibili.backup.app.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -14,7 +14,7 @@ import io.github.hzhilong.bilibili.backup.api.request.CreateApi;
 import io.github.hzhilong.bilibili.backup.api.request.ListApi;
 import io.github.hzhilong.bilibili.backup.api.request.ModifyApi;
 import io.github.hzhilong.bilibili.backup.api.request.PageApi;
-import io.github.hzhilong.bilibili.backup.api.service.RelationService;
+import io.github.hzhilong.bilibili.backup.app.service.RelationService;
 import io.github.hzhilong.bilibili.backup.api.user.User;
 import io.github.hzhilong.base.utils.ListUtil;
 import io.github.hzhilong.bilibili.backup.app.business.BusinessType;

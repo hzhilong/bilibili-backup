@@ -2,8 +2,8 @@ package io.github.hzhilong.bilibili.backup.app.cli;
 
 import lombok.extern.slf4j.Slf4j;
 import io.github.hzhilong.base.error.BusinessException;
-import io.github.hzhilong.bilibili.backup.api.service.BackupRestoreItem;
-import io.github.hzhilong.bilibili.backup.api.service.ServiceBuilder;
+import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreItem;
+import io.github.hzhilong.bilibili.backup.app.service.ServiceBuilder;
 import io.github.hzhilong.bilibili.backup.app.utils.MenuUtil;
 import io.github.hzhilong.bilibili.backup.app.constant.AppConstant;
 

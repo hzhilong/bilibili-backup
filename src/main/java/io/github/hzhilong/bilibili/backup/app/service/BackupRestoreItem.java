@@ -1,13 +1,13 @@
-package io.github.hzhilong.bilibili.backup.api.service;
+package io.github.hzhilong.bilibili.backup.app.service;
 
-import io.github.hzhilong.bilibili.backup.api.service.impl.BangumiService;
-import io.github.hzhilong.bilibili.backup.api.service.impl.BlackService;
-import io.github.hzhilong.bilibili.backup.api.service.impl.FavCollectedService;
-import io.github.hzhilong.bilibili.backup.api.service.impl.FavOpusesService;
-import io.github.hzhilong.bilibili.backup.api.service.impl.FavoritesService;
-import io.github.hzhilong.bilibili.backup.api.service.impl.FollowingService;
-import io.github.hzhilong.bilibili.backup.api.service.impl.HistoryService;
-import io.github.hzhilong.bilibili.backup.api.service.impl.ToViewService;
+import io.github.hzhilong.bilibili.backup.app.service.impl.BangumiService;
+import io.github.hzhilong.bilibili.backup.app.service.impl.BlackService;
+import io.github.hzhilong.bilibili.backup.app.service.impl.FavCollectedService;
+import io.github.hzhilong.bilibili.backup.app.service.impl.FavOpusesService;
+import io.github.hzhilong.bilibili.backup.app.service.impl.FavoritesService;
+import io.github.hzhilong.bilibili.backup.app.service.impl.FollowingService;
+import io.github.hzhilong.bilibili.backup.app.service.impl.HistoryService;
+import io.github.hzhilong.bilibili.backup.app.service.impl.ToViewService;
 
 /**
  * 备份还原项

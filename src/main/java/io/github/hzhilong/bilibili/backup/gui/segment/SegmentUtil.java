@@ -3,9 +3,9 @@ package io.github.hzhilong.bilibili.backup.gui.segment;
 import lombok.extern.slf4j.Slf4j;
 import io.github.hzhilong.bilibili.backup.app.bean.SavedUser;
 import io.github.hzhilong.bilibili.backup.app.business.BusinessType;
-import io.github.hzhilong.bilibili.backup.api.service.BackupRestoreItem;
-import io.github.hzhilong.bilibili.backup.api.service.BackupRestoreService;
-import io.github.hzhilong.bilibili.backup.api.service.SegmentableBackupRestoreService;
+import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreItem;
+import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreService;
+import io.github.hzhilong.bilibili.backup.app.service.SegmentableBackupRestoreService;
 import io.github.hzhilong.bilibili.backup.app.state.AppData;
 import io.github.hzhilong.bilibili.backup.gui.worker.BackupRestoreRunnable;
 

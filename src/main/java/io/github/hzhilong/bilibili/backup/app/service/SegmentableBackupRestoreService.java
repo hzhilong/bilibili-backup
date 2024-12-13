@@ -1,4 +1,4 @@
-package io.github.hzhilong.bilibili.backup.api.service;
+package io.github.hzhilong.bilibili.backup.app.service;
 
 import lombok.Getter;
 import lombok.Setter;

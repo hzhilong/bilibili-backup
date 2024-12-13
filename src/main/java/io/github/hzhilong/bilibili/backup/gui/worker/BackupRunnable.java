@@ -5,8 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import io.github.hzhilong.bilibili.backup.app.bean.SavedUser;
 import io.github.hzhilong.base.error.BusinessException;
-import io.github.hzhilong.bilibili.backup.api.service.BackupRestoreItem;
-import io.github.hzhilong.bilibili.backup.api.service.BackupRestoreService;
+import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreItem;
+import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreService;
 
 import java.util.LinkedHashSet;
 

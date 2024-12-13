@@ -1,6 +1,6 @@
 package io.github.hzhilong.bilibili.backup.gui.component;
 
-import io.github.hzhilong.bilibili.backup.api.service.BackupRestoreItem;
+import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreItem;
 import io.github.hzhilong.bilibili.backup.app.bean.BackupDir;
 import io.github.hzhilong.bilibili.backup.app.utils.BackupFileUtil;
 import io.github.hzhilong.bilibili.backup.gui.utils.LayoutUtil;

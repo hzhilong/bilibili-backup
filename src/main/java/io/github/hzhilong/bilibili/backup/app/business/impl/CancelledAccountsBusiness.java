@@ -10,12 +10,12 @@ import io.github.hzhilong.bilibili.backup.api.bean.CancelledAccountInfo;
 import io.github.hzhilong.bilibili.backup.api.bean.Upper;
 import io.github.hzhilong.bilibili.backup.api.bean.Video;
 import io.github.hzhilong.base.error.BusinessException;
-import io.github.hzhilong.bilibili.backup.api.service.ServiceBuilder;
-import io.github.hzhilong.bilibili.backup.api.service.impl.BangumiService;
-import io.github.hzhilong.bilibili.backup.api.service.impl.CancelledAccountService;
-import io.github.hzhilong.bilibili.backup.api.service.impl.FavCollectedService;
-import io.github.hzhilong.bilibili.backup.api.service.impl.FavoritesService;
-import io.github.hzhilong.bilibili.backup.api.service.impl.VideoService;
+import io.github.hzhilong.bilibili.backup.app.service.ServiceBuilder;
+import io.github.hzhilong.bilibili.backup.app.service.impl.BangumiService;
+import io.github.hzhilong.bilibili.backup.app.service.impl.CancelledAccountService;
+import io.github.hzhilong.bilibili.backup.app.service.impl.FavCollectedService;
+import io.github.hzhilong.bilibili.backup.app.service.impl.FavoritesService;
+import io.github.hzhilong.bilibili.backup.app.service.impl.VideoService;
 import io.github.hzhilong.bilibili.backup.api.user.User;
 
 import java.text.SimpleDateFormat;

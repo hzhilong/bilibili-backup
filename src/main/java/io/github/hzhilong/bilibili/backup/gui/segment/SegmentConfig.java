@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import io.github.hzhilong.bilibili.backup.app.business.BusinessType;
-import io.github.hzhilong.bilibili.backup.api.service.BackupRestoreItem;
+import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreItem;
 
 /**
  * 分段处理的配置

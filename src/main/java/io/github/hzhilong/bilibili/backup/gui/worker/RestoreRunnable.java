@@ -2,8 +2,8 @@ package io.github.hzhilong.bilibili.backup.gui.worker;
 
 import io.github.hzhilong.base.bean.BuCallback;
 import io.github.hzhilong.base.error.BusinessException;
-import io.github.hzhilong.bilibili.backup.api.service.BackupRestoreItem;
-import io.github.hzhilong.bilibili.backup.api.service.BackupRestoreService;
+import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreItem;
+import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreService;
 import io.github.hzhilong.bilibili.backup.app.bean.SavedUser;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;

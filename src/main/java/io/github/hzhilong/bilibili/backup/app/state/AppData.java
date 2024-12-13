@@ -1,7 +1,7 @@
 package io.github.hzhilong.bilibili.backup.app.state;
 
 import io.github.hzhilong.base.utils.StringUtils;
-import io.github.hzhilong.bilibili.backup.api.service.BackupRestoreItem;
+import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreItem;
 import io.github.hzhilong.bilibili.backup.app.business.BusinessType;
 import io.github.hzhilong.bilibili.backup.gui.segment.SegmentConfig;
 
