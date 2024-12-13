@@ -71,7 +71,6 @@ public class ThemeConfig extends BaseConfig {
         } catch (Exception ex) {
             throw new RuntimeException("切换主题失败：" + ex.getMessage());
         }
-        FlatLaf.updateUI();
         FlatAnimatedLafChange.hideSnapshotWithAnimation();
     }
 

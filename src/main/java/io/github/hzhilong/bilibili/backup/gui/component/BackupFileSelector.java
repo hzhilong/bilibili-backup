@@ -1,9 +1,9 @@
 package io.github.hzhilong.bilibili.backup.gui.component;
 
 import io.github.hzhilong.base.utils.ListUtil;
-import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreItem;
 import io.github.hzhilong.bilibili.backup.app.bean.BackupDir;
 import io.github.hzhilong.bilibili.backup.app.bean.BackupFile;
+import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreItem;
 import io.github.hzhilong.bilibili.backup.app.utils.BackupFileUtil;
 import io.github.hzhilong.bilibili.backup.gui.utils.LayoutUtil;
 import lombok.Getter;
@@ -17,6 +17,7 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 备份文件选择器
@@ -250,5 +251,18 @@ public class BackupFileSelector extends JPanel {
 
     private String getActionCommand() {
         return actionCommand;
+    }
+
+    @Override
+    public void updateUI() {
+        super.updateUI();
+        if(defaultBackupCountLabels != null){
+            for (Map.Entry<BackupRestoreItem, BackupCountLabel> entry : defaultBackupCountLabels.entrySet()) {
+                BackupCountLabel label = entry.getValue();
+                if (label != null) {
+                    label.updateUI();
+                }
+            }
+        }
     }
 }

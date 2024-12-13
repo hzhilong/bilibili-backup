@@ -33,7 +33,6 @@ public class BackupCountLabel extends JLabel {
         g2.setColor(getBackground());
         g2.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 12, 12);
         super.paintComponent(g);
-        g2.dispose();
     }
 
     public void setCount(int count) {

@@ -42,4 +42,12 @@ public class SettingDialog extends BaseDialog {
                 new Insets(20, 20, 20, 20), 0, 0));
     }
 
+    @Override
+    public void setVisible(boolean visible) {
+        if(visible){
+            pack();
+            setMinimumSize(getSize());
+        }
+        super.setVisible(visible);
+    }
 }

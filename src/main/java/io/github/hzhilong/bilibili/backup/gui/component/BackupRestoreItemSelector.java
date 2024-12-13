@@ -1,7 +1,7 @@
 package io.github.hzhilong.bilibili.backup.gui.component;
 
-import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreItem;
 import io.github.hzhilong.bilibili.backup.app.bean.BackupDir;
+import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreItem;
 import io.github.hzhilong.bilibili.backup.app.utils.BackupFileUtil;
 import io.github.hzhilong.bilibili.backup.gui.utils.LayoutUtil;
 import lombok.Getter;
@@ -151,6 +151,18 @@ public class BackupRestoreItemSelector extends JPanel {
         super.setEnabled(enabled);
         for (JCheckBox chkItem : defaultChkItems) {
             chkItem.setEnabled(enabled);
+        }
+    }
+
+    @Override
+    public void updateUI() {
+        super.updateUI();
+        if (defaultChkItems != null) {
+            for (JCheckBox chkItem : defaultChkItems) {
+                if (chkItem != null) {
+                    chkItem.updateUI();
+                }
+            }
         }
     }
 }

@@ -1,19 +1,19 @@
 package io.github.hzhilong.bilibili.backup.gui.page;
 
+import io.github.hzhilong.base.bean.BuCallback;
 import io.github.hzhilong.base.error.BusinessException;
 import io.github.hzhilong.base.utils.StringUtils;
 import io.github.hzhilong.bilibili.backup.api.bean.CancelledAccountInfo;
 import io.github.hzhilong.bilibili.backup.api.bean.Upper;
 import io.github.hzhilong.bilibili.backup.api.bean.Video;
-import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreItem;
 import io.github.hzhilong.bilibili.backup.app.bean.SavedUser;
-import io.github.hzhilong.bilibili.backup.gui.component.PagePanel;
 import io.github.hzhilong.bilibili.backup.app.constant.AppConstant;
+import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreItem;
 import io.github.hzhilong.bilibili.backup.app.state.GlobalState;
+import io.github.hzhilong.bilibili.backup.gui.component.PagePanel;
 import io.github.hzhilong.bilibili.backup.gui.utils.LayoutUtil;
 import io.github.hzhilong.bilibili.backup.gui.worker.BackupRestoreRunnable;
 import io.github.hzhilong.bilibili.backup.gui.worker.BackupRunnable;
-import io.github.hzhilong.base.bean.BuCallback;
 import io.github.hzhilong.bilibili.backup.gui.worker.CancelledAccountInfoRunnable;
 import io.github.hzhilong.bilibili.backup.gui.worker.DelaySetProcessingLoggerRunnable;
 import io.github.hzhilong.bilibili.backup.gui.worker.UpperVideosRunnable;
@@ -68,8 +68,7 @@ public class CancelledAccountPage extends PagePanel {
         JLabel jLabel = new JLabel("请输入 UID：");
         addFixedContent(jLabel, 0, posY);
 
-        txtUid = new JTextField();
-        txtUid.setPreferredSize((new Dimension(200, 30)));
+        txtUid = new JTextField("", 14);
         addFixedContent(txtUid, 1, posY++);
 
         addSeparatorToFixed(0, posY++, 2);
