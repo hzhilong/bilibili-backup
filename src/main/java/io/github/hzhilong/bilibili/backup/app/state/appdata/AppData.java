@@ -136,7 +136,7 @@ public class AppData extends Properties implements PersistenceData {
             initialFontSize.setValue(UIManager.getFont("defaultFont").getSize());
         }
         AppDataItem<String> initialFontFamily = AppDataItem.INITIAL_FONT_FAMILY;
-        Integer initialFontFamilyValue = initialFontSize.getValue();
+        String initialFontFamilyValue = initialFontFamily.getValue();
         if (initialFontFamilyValue == null) {
             initialFontFamily.setValue(UIManager.getFont("Label.font").getFamily());
         }
