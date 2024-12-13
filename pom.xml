@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>top.ybgnb</groupId>
+    <groupId>io.github.hzhilong</groupId>
     <artifactId>bilibili-backup</artifactId>
     <name>哔哩哔哩账号备份</name>
     <description>一键对B站账号进行数据备份和还原，方便账号数据迁移/快速转生(哗哩哗哩 bilibili)</description>
@@ -17,8 +17,10 @@
         <app.author>hzhilong</app.author>
         <app.email>hzhilong777@outlook.com</app.email>
         <app.github>https://github.com/hzhilong/bilibili-backup</app.github>
-        <app.mainClass>top.ybgnb.bilibili.backup.App</app.mainClass>
+        <app.mainClass>io.github.hzhilong.bilibili.backup.App</app.mainClass>
         <app.ico>assets/windows/${project.name}.ico</app.ico>
+
+        <flatlaf.version>3.5.2</flatlaf.version>
     </properties>
 
     <dependencies>
@@ -61,7 +63,17 @@
         <dependency>
             <groupId>com.formdev</groupId>
             <artifactId>flatlaf</artifactId>
-            <version>3.5.2</version>
+            <version>${flatlaf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.formdev</groupId>
+            <artifactId>flatlaf-extras</artifactId>
+            <version>${flatlaf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.formdev</groupId>
+            <artifactId>flatlaf-intellij-themes</artifactId>
+            <version>${flatlaf.version}</version>
         </dependency>
     </dependencies>
 
@@ -127,7 +139,7 @@
                         </goals>
                         <configuration>
                             <mainClass>${app.mainClass}</mainClass>
-<!--                            <displayName>${project.artifactId}</displayName>-->
+                            <!--                            <displayName>${project.artifactId}</displayName>-->
                             <name>${project.artifactId}</name>
                             <bundleJre>true</bundleJre>
                             <jrePath>jre</jrePath>
@@ -140,7 +152,7 @@
                             <organizationEmail>${app.email}</organizationEmail>
 
                             <winConfig>
-<!--                                <exeCreationTool>why</exeCreationTool>-->
+                                <!--                                <exeCreationTool>why</exeCreationTool>-->
                                 <exeCreationTool>winrun4j</exeCreationTool>
                                 <!-- https://github.com/kira-96/Inno-Setup-Chinese-Simplified-Translation -->
                                 <setupLanguages>
