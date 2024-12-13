@@ -3,8 +3,8 @@ package io.github.hzhilong.bilibili.backup.app.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
-import lombok.extern.slf4j.Slf4j;
-import okhttp3.OkHttpClient;
+import io.github.hzhilong.base.error.BusinessException;
+import io.github.hzhilong.base.utils.ListUtil;
 import io.github.hzhilong.bilibili.backup.api.bean.ApiResult;
 import io.github.hzhilong.bilibili.backup.api.bean.Relation;
 import io.github.hzhilong.bilibili.backup.api.bean.RelationAct;
@@ -14,11 +14,11 @@ import io.github.hzhilong.bilibili.backup.api.request.CreateApi;
 import io.github.hzhilong.bilibili.backup.api.request.ListApi;
 import io.github.hzhilong.bilibili.backup.api.request.ModifyApi;
 import io.github.hzhilong.bilibili.backup.api.request.PageApi;
-import io.github.hzhilong.bilibili.backup.app.service.RelationService;
 import io.github.hzhilong.bilibili.backup.api.user.User;
-import io.github.hzhilong.base.utils.ListUtil;
 import io.github.hzhilong.bilibili.backup.app.business.BusinessType;
-import io.github.hzhilong.base.error.BusinessException;
+import io.github.hzhilong.bilibili.backup.app.service.RelationService;
+import lombok.extern.slf4j.Slf4j;
+import okhttp3.OkHttpClient;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -125,13 +125,17 @@ public class FollowingService extends RelationService {
             }
         }
 
-        log.info("获取新账号关注...");
-        List<Relation> newFollowings = getRelations(BusinessType.RESTORE);
         HashSet<Long> newFollowingIds = new HashSet<>();
         HashMap<Long, Relation> mapNewFollowing = new HashMap<>();
-        for (Relation newFollowing : newFollowings) {
-            newFollowingIds.add(newFollowing.getMid());
-            mapNewFollowing.put(newFollowing.getMid(), newFollowing);
+        if (isDirectRestore()) {
+            log.info("还原时忽略新账号现有的数据，直接还原...");
+        } else {
+            log.info("获取新账号关注...");
+            List<Relation> newFollowings = getRelations(BusinessType.RESTORE);
+            for (Relation newFollowing : newFollowings) {
+                newFollowingIds.add(newFollowing.getMid());
+                mapNewFollowing.put(newFollowing.getMid(), newFollowing);
+            }
         }
 
         List<Relation> oldFollowings = JSONObject.parseObject(readJsonFile(path, "", "关注"),
@@ -166,7 +170,13 @@ public class FollowingService extends RelationService {
                 } catch (InterruptedException ignored) {
 
                 }
-                modify(oldFollowing, RelationAct.FOLLOW);
+                try {
+                    modify(oldFollowing, RelationAct.FOLLOW);
+                } catch (Exception e) {
+                    if (!isAllowFailure()) {
+                        throw e;
+                    }
+                }
             }
             // 处理该关注的关注分组
             List<Long> oldFollowingTag = oldFollowing.getTag();
@@ -273,5 +283,13 @@ public class FollowingService extends RelationService {
                 }
             }
         }
+    }
+
+    @Override
+    public void setInterrupt(boolean interrupt) {
+        if (pageApi != null) {
+            pageApi.setInterrupt(interrupt);
+        }
+        super.setInterrupt(interrupt);
     }
 }

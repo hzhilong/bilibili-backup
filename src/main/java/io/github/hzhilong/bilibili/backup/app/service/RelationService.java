@@ -1,8 +1,8 @@
 package io.github.hzhilong.bilibili.backup.app.service;
 
 import com.alibaba.fastjson.JSONObject;
-import lombok.extern.slf4j.Slf4j;
-import okhttp3.OkHttpClient;
+import io.github.hzhilong.base.error.BusinessException;
+import io.github.hzhilong.base.error.EndLoopBusinessException;
 import io.github.hzhilong.bilibili.backup.api.bean.ApiResult;
 import io.github.hzhilong.bilibili.backup.api.bean.Relation;
 import io.github.hzhilong.bilibili.backup.api.bean.RelationAct;
@@ -10,8 +10,8 @@ import io.github.hzhilong.bilibili.backup.api.request.AddQueryParams;
 import io.github.hzhilong.bilibili.backup.api.request.BaseApi;
 import io.github.hzhilong.bilibili.backup.api.request.ModifyApi;
 import io.github.hzhilong.bilibili.backup.api.user.User;
-import io.github.hzhilong.base.error.BusinessException;
-import io.github.hzhilong.base.error.EndLoopBusinessException;
+import lombok.extern.slf4j.Slf4j;
+import okhttp3.OkHttpClient;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -119,7 +119,7 @@ public abstract class RelationService extends SegmentableBackupRestoreService {
             } else if (40061 == apiResult.getCode()) {
                 log.info("用户不存在");
             } else {
-                throw new EndLoopBusinessException("操作失败，可能被风控，建议晚点再试");
+                throw new EndLoopBusinessException(act.getName() + "失败，可能被风控，建议晚点再试");
             }
         }
         modifyCount++;

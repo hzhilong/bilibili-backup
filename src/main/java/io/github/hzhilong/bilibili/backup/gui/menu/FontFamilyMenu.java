@@ -1,7 +1,7 @@
-package io.github.hzhilong.bilibili.backup.gui.component.menu;
+package io.github.hzhilong.bilibili.backup.gui.menu;
 
 import io.github.hzhilong.bilibili.backup.gui.config.FontConfig;
-import io.github.hzhilong.bilibili.backup.app.state.AppDataItem;
+import io.github.hzhilong.bilibili.backup.app.state.appdata.AppDataItem;
 import io.github.hzhilong.bilibili.backup.gui.utils.SystemUtil;
 
 import javax.swing.*;
@@ -20,12 +20,12 @@ import java.util.List;
  */
 public class FontFamilyMenu extends JMenu {
 
-    private final AppDataItem appDataItem;
+    private final AppDataItem<String> appDataItem;
     private String currFontFamily;
     private final String initialFontFamily;
     private List<JCheckBoxMenuItem> fontFamilyMenuItems;
 
-    public FontFamilyMenu(AppDataItem appDataItem, String initialFontFamily) {
+    public FontFamilyMenu(AppDataItem<String> appDataItem, String initialFontFamily) {
         this.appDataItem = appDataItem;
         this.initialFontFamily = initialFontFamily;
         this.currFontFamily = appDataItem.getValue(initialFontFamily);

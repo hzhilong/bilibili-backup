@@ -1,12 +1,14 @@
 package io.github.hzhilong.bilibili.backup.gui.page;
 
-import lombok.extern.slf4j.Slf4j;
-import io.github.hzhilong.bilibili.backup.gui.component.menu.AppearanceMenu;
-import io.github.hzhilong.bilibili.backup.gui.component.menu.HelpMenu;
+import io.github.hzhilong.bilibili.backup.App;
 import io.github.hzhilong.bilibili.backup.app.config.AppBuildProperties;
+import io.github.hzhilong.bilibili.backup.app.state.appdata.AppData;
+import io.github.hzhilong.bilibili.backup.app.state.appdata.AppDataItem;
 import io.github.hzhilong.bilibili.backup.gui.config.AppUIConfig;
-import io.github.hzhilong.bilibili.backup.app.state.AppData;
-import io.github.hzhilong.bilibili.backup.app.state.GlobalState;
+import io.github.hzhilong.bilibili.backup.gui.menu.AppMenu;
+import io.github.hzhilong.bilibili.backup.gui.menu.AppearanceMenu;
+import io.github.hzhilong.bilibili.backup.gui.menu.HelpMenu;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 import java.awt.*;
@@ -40,15 +42,7 @@ public class MainFrame extends JFrame {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                if (GlobalState.getProcessing()) {
-                    JOptionPane.showMessageDialog(MainFrame.this,
-                            "正在操作，请勿退出！",
-                            "提示", JOptionPane.WARNING_MESSAGE);
-                } else {
-                    AppData.getInstance().setWindowsXY(getLocation().x, getLocation().y);
-                    AppData.getInstance().setWindowsSize(getSize().width, getSize().height);// 退出
-                    System.exit(0);
-                }
+                App.exitApp();
             }
         });
         // 获取上一次窗口的坐标和大小
@@ -81,15 +75,17 @@ public class MainFrame extends JFrame {
                 1, 1, GridBagConstraints.NORTHWEST, GridBagConstraints.BOTH,
                 new Insets(0, 0, 0, 0), 0, 0));
 
-        if (appData.isFirstRun()) {
+        Boolean isFirstRun = AppDataItem.IS_FIRST_RUN.getValue();
+        if (isFirstRun == null || isFirstRun) {
             JOptionPane.showMessageDialog(MainFrame.this,
                     "首次运行，若界面显示有问题，请手动调整窗口位置和大小",
                     "首次运行", JOptionPane.INFORMATION_MESSAGE);
-            appData.setFirstRun(false);
+            AppDataItem.IS_FIRST_RUN.setValue(false);
         }
         setVisible(true);
 
         JMenuBar menuBar = new JMenuBar();
+        menuBar.add(new AppMenu());
         menuBar.add(new AppearanceMenu());
         menuBar.add(new HelpMenu());
         this.setJMenuBar(menuBar);

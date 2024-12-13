@@ -10,6 +10,7 @@ import com.formdev.flatlaf.intellijthemes.FlatSolarizedLightIJTheme;
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import io.github.hzhilong.base.utils.StringUtils;
+import io.github.hzhilong.bilibili.backup.app.state.appdata.AppDataItem;
 
 import javax.swing.*;
 
@@ -42,7 +43,7 @@ public class ThemeConfig extends BaseConfig {
     }
 
     public static void init() {
-        init(appData.getThemeDataItem().getValue());
+        init(AppDataItem.THEME.getValue());
     }
 
     public static void init(String themeClassName) {

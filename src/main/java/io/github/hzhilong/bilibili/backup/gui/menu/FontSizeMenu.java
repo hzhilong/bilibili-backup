@@ -1,7 +1,7 @@
-package io.github.hzhilong.bilibili.backup.gui.component.menu;
+package io.github.hzhilong.bilibili.backup.gui.menu;
 
+import io.github.hzhilong.bilibili.backup.app.state.appdata.AppDataItem;
 import io.github.hzhilong.bilibili.backup.gui.config.FontConfig;
-import io.github.hzhilong.bilibili.backup.app.state.AppDataItem;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -20,21 +20,21 @@ public class FontSizeMenu extends JMenu {
 
     public static final String[] DEFAULT_FONT_SIZES = {"10", "12", "13", "14", "15", "16", "18", "20", "22", "24", "26"};
 
-    private final AppDataItem appDataItem;
-    private String currFontSize;
+    private final AppDataItem<Integer> appDataItem;
+    private int currFontSize;
     private final String[] fontSizes;
 
     /**
      * 初始的字体大小
      */
-    private final String initialFontSize;
+    private final Integer initialFontSize;
     private List<JCheckBoxMenuItem> fontSizeMenuItems;
 
-    public FontSizeMenu(AppDataItem appDataItem, String initialFontSize) {
+    public FontSizeMenu(AppDataItem<Integer> appDataItem, Integer initialFontSize) {
         this(appDataItem, null, initialFontSize);
     }
 
-    public FontSizeMenu(AppDataItem appDataItem, String[] fontSizes, String initialFontSize) {
+    public FontSizeMenu(AppDataItem<Integer> appDataItem, String[] fontSizes, Integer initialFontSize) {
         this.appDataItem = appDataItem;
         this.fontSizes = fontSizes == null ? DEFAULT_FONT_SIZES : fontSizes;
         this.initialFontSize = initialFontSize;
@@ -70,24 +70,24 @@ public class FontSizeMenu extends JMenu {
     public void changed(ItemEvent e) {
         if (e.getStateChange() == ItemEvent.SELECTED) {
             JCheckBoxMenuItem item = (JCheckBoxMenuItem) e.getItem();
-            currFontSize = item.getText();
+            currFontSize = Integer.parseInt(item.getText());
             updateAppUI();
             appDataItem.setValue(currFontSize);
         }
     }
 
     private void updateAppUI() {
-        FontConfig.update(Integer.parseInt(currFontSize));
+        FontConfig.update(currFontSize);
     }
 
-    public void setCurrFontSize(String currFontSize) {
+    public void setCurrFontSize(int currFontSize) {
         this.currFontSize = currFontSize;
         updateItemsState();
     }
 
     private void updateItemsState() {
         for (JCheckBoxMenuItem menuItem : fontSizeMenuItems) {
-            menuItem.setSelected(menuItem.getText().equals(currFontSize));
+            menuItem.setSelected(menuItem.getText().equals(String.valueOf(currFontSize)));
         }
     }
 }

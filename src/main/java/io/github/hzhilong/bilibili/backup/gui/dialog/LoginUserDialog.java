@@ -49,16 +49,16 @@ public class LoginUserDialog extends BaseDialog {
     }
 
     private void initData() {
+    }
+
+
+    private void initUI() throws BusinessException {
         setSize(500, 400);
         setMinimumSize(new Dimension(500, 400));
         // 对话框居于屏幕中央
         setLocationRelativeTo(null);
         // 点击对话框关闭按钮时，销毁对话框
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-    }
-
-
-    private void initUI() throws BusinessException {
         setLayout(new GridBagLayout());
         JPanel contentPanel = new JPanel();
         contentPanel.setLayout(new GridBagLayout());

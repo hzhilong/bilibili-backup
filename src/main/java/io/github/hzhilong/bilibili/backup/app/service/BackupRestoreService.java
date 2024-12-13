@@ -3,16 +3,16 @@ package io.github.hzhilong.bilibili.backup.app.service;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
+import io.github.hzhilong.base.error.BusinessException;
+import io.github.hzhilong.base.error.EndLoopBusinessException;
+import io.github.hzhilong.base.utils.FileUtil;
+import io.github.hzhilong.base.utils.ListUtil;
+import io.github.hzhilong.base.utils.StringUtils;
+import io.github.hzhilong.bilibili.backup.api.user.User;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
-import io.github.hzhilong.bilibili.backup.api.user.User;
-import io.github.hzhilong.base.utils.FileUtil;
-import io.github.hzhilong.base.utils.ListUtil;
-import io.github.hzhilong.base.utils.StringUtils;
-import io.github.hzhilong.base.error.BusinessException;
-import io.github.hzhilong.base.error.EndLoopBusinessException;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -46,11 +46,27 @@ public abstract class BackupRestoreService extends BaseService implements Backup
 
     private final Random random;
 
+    /**
+     * 还原时忽略新账号现有的数据，直接还原
+     */
+    @Setter
+    @Getter
+    private boolean directRestore;
+
+    /**
+     * 还原失败时，继续还原下一个数据
+     */
+    @Setter
+    @Getter
+    private boolean allowFailure;
+
     public BackupRestoreService(OkHttpClient client, User user, String path) {
         super(client, user);
         this.path = path;
         this.mapFileName = new HashMap<>(2);
         this.random = new Random();
+        this.directRestore = false;
+        this.allowFailure = false;
         this.initFileName(mapFileName);
     }
 
@@ -171,15 +187,21 @@ public abstract class BackupRestoreService extends BaseService implements Backup
             log.info("{}为空，无需还原", buName);
             return oldList;
         }
-        log.info("获取新账号{}...", buName);
-        List<D> newList = callback.getNewList();
-        log.info("获取新账号{}：{}条数据", buName, ListUtil.getSize(newList));
+
         Set<String> newListIds = new HashSet<>();
-        for (D data : newList) {
-            if (data != null) {
-                newListIds.add(callback.compareFlag(data));
+        if (directRestore) {
+            log.info("还原时忽略新账号现有的数据，直接还原...");
+        } else {
+            log.info("获取新账号{}...", buName);
+            List<D> newList = callback.getNewList();
+            log.info("获取新账号{}：{}条数据", buName, ListUtil.getSize(newList));
+            for (D data : newList) {
+                if (data != null) {
+                    newListIds.add(callback.compareFlag(data));
+                }
             }
         }
+
         log.info("开始遍历旧账号{}...", buName);
         List<D> restoredList = new ArrayList<>();
         // 反序还原
@@ -207,7 +229,8 @@ public abstract class BackupRestoreService extends BaseService implements Backup
                     sleep(restoredList.size());
                 } catch (BusinessException e) {
                     log.info("{}还原失败：{}", dataName, e.getMessage());
-                    if (e instanceof EndLoopBusinessException) {
+                    if (!allowFailure && (e instanceof EndLoopBusinessException)) {
+                        // 不允许失败继续，且内部项目遇到需跳出循环的异常
                         break;
                     }
                 }

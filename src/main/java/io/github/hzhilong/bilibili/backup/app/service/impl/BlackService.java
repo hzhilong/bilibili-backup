@@ -99,4 +99,12 @@ public class BlackService extends RelationService {
     public int getBackupCount(File dir) throws BusinessException {
         return getBackupListSize(dir, "", "黑名单");
     }
+
+    @Override
+    public void setInterrupt(boolean interrupt) {
+        if (pageApi != null) {
+            pageApi.setInterrupt(interrupt);
+        }
+        super.setInterrupt(interrupt);
+    }
 }

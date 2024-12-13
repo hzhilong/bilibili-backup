@@ -77,7 +77,6 @@ public class RestorePage extends PagePanel {
         backupRestoreItemSelector = new BackupRestoreItemSelector(null);
         addDynamicContent(backupRestoreItemSelector, 0, posY++);
 
-
         JPanel btnPanel = new JPanel();
         btnPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
         GridBagConstraints temp = LayoutUtil.getSeparatorConstraints(0, posY++, 1);

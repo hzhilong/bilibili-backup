@@ -138,6 +138,7 @@ public class BackupRestoreItemSelector extends JPanel {
         this.itemsPanel.removeAll();
         for (JCheckBox chkItem : defaultChkItems) {
             if (items != null && items.containsKey(chkItem.getText())) {
+                chkItem.setSelected(false);
                 LayoutUtil.addGridBar(itemsPanel, chkItem, pos % numberOfRows, pos / numberOfRows);
                 pos++;
             }

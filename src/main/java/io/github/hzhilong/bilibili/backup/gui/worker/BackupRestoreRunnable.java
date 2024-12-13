@@ -3,11 +3,12 @@ package io.github.hzhilong.bilibili.backup.gui.worker;
 import io.github.hzhilong.base.bean.BuCallback;
 import io.github.hzhilong.base.error.BusinessException;
 import io.github.hzhilong.base.utils.StringUtils;
-import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreItem;
-import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreService;
 import io.github.hzhilong.bilibili.backup.api.user.User;
 import io.github.hzhilong.bilibili.backup.app.bean.SavedUser;
 import io.github.hzhilong.bilibili.backup.app.constant.AppConstant;
+import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreItem;
+import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreService;
+import io.github.hzhilong.bilibili.backup.app.state.appdata.AppDataItem;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
@@ -51,7 +52,10 @@ public abstract class BackupRestoreRunnable extends BaseRunnable {
         }
         this.apiUser = new User(user.getCookie());
         for (BackupRestoreItem item : backupRestoreItems) {
-            backupRestoreItemServices.put(item, item.getServiceBuilder().build(this.client, this.apiUser, this.backupDirPath));
+            BackupRestoreService service = item.getServiceBuilder().build(this.client, this.apiUser, this.backupDirPath);
+            service.setDirectRestore(AppDataItem.DIRECT_RESTORE.getValue());
+            service.setAllowFailure(AppDataItem.ALLOW_FAILURE.getValue());
+            backupRestoreItemServices.put(item, service);
         }
     }
 

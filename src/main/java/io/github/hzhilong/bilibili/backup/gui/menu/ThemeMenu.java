@@ -1,8 +1,8 @@
-package io.github.hzhilong.bilibili.backup.gui.component.menu;
+package io.github.hzhilong.bilibili.backup.gui.menu;
 
 import com.formdev.flatlaf.FlatLaf;
 import io.github.hzhilong.bilibili.backup.gui.config.ThemeConfig;
-import io.github.hzhilong.bilibili.backup.app.state.AppDataItem;
+import io.github.hzhilong.bilibili.backup.app.state.appdata.AppDataItem;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -23,18 +23,18 @@ public class ThemeMenu extends JMenu {
 
     private final Class<? extends FlatLaf> defaultTheme;
 
-    private final AppDataItem appDataItem;
+    private final AppDataItem<String> appDataItem;
     private String currThemeClassName;
     private final Class<? extends FlatLaf>[] themes;
     private final Map<String, String> themeClassMapName;
     private final Map<String, String> themeNameMapClass;
     private List<JCheckBoxMenuItem> themeMenuItems;
 
-    public ThemeMenu(AppDataItem appDataItem) {
+    public ThemeMenu(AppDataItem<String> appDataItem) {
         this(appDataItem, null);
     }
 
-    public ThemeMenu(AppDataItem appDataItem, Class<? extends FlatLaf>[] themes) {
+    public ThemeMenu(AppDataItem<String> appDataItem, Class<? extends FlatLaf>[] themes) {
         this.appDataItem = appDataItem;
         Class<? extends FlatLaf> appDefaultTheme = ThemeConfig.getDefaultTheme();
         this.currThemeClassName = appDataItem.getValue(appDefaultTheme.getName());

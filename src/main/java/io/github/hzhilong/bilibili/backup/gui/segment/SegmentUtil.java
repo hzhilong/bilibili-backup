@@ -6,7 +6,7 @@ import io.github.hzhilong.bilibili.backup.app.business.BusinessType;
 import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreItem;
 import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreService;
 import io.github.hzhilong.bilibili.backup.app.service.SegmentableBackupRestoreService;
-import io.github.hzhilong.bilibili.backup.app.state.AppData;
+import io.github.hzhilong.bilibili.backup.app.state.appdata.AppData;
 import io.github.hzhilong.bilibili.backup.gui.worker.BackupRestoreRunnable;
 
 import javax.swing.*;

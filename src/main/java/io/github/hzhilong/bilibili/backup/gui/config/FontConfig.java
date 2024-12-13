@@ -1,7 +1,7 @@
 package io.github.hzhilong.bilibili.backup.gui.config;
 
 import com.formdev.flatlaf.FlatLaf;
-import io.github.hzhilong.base.utils.StringUtils;
+import io.github.hzhilong.bilibili.backup.app.state.appdata.AppDataItem;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,14 +15,27 @@ import java.awt.*;
 public class FontConfig extends BaseConfig {
 
     public static void init() {
-        String fontFamily = appData.getPreferredFontFamily();
-        int fontSize = Integer.parseInt(appData.getPreferredFontSize());
-        init(fontFamily, fontSize);
+        String fontFamily = AppDataItem.FONT_FAMILY.getValue();
+        Integer fontSize = AppDataItem.FONT_SIZE.getValue();
+        if (fontFamily != null || fontSize != null) {
+            init(fontFamily, fontSize);
+        }
     }
 
-    public static void init(String fontFamily, int fontSize) {
-        Font font = new Font(fontFamily, Font.PLAIN, fontSize);
-        UIManager.put("defaultFont", font);
+    public static String getPreferredFontFamily(String value) {
+        return getPreferredValue(value, AppDataItem.FONT_FAMILY, AppDataItem.INITIAL_FONT_FAMILY);
+    }
+
+    public static Integer getPreferredFontSize(Integer value) {
+        return getPreferredValue(value, AppDataItem.FONT_SIZE, AppDataItem.INITIAL_FONT_SIZE);
+    }
+
+    private static Font getPreferredFont(String fontFamily, Integer fontSize) {
+        return new Font(getPreferredFontFamily(fontFamily), Font.PLAIN, getPreferredFontSize(fontSize));
+    }
+
+    public static void init(String fontFamily, Integer fontSize) {
+        UIManager.put("defaultFont", getPreferredFont(fontFamily, fontSize));
     }
 
     public static void update(String fontFamily) {
@@ -34,14 +47,7 @@ public class FontConfig extends BaseConfig {
     }
 
     public static void update(String fontFamily, Integer fontSize) {
-        if (StringUtils.isEmpty(fontFamily)) {
-            fontFamily = appData.getPreferredFontFamily();
-        }
-        if (fontSize == null) {
-            fontSize = Integer.parseInt(appData.getPreferredFontSize());
-        }
-        Font font = new Font(fontFamily, Font.PLAIN, fontSize);
-        UIManager.put("defaultFont", font);
+        UIManager.put("defaultFont", getPreferredFont(fontFamily, fontSize));
         FlatLaf.updateUI();
     }
 
