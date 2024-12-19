@@ -34,7 +34,7 @@ public class App {
                     "正在操作，请勿退出！",
                     "提示", JOptionPane.WARNING_MESSAGE);
         } else {
-            AppData.getInstance().setWindowsXY(mainFrame.getLocation().x, mainFrame.getLocation().y);
+            AppData.getInstance().setWindowsLocation(mainFrame.getLocation().x, mainFrame.getLocation().y);
             AppData.getInstance().setWindowsSize(mainFrame.getSize().width, mainFrame.getSize().height);
             mainFrame.dispose();
             System.exit(0);

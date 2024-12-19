@@ -101,7 +101,7 @@ public class AppData extends Properties implements PersistenceData {
         return new Dimension(w, h);
     }
 
-    public void setWindowsXY(int x, int y) {
+    public void setWindowsLocation(int x, int y) {
         AppDataItem.WINDOW_LOCATION_X.setValue(x);
         AppDataItem.WINDOW_LOCATION_Y.setValue(y);
     }
