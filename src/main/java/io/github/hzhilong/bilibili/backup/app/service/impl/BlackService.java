@@ -1,15 +1,16 @@
 package io.github.hzhilong.bilibili.backup.app.service.impl;
 
-import lombok.extern.slf4j.Slf4j;
-import okhttp3.OkHttpClient;
+import io.github.hzhilong.base.error.BusinessException;
 import io.github.hzhilong.bilibili.backup.api.bean.Relation;
 import io.github.hzhilong.bilibili.backup.api.bean.RelationAct;
 import io.github.hzhilong.bilibili.backup.api.bean.page.PageData;
 import io.github.hzhilong.bilibili.backup.api.request.PageApi;
-import io.github.hzhilong.bilibili.backup.app.service.RelationService;
 import io.github.hzhilong.bilibili.backup.api.user.User;
+import io.github.hzhilong.bilibili.backup.app.bean.BackupRestoreResult;
 import io.github.hzhilong.bilibili.backup.app.business.BusinessType;
-import io.github.hzhilong.base.error.BusinessException;
+import io.github.hzhilong.bilibili.backup.app.service.RelationService;
+import lombok.extern.slf4j.Slf4j;
+import okhttp3.OkHttpClient;
 
 import java.io.File;
 import java.util.List;
@@ -45,49 +46,52 @@ public class BlackService extends RelationService {
     }
 
     @Override
-    public void backup() throws BusinessException {
-        backupData("黑名单", new BackupCallback<List<Relation>>() {
-            @Override
-            public List<Relation> getData() throws BusinessException {
-                return getList(BusinessType.BACKUP);
-            }
+    public List<BackupRestoreResult<List<Relation>>> backup() throws BusinessException {
+        return createResults(backupData("黑名单",
+                new BackupCallback<List<Relation>>() {
+                    @Override
+                    public List<Relation> getData() throws BusinessException {
+                        return getList(BusinessType.BACKUP);
+                    }
 
-            @Override
-            public void finished(List<Relation> data) {
-                callbackBackupSegment(pageApi, data);
-            }
-        }, getSegmentBackupPageNo() > 1);
+                    @Override
+                    public void finished(List<Relation> data) {
+                        callbackBackupSegment(pageApi, data);
+                    }
+                }, getSegmentBackupPageNo() > 1));
     }
 
     @Override
-    public void restore() throws BusinessException {
-        restoreList("黑名单", Relation.class, getSegmentRestorePageNo(),
-                getSegmentRestoreMaxSize(), new RestoreCallback<Relation>() {
-                    @Override
-                    public List<Relation> getNewList() throws BusinessException {
-                        return getList(BusinessType.RESTORE);
-                    }
+    public List<BackupRestoreResult<List<Relation>>> restore() throws BusinessException {
+        return createResults(
+                restoreList("黑名单", Relation.class,
+                        getSegmentRestorePageNo(), getSegmentRestoreMaxSize(),
+                        new RestoreCallback<Relation>() {
+                            @Override
+                            public List<Relation> getNewList() throws BusinessException {
+                                return getList(BusinessType.RESTORE);
+                            }
 
-                    @Override
-                    public String compareFlag(Relation data) {
-                        return String.valueOf(data.getMid());
-                    }
+                            @Override
+                            public String compareFlag(Relation data) {
+                                return String.valueOf(data.getMid());
+                            }
 
-                    @Override
-                    public String dataName(Relation data) {
-                        return String.format("用户[%s]", data.getUname());
-                    }
+                            @Override
+                            public String dataName(Relation data) {
+                                return String.format("用户[%s]", data.getUname());
+                            }
 
-                    @Override
-                    public void restoreData(Relation data) throws BusinessException {
-                        modify(data, RelationAct.BLOCK);
-                    }
+                            @Override
+                            public void restoreData(Relation data) throws BusinessException {
+                                modify(data, RelationAct.BLOCK);
+                            }
 
-                    @Override
-                    public void finished(List<Relation> oldData) {
-                        callbackRestoreSegment(oldData);
-                    }
-                });
+                            @Override
+                            public void finished(List<Relation> oldData) {
+                                callbackRestoreSegment(oldData);
+                            }
+                        }));
     }
 
     @Override

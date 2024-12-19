@@ -1,5 +1,6 @@
 package io.github.hzhilong.bilibili.backup.app.service;
 
+import io.github.hzhilong.bilibili.backup.app.bean.ServiceBuilder;
 import io.github.hzhilong.bilibili.backup.app.service.impl.BangumiService;
 import io.github.hzhilong.bilibili.backup.app.service.impl.BlackService;
 import io.github.hzhilong.bilibili.backup.app.service.impl.FavCollectedService;

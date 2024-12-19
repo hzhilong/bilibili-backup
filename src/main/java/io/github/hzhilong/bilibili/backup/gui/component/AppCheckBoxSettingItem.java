@@ -15,7 +15,7 @@ import java.awt.event.ItemListener;
  */
 public class AppCheckBoxSettingItem extends AppSettingItem<Boolean> {
 
-    public AppCheckBoxSettingItem(String text, AppDataItem appDataItem) {
+    public AppCheckBoxSettingItem(String text, AppDataItem<Boolean> appDataItem) {
         super(text, appDataItem);
     }
 

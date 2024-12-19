@@ -19,7 +19,7 @@ import java.util.List;
 @Setter
 @Getter
 @Slf4j
-public abstract class SegmentableBackupRestoreService extends BackupRestoreService {
+public abstract class SegmentableBackupRestoreService<T> extends BackupRestoreService<T> {
 
     /**
      * 分段的开始页码

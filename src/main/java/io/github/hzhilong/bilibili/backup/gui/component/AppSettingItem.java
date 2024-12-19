@@ -19,11 +19,6 @@ public abstract class AppSettingItem<D> extends JPanel implements ComponentInit 
     private String text;
 
     /**
-     * 绑定的数据
-     */
-    private D data;
-
-    /**
      * 应用序列化的数据项
      */
     private AppDataItem<D> appDataItem;

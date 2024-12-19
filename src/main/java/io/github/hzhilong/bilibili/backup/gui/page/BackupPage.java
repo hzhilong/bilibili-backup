@@ -74,6 +74,7 @@ public class BackupPage extends PagePanel {
         btnPanel.add(btnBackup);
         btnPanel.add(new JLabel("  分段备份的数量："));
         segmentButtons = SegmentUtil.createSegmentButtons(btnPanel);
+        btnPanel.add(new JLabel("（关注、黑名单、历史记录）"));
 
         JScrollPane scrollPaneLog = addTxtLogToDynamic(0, posY++);
         txtLog = (JTextArea) scrollPaneLog.getViewport().getView();

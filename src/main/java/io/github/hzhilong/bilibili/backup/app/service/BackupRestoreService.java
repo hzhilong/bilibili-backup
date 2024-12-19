@@ -9,6 +9,9 @@ import io.github.hzhilong.base.utils.FileUtil;
 import io.github.hzhilong.base.utils.ListUtil;
 import io.github.hzhilong.base.utils.StringUtils;
 import io.github.hzhilong.bilibili.backup.api.user.User;
+import io.github.hzhilong.bilibili.backup.app.bean.BackupRestoreItemInfo;
+import io.github.hzhilong.bilibili.backup.app.bean.BackupRestoreResult;
+import io.github.hzhilong.bilibili.backup.app.business.BusinessType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +34,7 @@ import java.util.Set;
  * @version 1.0
  */
 @Slf4j
-public abstract class BackupRestoreService extends BaseService implements BackupRestoreItemInfo {
+public abstract class BackupRestoreService<T> extends BaseService implements BackupRestoreItemInfo {
 
     /**
      * 最长的延迟时间 毫秒
@@ -70,9 +73,20 @@ public abstract class BackupRestoreService extends BaseService implements Backup
         this.initFileName(mapFileName);
     }
 
-    public abstract void backup() throws BusinessException;
+    public abstract List<BackupRestoreResult<List<T>>> backup() throws BusinessException;
 
-    public abstract void restore() throws BusinessException;
+    public abstract List<BackupRestoreResult<List<T>>> restore() throws BusinessException;
+
+    @SafeVarargs
+    protected final List<BackupRestoreResult<List<T>>> createResults(BackupRestoreResult<List<T>>... results) {
+        if (results == null) {
+            return new ArrayList<>(0);
+        } else {
+            List<BackupRestoreResult<List<T>>> backupRestoreResults = new ArrayList<>(results.length);
+            Collections.addAll(backupRestoreResults, results);
+            return backupRestoreResults;
+        }
+    }
 
     public void writeJsonFile(String path, String appendDir, String name, Object obj, boolean isAppendData) throws BusinessException {
         Object content = obj;
@@ -103,99 +117,137 @@ public abstract class BackupRestoreService extends BaseService implements Backup
         }
     }
 
-    public interface BackupCallback<D> {
-        D getData() throws BusinessException;
+    public interface BackupCallback<DB> {
+        DB getData() throws BusinessException;
 
-        default D processData(D data) throws BusinessException {
+        default DB processData(DB data) throws BusinessException {
             return data;
         }
 
-        default void finished(D data) throws BusinessException {
+        default void finished(DB data) {
         }
     }
 
-    protected <D> D backupData(String buName, BackupCallback<D> callback) throws BusinessException {
+    protected <D> BackupRestoreResult<D> backupData(String buName, BackupCallback<D> callback) throws BusinessException {
         return backupData(buName, callback, false);
     }
 
-    protected <D> D backupData(String buName, BackupCallback<D> callback, boolean isAppendData) throws BusinessException {
+    protected <D> BackupRestoreResult<D> backupData(String buName, BackupCallback<D> callback, boolean isAppendData) throws BusinessException {
         return backupData("", buName, callback, isAppendData);
     }
 
-    protected <D> D backupData(String appendDir, String buName, BackupCallback<D> callback) throws BusinessException {
+    protected <D> BackupRestoreResult<D> backupData(String appendDir, String buName, BackupCallback<D> callback) throws BusinessException {
         return backupData(appendDir, buName, callback, false);
     }
 
-    protected <D> D backupData(String appendDir, String buName, BackupCallback<D> callback, boolean isAppendData) throws BusinessException {
+    protected <D> BackupRestoreResult<D> backupData(String appendDir, String buName, BackupCallback<D> callback, boolean isAppendData) throws BusinessException {
         return backupData(appendDir, buName, callback, isAppendData, true);
     }
 
-    protected <D> D backupData(String appendDir, String buName, BackupCallback<D> callback, boolean isAppendData, boolean printLog) throws BusinessException {
+    protected <D> BackupRestoreResult<D> backupData(String appendDir, String buName, BackupCallback<D> callback, boolean isAppendData, boolean printLog) throws BusinessException {
+        BackupRestoreResult<D> result = new BackupRestoreResult<>();
+        result.setBusinessType(BusinessType.BACKUP);
+        result.setItemName(buName);
         handleInterrupt();
         if (printLog) {
             log.info("正在备份[{}]...", buName);
         }
-        D data = callback.getData();
-        callback.processData(data);
-        writeJsonFile(path, appendDir, buName, data, isAppendData);
+        D data = null;
+        try {
+            data = callback.getData();
+        } catch (BusinessException e) {
+            result.setFailed("获取数据失败：" + e.getMessage());
+            return result;
+        }
+        result.setData(data);
+        try {
+            data = callback.processData(data);
+        } catch (BusinessException e) {
+            result.setFailed("处理数据失败：" + e.getMessage());
+            return result;
+        }
+        try {
+            writeJsonFile(path, appendDir, buName, data, isAppendData);
+        } catch (BusinessException e) {
+            result.setFailed("写入文件失败：" + e.getMessage());
+            return result;
+        }
         if (printLog) {
-            if (List.class.isAssignableFrom(data.getClass())) {
-                List<?> list = (List<?>) data;
-                log.info("成功备份{}条[{}]数据", list.size(), buName);
+            String msg;
+            if (data instanceof List) {
+                List list = (List) data;
+                msg = String.format("成功备份%s条[%s]数据", list.size(), buName);
             } else {
-                log.info("成功备份[{}]", buName);
+                msg = String.format("成功备份%s数据", buName);
             }
+            log.info(msg);
+            result.setSuccess(msg);
         }
         callback.finished(data);
-        return data;
+        return result;
     }
 
-    public interface RestoreCallback<D> {
-        List<D> getNewList() throws BusinessException;
+    public interface RestoreCallback<DR> {
+        List<DR> getNewList() throws BusinessException;
 
         /**
          * 比较的标志
          */
-        String compareFlag(D data);
+        String compareFlag(DR data);
 
-        String dataName(D data);
+        String dataName(DR data);
 
-        void restoreData(D data) throws BusinessException;
+        void restoreData(DR data) throws BusinessException;
 
-        default void finished(List<D> oldData) throws BusinessException {
+        default void finished(List<DR> oldData) {
         }
     }
 
-    protected <D> List<D> restoreList(String buName, Class<D> dataClass, RestoreCallback<D> callback) throws BusinessException {
+    protected <R> BackupRestoreResult<List<R>> restoreList(String buName, Class<R> dataClass, RestoreCallback<R> callback) throws BusinessException {
         return restoreList("", buName, dataClass, callback);
     }
 
-    protected <D> List<D> restoreList(String buName, Class<D> dataClass, int page, int pageSize, RestoreCallback<D> callback) throws BusinessException {
+    protected <R> BackupRestoreResult<List<R>> restoreList(String buName, Class<R> dataClass, int page, int pageSize, RestoreCallback<R> callback) throws BusinessException {
         return restoreList("", buName, dataClass, page, pageSize, callback);
     }
 
-    protected <D> List<D> restoreList(String appendDir, String buName, Class<D> dataClass, RestoreCallback<D> callback) throws BusinessException {
+    protected <R> BackupRestoreResult<List<R>> restoreList(String appendDir, String buName, Class<R> dataClass, RestoreCallback<R> callback) throws BusinessException {
         return restoreList(appendDir, buName, dataClass, 1, -1, callback);
     }
 
-    protected <D> List<D> restoreList(String appendDir, String buName, Class<D> dataClass, int page, int pageSize, RestoreCallback<D> callback) throws BusinessException {
+    protected <R> BackupRestoreResult<List<R>> restoreList(String appendDir, String buName, Class<R> dataClass, int page, int pageSize, RestoreCallback<R> callback) throws BusinessException {
+        BackupRestoreResult<List<R>> result = new BackupRestoreResult<>();
+        result.setBusinessType(BusinessType.RESTORE);
+        result.setItemName(buName);
         handleInterrupt();
         log.info("正在还原[{}]...", buName);
-        List<D> oldList = getBackupList(path, appendDir, buName, dataClass);
+        List<R> oldList = null;
+        try {
+            oldList = getBackupList(path, appendDir, buName, dataClass);
+        } catch (BusinessException e) {
+            result.setFailed("解析旧账号数据失败：" + e.getMessage());
+            return result;
+        }
         log.info("解析旧账号{}：{}条数据", buName, ListUtil.getSize(oldList));
         if (ListUtil.isEmpty(oldList)) {
             log.info("{}为空，无需还原", buName);
-            return oldList;
+            result.setFailed("数据为空，无需还原");
+            return result;
         }
-
         Set<String> newListIds = new HashSet<>();
         if (directRestore) {
             log.info("还原时忽略新账号现有的数据，直接还原...");
         } else {
             log.info("获取新账号{}...", buName);
-            List<D> newList = callback.getNewList();
+            List<R> newList = null;
+            try {
+                newList = callback.getNewList();
+            } catch (BusinessException e) {
+                result.setFailed("获取新账号数据失败：" + e.getMessage());
+                return result;
+            }
             log.info("获取新账号{}：{}条数据", buName, ListUtil.getSize(newList));
-            for (D data : newList) {
+            for (R data : newList) {
                 if (data != null) {
                     newListIds.add(callback.compareFlag(data));
                 }
@@ -203,7 +255,7 @@ public abstract class BackupRestoreService extends BaseService implements Backup
         }
 
         log.info("开始遍历旧账号{}...", buName);
-        List<D> restoredList = new ArrayList<>();
+        List<R> restoredList = new ArrayList<>();
         // 反序还原
         Collections.reverse(oldList);
         // 截取旧数据
@@ -212,7 +264,7 @@ public abstract class BackupRestoreService extends BaseService implements Backup
             int start = (page - 1) * pageSize;
             oldList = oldList.subList(start, Math.min(start + pageSize, oldList.size()));
         }
-        for (D oldData : oldList) {
+        for (R oldData : oldList) {
             handleInterrupt();
             if (oldData == null || "null".equals(callback.compareFlag(oldData))) {
                 log.info("失效的{}，跳过还原", buName);
@@ -221,6 +273,7 @@ public abstract class BackupRestoreService extends BaseService implements Backup
             String dataName = callback.dataName(oldData);
             if (newListIds.contains(callback.compareFlag(oldData))) {
                 log.info("{}已在新账号{}中", dataName, buName);
+                restoredList.add(oldData);
             } else {
                 try {
                     callback.restoreData(oldData);
@@ -231,13 +284,16 @@ public abstract class BackupRestoreService extends BaseService implements Backup
                     log.info("{}还原失败：{}", dataName, e.getMessage());
                     if (!allowFailure && (e instanceof EndLoopBusinessException)) {
                         // 不允许失败继续，且内部项目遇到需跳出循环的异常
+                        result.setFailed("还原失败" + e.getMessage());
                         break;
                     }
                 }
             }
         }
         callback.finished(oldList);
-        return restoredList;
+        result.setData(restoredList);
+        result.setSuccess(String.format("成功还原%s条[%s]数据", restoredList.size(), buName));
+        return result;
     }
 
     private <D> List<D> getBackupList(String dirPath, String appendDir, String buName, Class<D> dataClass) throws BusinessException {

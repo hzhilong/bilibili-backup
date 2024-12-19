@@ -1,14 +1,17 @@
 package io.github.hzhilong.bilibili.backup.gui.worker;
 
 import io.github.hzhilong.base.bean.BuCallback;
-import lombok.extern.slf4j.Slf4j;
-import okhttp3.OkHttpClient;
-import io.github.hzhilong.bilibili.backup.app.bean.SavedUser;
 import io.github.hzhilong.base.error.BusinessException;
+import io.github.hzhilong.bilibili.backup.app.bean.BackupRestoreResult;
+import io.github.hzhilong.bilibili.backup.app.bean.SavedUser;
+import io.github.hzhilong.bilibili.backup.app.business.BusinessType;
 import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreItem;
 import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreService;
+import lombok.extern.slf4j.Slf4j;
+import okhttp3.OkHttpClient;
 
 import java.util.LinkedHashSet;
+import java.util.List;
 
 /**
  * 备份的线程
@@ -24,7 +27,12 @@ public class BackupRunnable extends BackupRestoreRunnable {
     }
 
     @Override
-    protected void runService(BackupRestoreItem item, BackupRestoreService service) throws BusinessException {
-        service.backup();
+    protected List<BackupRestoreResult> runService(BackupRestoreItem item, BackupRestoreService service) throws BusinessException {
+        return service.backup();
+    }
+
+    @Override
+    protected BusinessType getBusinessType() {
+        return BusinessType.BACKUP;
     }
 }

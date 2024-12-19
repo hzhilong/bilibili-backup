@@ -1,4 +1,4 @@
-package io.github.hzhilong.bilibili.backup.app.service;
+package io.github.hzhilong.bilibili.backup.app.bean;
 
 import io.github.hzhilong.base.error.BusinessException;
 

@@ -1,5 +1,6 @@
-package io.github.hzhilong.bilibili.backup.app.service;
+package io.github.hzhilong.bilibili.backup.app.bean;
 
+import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreService;
 import okhttp3.OkHttpClient;
 import io.github.hzhilong.bilibili.backup.api.user.User;
 

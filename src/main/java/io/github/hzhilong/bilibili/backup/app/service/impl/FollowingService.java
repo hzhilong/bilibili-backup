@@ -15,10 +15,12 @@ import io.github.hzhilong.bilibili.backup.api.request.ListApi;
 import io.github.hzhilong.bilibili.backup.api.request.ModifyApi;
 import io.github.hzhilong.bilibili.backup.api.request.PageApi;
 import io.github.hzhilong.bilibili.backup.api.user.User;
+import io.github.hzhilong.bilibili.backup.app.bean.BackupRestoreResult;
 import io.github.hzhilong.bilibili.backup.app.business.BusinessType;
 import io.github.hzhilong.bilibili.backup.app.service.RelationService;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -27,6 +29,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 关注
@@ -50,7 +53,7 @@ public class FollowingService extends RelationService {
     }
 
     @Override
-    public void backup() throws BusinessException {
+    public List<BackupRestoreResult<List<Relation>>> backup() throws BusinessException {
         try {
             backupData("关注分组", this::getRelationTags);
         } catch (BusinessException be) {
@@ -58,17 +61,17 @@ public class FollowingService extends RelationService {
                 throw be;
             }
         }
-        backupData("关注", new BackupCallback<List<Relation>>() {
+        return createResults(backupData("关注", new BackupCallback<List<Relation>>() {
             @Override
             public List<Relation> getData() throws BusinessException {
                 return getRelations(BusinessType.BACKUP);
             }
 
             @Override
-            public void finished(List<Relation> data) throws BusinessException {
+            public void finished(List<Relation> data) {
                 callbackBackupSegment(pageApi, data);
             }
-        }, getSegmentBackupPageNo() > 1);
+        }, getSegmentBackupPageNo() > 1));
     }
 
     private List<RelationTag> getRelationTags() throws BusinessException {
@@ -84,10 +87,10 @@ public class FollowingService extends RelationService {
     }
 
     @Override
-    public void restore() throws BusinessException {
+    public List<BackupRestoreResult<List<Relation>>> restore() throws BusinessException {
         log.info("正在还原[关注]...");
-        List<RelationTag> oldTags = JSONObject.parseObject(readJsonFile(path, "", "关注分组"),
-                new TypeReference<List<RelationTag>>() {
+        List<RelationTag> oldTags = JSONObject.parseObject(
+                readJsonFile(path, "", "关注分组"), new TypeReference<List<RelationTag>>() {
                 });
         log.info("解析旧账号关注分组...");
 
@@ -113,7 +116,8 @@ public class FollowingService extends RelationService {
             for (RelationTag needCreateTag : needCreateTags) {
                 handleInterrupt();
                 log.info("正在新建关注分组：{}", needCreateTag.getName());
-                ApiResult<RelationTag> apiResult = new CreateApi<RelationTag>(client, user, "https://api.bilibili.com/x/relation/tag/create", RelationTag.class)
+                ApiResult<RelationTag> apiResult = new CreateApi<RelationTag>(client, user,
+                        "https://api.bilibili.com/x/relation/tag/create", RelationTag.class)
                         .create(new HashMap<String, String>() {{
                             put("tag", needCreateTag.getName());
                         }});
@@ -144,7 +148,7 @@ public class FollowingService extends RelationService {
         log.info("解析旧账号关注：{}", JSON.toJSONString(oldFollowings.size()));
         if (ListUtil.isEmpty(oldFollowings)) {
             log.info("关注为空，无需还原");
-            return;
+            return null;
         }
         Map<String, CopyUser> copyUsers = new HashMap<>();
         Collections.reverse(oldFollowings);
@@ -158,9 +162,11 @@ public class FollowingService extends RelationService {
             oldFollowings = oldFollowings.subList(start, Math.min(start + pageSize, oldFollowings.size()));
         }
 
+        Set<Long> failIds = new HashSet<>();
         for (Relation oldFollowing : oldFollowings) {
             handleInterrupt();
             boolean isFollowed = false;
+            boolean modifySuccess = true;
             if (newFollowingIds.contains(oldFollowing.getMid())) {
                 log.info("已关注UP主：{}", oldFollowing.getUname());
                 isFollowed = true;
@@ -173,6 +179,8 @@ public class FollowingService extends RelationService {
                 try {
                     modify(oldFollowing, RelationAct.FOLLOW);
                 } catch (Exception e) {
+                    modifySuccess = false;
+                    failIds.add(oldFollowing.getMid());
                     if (!isAllowFailure()) {
                         throw e;
                     }
@@ -180,7 +188,7 @@ public class FollowingService extends RelationService {
             }
             // 处理该关注的关注分组
             List<Long> oldFollowingTag = oldFollowing.getTag();
-            if (ListUtil.notEmpty(oldFollowingTag) && !oldIdMapNewId.isEmpty()) {
+            if (modifySuccess && ListUtil.notEmpty(oldFollowingTag) && !oldIdMapNewId.isEmpty()) {
                 boolean isNeedUpdateTags = true;
                 if (isFollowed) {
                     // 之前已关注
@@ -237,6 +245,27 @@ public class FollowingService extends RelationService {
             }
         }
         callbackRestoreSegment(oldFollowings);
+        List<BackupRestoreResult<List<Relation>>> results = new ArrayList<>();
+        BackupRestoreResult<List<Relation>> result = getListBackupRestoreResult(oldFollowings, failIds);
+        results.add(result);
+        return results;
+    }
+
+    @NotNull
+    private static BackupRestoreResult<List<Relation>> getListBackupRestoreResult(List<Relation> oldFollowings, Set<Long> failIds) {
+        BackupRestoreResult<List<Relation>> result = new BackupRestoreResult<>();
+        result.setBusinessType(BusinessType.RESTORE);
+        result.setItemName("关注");
+        int oldSize = oldFollowings.size();
+        int newSize = oldSize - failIds.size();
+        String msg = String.format("关注还原%s：已还原%s个，原%s个",
+                oldSize == newSize ? "成功" : "失败", newSize, oldSize);
+        if (oldSize == newSize) {
+            result.setSuccess(msg);
+        } else {
+            result.setFailed(msg);
+        }
+        return result;
     }
 
     @Override

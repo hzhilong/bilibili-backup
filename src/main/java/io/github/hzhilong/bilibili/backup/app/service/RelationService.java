@@ -23,7 +23,7 @@ import java.util.Map;
  * @version 1.0
  */
 @Slf4j
-public abstract class RelationService extends SegmentableBackupRestoreService {
+public abstract class RelationService extends SegmentableBackupRestoreService<Relation> {
 
     private int modifyCount;
 

@@ -1,15 +1,17 @@
 package io.github.hzhilong.bilibili.backup.app.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import lombok.extern.slf4j.Slf4j;
-import okhttp3.OkHttpClient;
+import io.github.hzhilong.base.error.BusinessException;
 import io.github.hzhilong.bilibili.backup.api.bean.ApiResult;
 import io.github.hzhilong.bilibili.backup.api.bean.Bangumi;
-import io.github.hzhilong.base.error.BusinessException;
 import io.github.hzhilong.bilibili.backup.api.request.ModifyApi;
 import io.github.hzhilong.bilibili.backup.api.request.PageApi;
-import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreService;
 import io.github.hzhilong.bilibili.backup.api.user.User;
+import io.github.hzhilong.bilibili.backup.app.bean.BackupRestoreResult;
+import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreService;
+import lombok.extern.slf4j.Slf4j;
+import okhttp3.OkHttpClient;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.HashMap;
@@ -23,14 +25,15 @@ import java.util.Map;
  * @version 1.0
  */
 @Slf4j
-public class BangumiService extends BackupRestoreService {
+public class BangumiService extends BackupRestoreService<Bangumi> {
 
     public BangumiService(OkHttpClient client, User user, String path) {
         super(client, user, path);
     }
 
     public List<Bangumi> getList(String type) throws BusinessException {
-        return new PageApi<>(client, signUser(), "https://api.bilibili.com/x/space/bangumi/follow/list",
+        return new PageApi<>(client, signUser(),
+                "https://api.bilibili.com/x/space/bangumi/follow/list",
                 queryParams -> {
                     queryParams.put("vmid", user.getUid());
                     queryParams.put("type", type);
@@ -39,7 +42,8 @@ public class BangumiService extends BackupRestoreService {
     }
 
     private void addData(Bangumi data) throws BusinessException {
-        ApiResult<JSONObject> apiResult = new ModifyApi<JSONObject>(client, user, "https://api.bilibili.com/pgc/web/follow/add", JSONObject.class)
+        ApiResult<JSONObject> apiResult = new ModifyApi<JSONObject>(client, user,
+                "https://api.bilibili.com/pgc/web/follow/add", JSONObject.class)
                 .modify(new HashMap<String, String>() {{
                     put("season_id", String.valueOf(data.getSeasonId()));
                 }});
@@ -49,17 +53,25 @@ public class BangumiService extends BackupRestoreService {
     }
 
     @Override
-    public void backup() throws BusinessException {
-        backupData("我的追番", () -> getList("1"));
-        backupData("我的追剧", () -> getList("2"));
+    public List<BackupRestoreResult<List<Bangumi>>> backup() throws BusinessException {
+        return createResults(
+                backupData("我的追番", () -> getList("1")),
+                backupData("我的追剧", () -> getList("2")));
     }
 
     @Override
-    public void restore() throws BusinessException {
-        restoreList("我的追番", Bangumi.class, new RestoreCallback<Bangumi>() {
+    public List<BackupRestoreResult<List<Bangumi>>> restore() throws BusinessException {
+        return createResults(
+                restoreList("我的追番", Bangumi.class, getRestoreCallback("1")),
+                restoreList("我的追剧", Bangumi.class, getRestoreCallback("2")));
+    }
+
+    @NotNull
+    private RestoreCallback<Bangumi> getRestoreCallback(String type) {
+        return new RestoreCallback<Bangumi>() {
             @Override
             public List<Bangumi> getNewList() throws BusinessException {
-                return getList("1");
+                return getList(type);
             }
 
             @Override
@@ -76,29 +88,7 @@ public class BangumiService extends BackupRestoreService {
             public void restoreData(Bangumi data) throws BusinessException {
                 addData(data);
             }
-        });
-
-        restoreList("我的追剧", Bangumi.class, new RestoreCallback<Bangumi>() {
-            @Override
-            public List<Bangumi> getNewList() throws BusinessException {
-                return getList("2");
-            }
-
-            @Override
-            public String compareFlag(Bangumi data) {
-                return String.valueOf(data.getSeasonId());
-            }
-
-            @Override
-            public String dataName(Bangumi data) {
-                return String.format("[%s]", data.getTitle());
-            }
-
-            @Override
-            public void restoreData(Bangumi data) throws BusinessException {
-                addData(data);
-            }
-        });
+        };
     }
 
     @Override

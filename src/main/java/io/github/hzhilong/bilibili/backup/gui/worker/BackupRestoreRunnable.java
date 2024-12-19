@@ -4,7 +4,9 @@ import io.github.hzhilong.base.bean.BuCallback;
 import io.github.hzhilong.base.error.BusinessException;
 import io.github.hzhilong.base.utils.StringUtils;
 import io.github.hzhilong.bilibili.backup.api.user.User;
+import io.github.hzhilong.bilibili.backup.app.bean.BackupRestoreResult;
 import io.github.hzhilong.bilibili.backup.app.bean.SavedUser;
+import io.github.hzhilong.bilibili.backup.app.business.BusinessType;
 import io.github.hzhilong.bilibili.backup.app.constant.AppConstant;
 import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreItem;
 import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreService;
@@ -14,9 +16,12 @@ import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -31,7 +36,7 @@ public abstract class BackupRestoreRunnable extends BaseRunnable {
     @Getter
     protected SavedUser user;
     protected BuCallback<Void> buCallback;
-    protected BackupRestoreService currBackupRestoreService;
+    protected BackupRestoreService<?> currBackupRestoreService;
     @Getter
     protected LinkedHashMap<BackupRestoreItem, BackupRestoreService> backupRestoreItemServices;
     @Getter
@@ -52,7 +57,7 @@ public abstract class BackupRestoreRunnable extends BaseRunnable {
         }
         this.apiUser = new User(user.getCookie());
         for (BackupRestoreItem item : backupRestoreItems) {
-            BackupRestoreService service = item.getServiceBuilder().build(this.client, this.apiUser, this.backupDirPath);
+            BackupRestoreService<?> service = item.getServiceBuilder().build(this.client, this.apiUser, this.backupDirPath);
             service.setDirectRestore(AppDataItem.DIRECT_RESTORE.getValue());
             service.setAllowFailure(AppDataItem.ALLOW_FAILURE.getValue());
             backupRestoreItemServices.put(item, service);
@@ -67,24 +72,39 @@ public abstract class BackupRestoreRunnable extends BaseRunnable {
         }
     }
 
-    protected abstract void runService(BackupRestoreItem item, BackupRestoreService service) throws BusinessException;
+    protected abstract List<BackupRestoreResult> runService(BackupRestoreItem item, BackupRestoreService<?> service) throws BusinessException;
+
+    protected abstract BusinessType getBusinessType();
+
+    private List<BackupRestoreResult> buildResult(BackupRestoreItem item, String failMsg) {
+        BackupRestoreResult result = new BackupRestoreResult<>();
+        result.setBusinessType(getBusinessType());
+        result.setItemName(item.getName());
+        result.setFailed(failMsg);
+        return Collections.singletonList(result);
+    }
 
     @Override
     public void run() {
         boolean onceSuccessful = false;
+        List<List<BackupRestoreResult>> results = new ArrayList<>(backupRestoreItemServices.size());
+        List<String> itemNames = new ArrayList<>(backupRestoreItemServices.size());
         // 执行各个项目
         for (Map.Entry<BackupRestoreItem, BackupRestoreService> next : backupRestoreItemServices.entrySet()) {
             BackupRestoreItem item = next.getKey();
+            itemNames.add(item.getName());
             BackupRestoreService service = next.getValue();
             try {
                 currBackupRestoreService = service;
-                runService(item, currBackupRestoreService);
+                results.add(runService(item, currBackupRestoreService));
                 onceSuccessful = true;
             } catch (Exception e) {
+                String msg = String.format("操作失败，%s\n", e.getMessage());
+                results.add(buildResult(item, msg));
                 if (e instanceof BusinessException) {
-                    log.info("操作失败，{}\n", e.getMessage());
+                    log.info(msg);
                 } else {
-                    log.error("操作失败，{}\n", e.getMessage(), e);
+                    log.error(msg, e);
                 }
             }
             if (interrupt) {
@@ -92,6 +112,16 @@ public abstract class BackupRestoreRunnable extends BaseRunnable {
                 break;
             }
         }
+        log.info("\n");
+        log.info("================【{}结果】================", getBusinessType().getName());
+        for (int i = 0; i < results.size(); i++) {
+            List<BackupRestoreResult> result = results.get(i);
+            log.info("- {}", itemNames.get(i));
+            for (BackupRestoreResult temp : result) {
+                log.info("  - {}", temp.getMsg());
+            }
+        }
+        log.info("=========================================");
         if (buCallback != null) {
             if (interrupt) {
                 buCallback.interrupt();
