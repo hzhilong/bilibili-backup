@@ -30,6 +30,9 @@ public class AppData extends Properties implements PersistenceData {
         File file = new File(CONFIG_PATH);
         if (!file.exists()) {
             try {
+                if(!file.getParentFile().exists()){
+                    file.getParentFile().mkdirs();
+                }
                 file.createNewFile();
             } catch (IOException e) {
                 throw new RuntimeException(e);
