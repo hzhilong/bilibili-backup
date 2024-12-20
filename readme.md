@@ -17,7 +17,7 @@
 
 - Windows
 
-（其他平台可以自己下载源码，配置参数后打包一下，详情请看：[JavaPackager](https://github.com/fvarrui/JavaPackager)）
+（mac/linux 可以自己下载源码编译，详情请看：[JavaPackager](https://github.com/fvarrui/JavaPackager)）
 
 ## 具体功能
 
@@ -48,11 +48,7 @@
 
 ## 软件截图
 
-![备份界面截图](./screenshot/app01.png "备份界面")
-
-![还原界面截图](./screenshot/app02.png "还原界面")
-
-![已注销账号界面截图](./screenshot/app03.png "已注销账号界面")
+![软件界面截图](./screenshot/app01.png "软件界面")
 
 ## 下载使用
 
@@ -65,6 +61,7 @@
 - 新号请先升到2级。
 - 如果因为备份还原的数据过多而遇到风控，可尝试勾选分段处理。
 - 还原时新账号数据过多的话，可勾选设置项【还原时忽略新账号现有的数据，直接还原】。
+- 部分UP主可能无法关注，还原时会导致失败从而停止整个备份，可勾选设置项【关注还原失败时，继续还原下一个数据】。
 
 ## 感谢
 
