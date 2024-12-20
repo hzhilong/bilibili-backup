@@ -1,21 +1,20 @@
 package io.github.hzhilong.bilibili.backup.api.request;
 
+import io.github.hzhilong.base.error.BusinessException;
+import io.github.hzhilong.base.utils.ListUtil;
+import io.github.hzhilong.bilibili.backup.api.bean.ApiResult;
+import io.github.hzhilong.bilibili.backup.api.bean.page.PageCallback;
+import io.github.hzhilong.bilibili.backup.api.bean.page.PageData;
+import io.github.hzhilong.bilibili.backup.api.user.User;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
-import io.github.hzhilong.bilibili.backup.api.bean.ApiResult;
-import io.github.hzhilong.bilibili.backup.api.bean.page.PageCallback;
-import io.github.hzhilong.bilibili.backup.api.bean.page.PageData;
-import io.github.hzhilong.bilibili.backup.api.user.User;
-import io.github.hzhilong.base.utils.ListUtil;
-import io.github.hzhilong.base.error.BusinessException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 /**
  * 分页接口
@@ -179,6 +178,7 @@ public class PageApi<D extends PageData<L>, L> extends BaseApi<D> {
             if (apiResult.isSuccess()) {
                 pageData = apiResult.getData();
                 if (pageData != null && pageData.getList() != null) {
+                    int currCount = pageData.getList().size();
                     list.addAll(pageData.getList());
                     if (pageCallback != null) {
                         pageCallback.page(page, ListUtil.getSize(pageData.getList()), list.size());
@@ -187,7 +187,7 @@ public class PageApi<D extends PageData<L>, L> extends BaseApi<D> {
                     if (ListUtil.notEmpty(list) && maxSize > 0 && list.size() >= maxSize) {
                         log.info("暂停获取，目前总数：{}，允许的最大内容数：{}", list.size(), maxSize);
                         break;
-                    } else if (pageData.hasMore(list.size())) {
+                    } else if (currCount > 0 && pageData.hasMore(list.size())) {
                         page++;
                         sleep(page);
                         continue;
