@@ -6,18 +6,21 @@ import io.github.hzhilong.bilibili.backup.gui.component.PagePanel;
 import io.github.hzhilong.bilibili.backup.gui.component.UserSelector;
 import io.github.hzhilong.bilibili.backup.gui.worker.DelaySetProcessingLoggerRunnable;
 import io.github.hzhilong.bilibili.backup.gui.worker.tools.OpenAutoReplyRunnable;
-import io.github.hzhilong.bilibili.backup.gui.worker.tools.ReadAllSessionRunnable;
 import io.github.hzhilong.bilibili.backup.gui.worker.tools.RunnableBuilder;
+import io.github.hzhilong.bilibili.backup.gui.worker.tools.SessionRunnable;
+import io.github.hzhilong.bilibili.backup.gui.worker.tools.Tool;
 import io.github.hzhilong.bilibili.backup.gui.worker.tools.ToolBuCallback;
 import io.github.hzhilong.bilibili.backup.gui.worker.tools.ToolRunnable;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -35,8 +38,9 @@ public class ToolsPage extends PagePanel {
 
     private JTextArea txtLog;
 
-    private LinkedHashMap<String, RunnableBuilder> tools;
+    private List<Tool> tools;
     private Map<String, ToolRunnable<?, ?>> toolsRunnable;
+    private Map<Tool, JButton> toolsBtn;
 
     public ToolsPage(OkHttpClient client) {
         super(client);
@@ -44,11 +48,24 @@ public class ToolsPage extends PagePanel {
 
     @Override
     public void initData() {
-        this.tools = new LinkedHashMap<>();
-        this.toolsRunnable = new HashMap<>();
-        this.tools.put("已读所有消息", ReadAllSessionRunnable::new);
-        this.tools.put("强开私信自动回复功能", (client, user, buCallback) -> new OpenAutoReplyRunnable(client, user, buCallback, true));
-        this.tools.put("关闭私信自动回复功能", (client, user, buCallback) -> new OpenAutoReplyRunnable(client, user, buCallback, false));
+        tools = new ArrayList<>();
+        toolsRunnable = new HashMap<>();
+        toolsBtn = new HashMap<>();
+        tools.add(new Tool("已读所有私信", "还原[关注]后会有很多私信，使用该工具可以一键已读。",
+                (client, user, buCallback)
+                        -> new SessionRunnable(client, user, buCallback, SessionRunnable.TYPE_READ_ALL_SESSION)));
+        tools.add(new Tool("删除所有私信", "一键删除B站所有私信。",
+                (client, user, buCallback)
+                        -> new SessionRunnable(client, user, buCallback, SessionRunnable.TYPE_DELETE_ALL_SESSION)));
+        tools.add(new Tool("删除所有系统通知", "一键删除B站系统通知。",
+                (client, user, buCallback)
+                        -> new SessionRunnable(client, user, buCallback, SessionRunnable.TYPE_DELETE_ALL_SYS_MSG)));
+        tools.add(new Tool("强开私信自动回复功能", "B站达到1000粉丝才能开启消息自动回复的功能",
+                (client, user, buCallback)
+                        -> new OpenAutoReplyRunnable(client, user, buCallback, true)));
+        tools.add(new Tool("关闭私信自动回复功能", "B站达到1000粉丝才能开启消息自动回复的功能",
+                (client, user, buCallback)
+                        -> new OpenAutoReplyRunnable(client, user, buCallback, false)));
     }
 
     @Override
@@ -57,25 +74,31 @@ public class ToolsPage extends PagePanel {
 
         userSelector = new UserSelector(client);
         addFixedContent(userSelector, 0, posY++);
-        addSeparatorToFixed(0, posY++, 3);
+        addSeparatorToFixed(0, posY++);
 
-        int pos = 0;
-        for (Map.Entry<String, RunnableBuilder> entry : this.tools.entrySet()) {
-            String name = entry.getKey();
-            RunnableBuilder builder = entry.getValue();
-            JButton button = new JButton(name);
-            addDynamicContent(button, pos % 3, (pos / 3) + posY);
-            pos++;
+        JPanel btnPanel = new JPanel();
+        btnPanel.setLayout(new FlowLayout());
+        addDynamicContent(btnPanel, 0, posY++);
+
+        for (int i = 0; i < tools.size(); i++) {
+            Tool tool = tools.get(i);
+            String name = tool.getName();
+            RunnableBuilder builder = tool.getRunnableBuilder();
+            JButton button = new JButton(tool.getName());
+            button.setToolTipText(tool.getDesc());
+            btnPanel.add(button);
+//            addDynamicContent(button, i % 3, (i / 3) + posY);
             button.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     startRunnable(button, name, builder);
                 }
             });
+            toolsBtn.put(tool, button);
         }
         posY++;
 
-        JScrollPane scrollPaneLog = addTxtLogToDynamic(0, posY++, 3);
+        JScrollPane scrollPaneLog = addTxtLogToDynamic(0, posY++);
         txtLog = (JTextArea) scrollPaneLog.getViewport().getView();
 
         setDynamicContentVisible(false);
@@ -129,6 +152,13 @@ public class ToolsPage extends PagePanel {
         } else {
             button.setText(name);
         }
+        for (Map.Entry<Tool, JButton> entry : toolsBtn.entrySet()) {
+            JButton btn = entry.getValue();
+            if (btn != button) {
+                btn.setEnabled(!flag);
+            }
+        }
+
         userSelector.setEnabled(!flag);
         if (flag) {
             GlobalState.setProcessingLogger(txtLog);

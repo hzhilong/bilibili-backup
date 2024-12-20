@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
 /**
@@ -36,18 +35,11 @@ import java.util.Set;
 @Slf4j
 public abstract class BackupRestoreService<T> extends BaseService implements BackupRestoreItemInfo {
 
-    /**
-     * 最长的延迟时间 毫秒
-     */
-    public final static int MAX_DELAY_TIME = 5 * 1000;
-
     @Setter
     @Getter
     public String path;
 
     private final HashMap<String, String> mapFileName;
-
-    private final Random random;
 
     /**
      * 还原时忽略新账号现有的数据，直接还原
@@ -67,7 +59,6 @@ public abstract class BackupRestoreService<T> extends BaseService implements Bac
         super(client, user);
         this.path = path;
         this.mapFileName = new HashMap<>(2);
-        this.random = new Random();
         this.directRestore = false;
         this.allowFailure = false;
         this.initFileName(mapFileName);
@@ -333,13 +324,6 @@ public abstract class BackupRestoreService<T> extends BaseService implements Bac
             return cnPathName + File.separator;
         } else {
             return enPathName + File.separator;
-        }
-    }
-
-    public void sleep(int count) {
-        try {
-            Thread.sleep((1000 + 1000 * Integer.toString(count).length() + random.nextInt(2000)) % MAX_DELAY_TIME);
-        } catch (InterruptedException ignored) {
         }
     }
 

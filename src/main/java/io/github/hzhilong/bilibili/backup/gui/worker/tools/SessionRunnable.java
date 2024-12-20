@@ -14,10 +14,17 @@ import okhttp3.OkHttpClient;
  * @version 1.0
  */
 @Slf4j
-public class ReadAllSessionRunnable extends ToolRunnable<MessageService, Void> {
+public class SessionRunnable extends ToolRunnable<MessageService, Void> {
 
-    public ReadAllSessionRunnable(OkHttpClient client, SavedUser user, ToolBuCallback<Void> buCallback) {
+    public static final int TYPE_READ_ALL_SESSION = 1;
+    public static final int TYPE_DELETE_ALL_SESSION = 2;
+    public static final int TYPE_DELETE_ALL_SYS_MSG = 3;
+
+    private int type;
+
+    public SessionRunnable(OkHttpClient client, SavedUser user, ToolBuCallback<Void> buCallback, int type) {
         super(client, user, buCallback);
+        this.type = type;
     }
 
     @Override
@@ -27,7 +34,13 @@ public class ReadAllSessionRunnable extends ToolRunnable<MessageService, Void> {
 
     @Override
     protected Void runService(MessageService service) throws BusinessException {
-        service.readAllSession();
+        if (type == TYPE_READ_ALL_SESSION) {
+            service.readAllSession();
+        } else if (type == TYPE_DELETE_ALL_SESSION) {
+            service.readAllSession(true);
+        } else if (type == TYPE_DELETE_ALL_SYS_MSG) {
+            service.deleteAllSysMsg();
+        }
         return null;
     }
 }

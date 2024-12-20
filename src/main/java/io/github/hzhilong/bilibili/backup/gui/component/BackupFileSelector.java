@@ -5,6 +5,7 @@ import io.github.hzhilong.bilibili.backup.app.bean.BackupDir;
 import io.github.hzhilong.bilibili.backup.app.bean.BackupFile;
 import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreItem;
 import io.github.hzhilong.bilibili.backup.app.utils.BackupFileUtil;
+import io.github.hzhilong.bilibili.backup.gui.config.ColorConfig;
 import io.github.hzhilong.bilibili.backup.gui.utils.LayoutUtil;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -62,16 +63,6 @@ public class BackupFileSelector extends JPanel {
     private JPanel backupDirInfoPanel;
 
     private LinkedHashMap<BackupRestoreItem, BackupCountLabel> defaultBackupCountLabels;
-
-    public static Color[] defaultColors = new Color[]{
-            new Color(0, 174, 236),
-            new Color(251, 114, 153),
-            new Color(43, 43, 43),
-            new Color(128, 122, 210),
-            new Color(238, 187, 43),
-            new Color(25, 190, 46),
-            new Color(255, 154, 0),
-    };
 
     private boolean resetting = false;
 
@@ -164,8 +155,7 @@ public class BackupFileSelector extends JPanel {
         for (int i = 0; i < backupRestoreItems.length; i++) {
             BackupRestoreItem item = backupRestoreItems[i];
             defaultBackupCountLabels.put(item, new BackupCountLabel(
-                    item.getName(), 0, Color.WHITE, defaultColors[i % defaultColors.length]
-            ));
+                    item.getName(), 0, Color.WHITE, ColorConfig.get(i)));
         }
     }
 
@@ -256,7 +246,7 @@ public class BackupFileSelector extends JPanel {
     @Override
     public void updateUI() {
         super.updateUI();
-        if(defaultBackupCountLabels != null){
+        if (defaultBackupCountLabels != null) {
             for (Map.Entry<BackupRestoreItem, BackupCountLabel> entry : defaultBackupCountLabels.entrySet()) {
                 BackupCountLabel label = entry.getValue();
                 if (label != null) {

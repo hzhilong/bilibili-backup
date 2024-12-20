@@ -64,8 +64,6 @@ public class PageApi<D extends PageData<L>, L> extends BaseApi<D> {
      */
     protected PageCallback pageCallback;
 
-    private final Random random;
-
     public PageApi(OkHttpClient client, User user, String url, Class<L> listItemClass) {
         this(client, user, url, null, null, listItemClass, null);
     }
@@ -96,7 +94,6 @@ public class PageApi<D extends PageData<L>, L> extends BaseApi<D> {
         } else {
             this.pageCallback = pageCallback;
         }
-        this.random = new Random();
         this.pageSize = 20;
     }
 
@@ -207,20 +204,12 @@ public class PageApi<D extends PageData<L>, L> extends BaseApi<D> {
         return pageData;
     }
 
-
     /**
      * 处理中断
      */
     protected void handleInterrupt() throws BusinessException {
         if (isInterrupt()) {
             throw new BusinessException("任务中断");
-        }
-    }
-
-    private void sleep(int page) {
-        try {
-            Thread.sleep((1000 + 1000 * Integer.toString(page).length() + random.nextInt(3000)) % MAX_DELAY_TIME);
-        } catch (InterruptedException ignored) {
         }
     }
 

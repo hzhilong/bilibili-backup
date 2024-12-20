@@ -1,12 +1,14 @@
 package io.github.hzhilong.bilibili.backup.app.service;
 
+import io.github.hzhilong.base.error.BusinessException;
+import io.github.hzhilong.bilibili.backup.api.user.User;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
-import io.github.hzhilong.bilibili.backup.api.user.User;
-import io.github.hzhilong.base.error.BusinessException;
+
+import java.util.Random;
 
 /**
  * 服务基类
@@ -17,6 +19,10 @@ import io.github.hzhilong.base.error.BusinessException;
 @Data
 @Slf4j
 public abstract class BaseService {
+    /**
+     * 最长的延迟时间 毫秒
+     */
+    public final static int MAX_DELAY_TIME = 5 * 1000;
 
     protected OkHttpClient client;
 
@@ -29,9 +35,12 @@ public abstract class BaseService {
     @Getter
     protected boolean interrupt;
 
+    private final Random random;
+
     public BaseService(OkHttpClient client, User user) {
         this.client = client;
         this.user = user;
+        this.random = new Random();
     }
 
     /**
@@ -52,4 +61,12 @@ public abstract class BaseService {
             throw new BusinessException("任务中断");
         }
     }
+
+    public void sleep(int count) {
+        try {
+            Thread.sleep((1000 + 1000 * Integer.toString(count).length() + random.nextInt(2000)) % MAX_DELAY_TIME);
+        } catch (InterruptedException ignored) {
+        }
+    }
+
 }

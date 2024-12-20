@@ -2,6 +2,11 @@ package io.github.hzhilong.bilibili.backup.api.request;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.util.ParameterizedTypeImpl;
+import io.github.hzhilong.base.error.BusinessException;
+import io.github.hzhilong.base.utils.StringUtils;
+import io.github.hzhilong.bilibili.backup.api.bean.ApiResult;
+import io.github.hzhilong.bilibili.backup.api.user.User;
+import io.github.hzhilong.bilibili.backup.app.service.impl.SignService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,15 +15,12 @@ import lombok.extern.slf4j.Slf4j;
 import okhttp3.Call;
 import okhttp3.FormBody;
 import okhttp3.Headers;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 import org.jetbrains.annotations.NotNull;
-import io.github.hzhilong.bilibili.backup.api.bean.ApiResult;
-import io.github.hzhilong.base.error.BusinessException;
-import io.github.hzhilong.bilibili.backup.app.service.impl.SignService;
-import io.github.hzhilong.bilibili.backup.api.user.User;
-import io.github.hzhilong.base.utils.StringUtils;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -26,6 +28,7 @@ import java.lang.reflect.Type;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * 接口请求基类
@@ -35,6 +38,10 @@ import java.util.Map;
  */
 @Slf4j
 public class BaseApi<D> implements AddQueryParams {
+    /**
+     * 最长的延迟时间 毫秒
+     */
+    public final static int MAX_DELAY_TIME = 5 * 1000;
 
     protected OkHttpClient client;
 
@@ -55,6 +62,8 @@ public class BaseApi<D> implements AddQueryParams {
 
     private SignService signService;
 
+    private final Random random;
+
     public BaseApi(OkHttpClient client, User user, String url, boolean isWbiSign, Class<?>... dataClasses) {
         this(client, user, url, null, isWbiSign, dataClasses);
     }
@@ -73,6 +82,7 @@ public class BaseApi<D> implements AddQueryParams {
         if (isWbiSign) {
             signService = new SignService(client, user);
         }
+        this.random = new Random();
     }
 
     protected Request getGETRequest(String url, Map<String, String> queryParams) {
@@ -100,8 +110,12 @@ public class BaseApi<D> implements AddQueryParams {
         return builder.build();
     }
 
-    protected Request getPOSTRequest(String url, Map<String, String> queryParams, Map<String, String> formParams) {
-        log.debug("post表单：{}", formParams);
+    protected Request getPOSTRequest(String url, Map<String, String> queryParams, Map<String, String> formParams, String jsonBody) {
+        if (StringUtils.notEmpty(jsonBody)) {
+            log.debug("post内容：{}", jsonBody);
+        } else {
+            log.debug("post表单：{}", formParams);
+        }
         if (queryParams != null) {
             StringBuilder urlBuilder = new StringBuilder(url);
             boolean flag = false;
@@ -119,12 +133,18 @@ public class BaseApi<D> implements AddQueryParams {
             }
             url = urlBuilder.toString();
         }
-        FormBody.Builder formBodyBuilder = new FormBody.Builder();
-        if (formParams != null && !formParams.isEmpty()) {
-            formParams.forEach((key, value) -> formBodyBuilder.add(key, value == null ? "" : value));
+        Request.Builder builder;
+        if (StringUtils.isEmpty(jsonBody)) {
+            FormBody.Builder formBodyBuilder = new FormBody.Builder();
+            if (formParams != null && !formParams.isEmpty()) {
+                formParams.forEach((key, value) -> formBodyBuilder.add(key, value == null ? "" : value));
+            }
+            builder = new Request.Builder()
+                    .url(url).post(formBodyBuilder.build());
+        } else {
+            builder = new Request.Builder()
+                    .url(url).post(RequestBody.create(MediaType.parse("application/json; charset=utf-8"), jsonBody));
         }
-        Request.Builder builder = new Request.Builder()
-                .url(url).post(formBodyBuilder.build());
         this.requestUrl = url;
         addBaseHeader(builder, url);
         return builder.build();
@@ -158,6 +178,14 @@ public class BaseApi<D> implements AddQueryParams {
     }
 
     public Request getRequest(Map<String, String> formParams) throws BusinessException {
+        return getRequest(formParams, null);
+    }
+
+    public Request getRequest(String jsonBody) throws BusinessException {
+        return getRequest(null, jsonBody);
+    }
+
+    public Request getRequest(Map<String, String> formParams, String jsonBody) throws BusinessException {
         Map<String, String> queryParams = new HashMap<>();
         addQueryParams(queryParams);
         if (this.addQueryParams != null) {
@@ -180,10 +208,10 @@ public class BaseApi<D> implements AddQueryParams {
             }
         }
         log.debug("请求参数：{}", queryParams);
-        if (formParams == null) {
+        if (formParams == null && StringUtils.isEmpty(jsonBody)) {
             return getGETRequest(this.url, queryParams);
         } else {
-            return getPOSTRequest(this.url, queryParams, formParams);
+            return getPOSTRequest(this.url, queryParams, formParams, jsonBody);
         }
     }
 
@@ -197,10 +225,15 @@ public class BaseApi<D> implements AddQueryParams {
     }
 
     public ApiResponse<D> apiRequest(Map<String, String> formParams, boolean isParseBody) throws BusinessException {
-        Call call = client.newCall(this.getRequest(formParams));
+        return apiRequest(formParams, null, isParseBody);
+    }
+
+    public ApiResponse<D> apiRequest(Map<String, String> formParams, String jsonBody, boolean isParseBody) throws BusinessException {
+        Call call = client.newCall(this.getRequest(formParams, jsonBody));
         try (Response response = call.execute()) {
             if (response.isSuccessful() && response.body() != null) {
                 String result = response.body().string();
+                log.debug("响应：({})", result);
                 if (!StringUtils.isEmpty(result)) {
                     ApiResponse<D> apiResponse = new ApiResponse<>();
                     apiResponse.setBody(result);
@@ -208,7 +241,6 @@ public class BaseApi<D> implements AddQueryParams {
                     if (isParseBody) {
                         apiResponse.setApiResult(parseApiResult(this.dataClasses, result));
                     }
-                    log.debug("响应：({})", result);
                     return apiResponse;
                 } else {
                     log.error("响应为空({})", response.code());
@@ -237,6 +269,11 @@ public class BaseApi<D> implements AddQueryParams {
     public ApiResult<D> apiPost(Map<String, String> formParams) throws BusinessException {
         log.debug("【apiPost】url：{}", url);
         return apiRequest(formParams, true).getApiResult();
+    }
+
+    public ApiResult<D> apiPost(String jsonBody) throws BusinessException {
+        log.debug("【apiPost】url：{}", url);
+        return apiRequest(null, jsonBody, true).getApiResult();
     }
 
     public ApiResponse<D> htmlGet() throws BusinessException {
@@ -275,4 +312,10 @@ public class BaseApi<D> implements AddQueryParams {
 
     }
 
+    protected void sleep(int page) {
+        try {
+            Thread.sleep((1000 + 1000 * Integer.toString(page).length() + random.nextInt(3000)) % MAX_DELAY_TIME);
+        } catch (InterruptedException ignored) {
+        }
+    }
 }
