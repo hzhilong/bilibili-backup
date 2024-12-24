@@ -1,18 +1,20 @@
 package io.github.hzhilong.bilibili.backup.gui.dialog;
 
+import io.github.hzhilong.base.error.BusinessException;
+import io.github.hzhilong.bilibili.backup.api.bean.QRCode;
+import io.github.hzhilong.bilibili.backup.app.bean.SavedUser;
+import io.github.hzhilong.bilibili.backup.gui.utils.LayoutUtil;
+import io.github.hzhilong.bilibili.backup.gui.worker.GetLoginQRWorker;
+import io.github.hzhilong.bilibili.backup.gui.worker.LoginRunnable;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
-import io.github.hzhilong.bilibili.backup.app.bean.SavedUser;
-import io.github.hzhilong.bilibili.backup.api.bean.QRCode;
-import io.github.hzhilong.base.error.BusinessException;
-import io.github.hzhilong.bilibili.backup.gui.utils.LayoutUtil;
-import io.github.hzhilong.bilibili.backup.gui.worker.GetLoginQRWorker;
-import io.github.hzhilong.bilibili.backup.gui.worker.LoginRunnable;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 /**
  * 登录账号对话框
@@ -58,7 +60,6 @@ public class LoginUserDialog extends BaseDialog {
         // 对话框居于屏幕中央
         setLocationRelativeTo(null);
         // 点击对话框关闭按钮时，销毁对话框
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLayout(new GridBagLayout());
         JPanel contentPanel = new JPanel();
         contentPanel.setLayout(new GridBagLayout());
@@ -80,16 +81,17 @@ public class LoginUserDialog extends BaseDialog {
     }
 
     private void initListener() {
-
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                close();
+            }
+        });
     }
 
     private void refreshQRCode() {
-        if (getLoginQRWorker != null) {
-            getLoginQRWorker.cancel(true);
-        }
-        if (loginRunnable != null) {
-            loginRunnable.setInterrupt(true);
-        }
+        stopTask();
         lblTipMsg.setText("正在获取登录二维码...");
         getLoginQRWorker = new GetLoginQRWorker(client, this, lblQRCode, lblTipMsg);
         getLoginQRWorker.execute();
@@ -98,6 +100,20 @@ public class LoginUserDialog extends BaseDialog {
     public void waitLogin(QRCode qrCode) {
         loginRunnable = new LoginRunnable(client, this, lblTipMsg, qrCode);
         new Thread(loginRunnable).start();
+    }
+
+    public void close() {
+        stopTask();
+        dispose();
+    }
+
+    private void stopTask() {
+        if (loginRunnable != null) {
+            loginRunnable.setInterrupt(true);
+        }
+        if (getLoginQRWorker != null) {
+            getLoginQRWorker.cancel(true);
+        }
     }
 
 }
