@@ -69,6 +69,7 @@ public class CancelledAccountPage extends PagePanel {
         addFixedContent(jLabel, 0, posY);
 
         txtUid = new JTextField("", 14);
+        txtUid.setMinimumSize(new Dimension(100, 30));
         addFixedContent(txtUid, 1, posY++);
 
         addSeparatorToFixed(0, posY++, 2);
