@@ -1,7 +1,7 @@
-package io.github.hzhilong.bilibili.backup.app.business.impl;
+package io.github.hzhilong.bilibili.backup.app.cli.business.impl;
 
 import io.github.hzhilong.bilibili.backup.app.bean.SavedUser;
-import io.github.hzhilong.bilibili.backup.app.business.BaseBusinessForLoginUser;
+import io.github.hzhilong.bilibili.backup.app.cli.business.BaseBusinessForLoginUser;
 import io.github.hzhilong.bilibili.backup.api.bean.Upper;
 import io.github.hzhilong.base.error.BusinessException;
 import io.github.hzhilong.bilibili.backup.app.service.impl.MessageService;

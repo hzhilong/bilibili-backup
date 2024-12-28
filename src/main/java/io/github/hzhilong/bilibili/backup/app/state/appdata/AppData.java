@@ -1,7 +1,7 @@
 package io.github.hzhilong.bilibili.backup.app.state.appdata;
 
 import io.github.hzhilong.base.utils.StringUtils;
-import io.github.hzhilong.bilibili.backup.app.business.BusinessType;
+import io.github.hzhilong.bilibili.backup.app.business.IBusinessType;
 import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreItem;
 import io.github.hzhilong.bilibili.backup.app.state.PersistenceData;
 import io.github.hzhilong.bilibili.backup.gui.segment.SegmentConfig;
@@ -114,7 +114,7 @@ public class AppData extends Properties implements PersistenceData {
     /**
      * 获取存在的分段处理配置
      */
-    public SegmentConfig getSegmentConfig(String uid, BusinessType businessType, BackupRestoreItem backupRestoreItem) {
+    public SegmentConfig getSegmentConfig(String uid, IBusinessType businessType, BackupRestoreItem backupRestoreItem) {
         String property = read(SegmentConfig.getAppPropertyKey(uid, businessType, backupRestoreItem));
         if (StringUtils.isEmpty(property)) {
             return null;

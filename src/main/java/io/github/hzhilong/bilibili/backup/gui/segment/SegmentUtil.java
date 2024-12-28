@@ -1,13 +1,14 @@
 package io.github.hzhilong.bilibili.backup.gui.segment;
 
-import lombok.extern.slf4j.Slf4j;
 import io.github.hzhilong.bilibili.backup.app.bean.SavedUser;
 import io.github.hzhilong.bilibili.backup.app.business.BusinessType;
+import io.github.hzhilong.bilibili.backup.app.business.IBusinessType;
 import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreItem;
 import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreService;
 import io.github.hzhilong.bilibili.backup.app.service.SegmentableBackupRestoreService;
 import io.github.hzhilong.bilibili.backup.app.state.appdata.AppData;
 import io.github.hzhilong.bilibili.backup.gui.worker.BackupRestoreRunnable;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 import java.awt.*;
@@ -51,7 +52,10 @@ public class SegmentUtil {
         return SegmentMaxSize.SIZE_ALL;
     }
 
-    public static void handle(Component windows, BusinessType businessType, BackupRestoreRunnable runnable, List<JRadioButton> segmentButtons) {
+    public static void handle(Component windows, IBusinessType businessType, BackupRestoreRunnable runnable, List<JRadioButton> segmentButtons) {
+        if(segmentButtons == null){
+            return;
+        }
         SegmentMaxSize segmentMaxSize = getSegmentMaxSize(segmentButtons);
         if (SegmentMaxSize.SIZE_ALL.equals(segmentMaxSize)) {
             log.debug("[{}] 未选择分段处理", businessType);

@@ -1,4 +1,4 @@
-package io.github.hzhilong.bilibili.backup.app.business;
+package io.github.hzhilong.bilibili.backup.app.cli.business;
 
 import lombok.extern.slf4j.Slf4j;
 import io.github.hzhilong.bilibili.backup.app.bean.SavedUser;

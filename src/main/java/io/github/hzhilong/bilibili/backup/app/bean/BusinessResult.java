@@ -1,7 +1,7 @@
 package io.github.hzhilong.bilibili.backup.app.bean;
 
 import io.github.hzhilong.base.bean.BuResult;
-import io.github.hzhilong.bilibili.backup.app.business.BusinessType;
+import io.github.hzhilong.bilibili.backup.app.business.IBusinessType;
 import lombok.Data;
 
 /**
@@ -11,9 +11,9 @@ import lombok.Data;
  * @version 1.0
  */
 @Data
-public class BackupRestoreResult<D> extends BuResult<D> {
+public class BusinessResult<D> extends BuResult<D> {
 
-    private BusinessType businessType;
+    private IBusinessType businessType;
 
     private String itemName;
 

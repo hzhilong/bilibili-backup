@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import io.github.hzhilong.base.error.BusinessException;
 import io.github.hzhilong.base.utils.ListUtil;
+import io.github.hzhilong.base.utils.StringUtils;
 import io.github.hzhilong.bilibili.backup.api.bean.ApiResult;
 import io.github.hzhilong.bilibili.backup.api.bean.Relation;
 import io.github.hzhilong.bilibili.backup.api.bean.RelationAct;
@@ -15,8 +16,9 @@ import io.github.hzhilong.bilibili.backup.api.request.ListApi;
 import io.github.hzhilong.bilibili.backup.api.request.ModifyApi;
 import io.github.hzhilong.bilibili.backup.api.request.PageApi;
 import io.github.hzhilong.bilibili.backup.api.user.User;
-import io.github.hzhilong.bilibili.backup.app.bean.BackupRestoreResult;
+import io.github.hzhilong.bilibili.backup.app.bean.BusinessResult;
 import io.github.hzhilong.bilibili.backup.app.business.BusinessType;
+import io.github.hzhilong.bilibili.backup.app.business.IBusinessType;
 import io.github.hzhilong.bilibili.backup.app.service.RelationService;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
@@ -53,7 +55,7 @@ public class FollowingService extends RelationService {
     }
 
     @Override
-    public List<BackupRestoreResult<List<Relation>>> backup() throws BusinessException {
+    public List<BusinessResult<List<Relation>>> backup() throws BusinessException {
         try {
             backupData("关注分组", this::getRelationTags);
         } catch (BusinessException be) {
@@ -79,15 +81,16 @@ public class FollowingService extends RelationService {
                 List.class, RelationTag.class).getList();
     }
 
-    private List<Relation> getRelations(BusinessType businessType) throws BusinessException {
+    private List<Relation> getRelations(IBusinessType businessType) throws BusinessException {
         if (BusinessType.BACKUP.equals(businessType)) {
             return pageApi.getAllData(getSegmentBackupPageNo(), getSegmentBackupMaxSize());
         }
+        pageApi.setPageSize(50);
         return pageApi.getAllData();
     }
 
     @Override
-    public List<BackupRestoreResult<List<Relation>>> restore() throws BusinessException {
+    public List<BusinessResult<List<Relation>>> restore() throws BusinessException {
         log.info("正在还原[关注]...");
         List<RelationTag> oldTags = JSONObject.parseObject(
                 readJsonFile(path, "", "关注分组"), new TypeReference<List<RelationTag>>() {
@@ -163,8 +166,11 @@ public class FollowingService extends RelationService {
         }
 
         Set<Long> failIds = new HashSet<>();
-        for (Relation oldFollowing : oldFollowings) {
+        String logNoFormat = StringUtils.getLogNoFormat(oldFollowings.size());
+        for (int i = 0; i < oldFollowings.size(); i++) {
+            Relation oldFollowing = oldFollowings.get(i);
             handleInterrupt();
+            log.info("{} UP主：{}", String.format(logNoFormat, i + 1), oldFollowing.getUname());
             boolean isFollowed = false;
             boolean modifySuccess = true;
             if (newFollowingIds.contains(oldFollowing.getMid())) {
@@ -245,15 +251,15 @@ public class FollowingService extends RelationService {
             }
         }
         callbackRestoreSegment(oldFollowings);
-        List<BackupRestoreResult<List<Relation>>> results = new ArrayList<>();
-        BackupRestoreResult<List<Relation>> result = getListBackupRestoreResult(oldFollowings, failIds);
+        List<BusinessResult<List<Relation>>> results = new ArrayList<>();
+        BusinessResult<List<Relation>> result = getListBackupRestoreResult(oldFollowings, failIds);
         results.add(result);
         return results;
     }
 
     @NotNull
-    private static BackupRestoreResult<List<Relation>> getListBackupRestoreResult(List<Relation> oldFollowings, Set<Long> failIds) {
-        BackupRestoreResult<List<Relation>> result = new BackupRestoreResult<>();
+    private static BusinessResult<List<Relation>> getListBackupRestoreResult(List<Relation> oldFollowings, Set<Long> failIds) {
+        BusinessResult<List<Relation>> result = new BusinessResult<>();
         result.setBusinessType(BusinessType.RESTORE);
         result.setItemName("关注");
         int oldSize = oldFollowings.size();
@@ -320,5 +326,26 @@ public class FollowingService extends RelationService {
             pageApi.setInterrupt(interrupt);
         }
         super.setInterrupt(interrupt);
+    }
+
+    @Override
+    public List<BusinessResult<List<Relation>>> clear() throws BusinessException {
+        return createResults(clearList("关注",
+                new ClearListCallback<Relation>() {
+                    @Override
+                    public List<Relation> getList() throws BusinessException {
+                        return FollowingService.this.getRelations(BusinessType.CLEAR);
+                    }
+
+                    @Override
+                    public void delData(Relation data) throws BusinessException {
+                        FollowingService.this.modify(data, RelationAct.UNFOLLOW, false);
+                    }
+
+                    @Override
+                    public String dataName(Relation data) {
+                        return String.format("关注[%s]", data.getUname());
+                    }
+                }));
     }
 }

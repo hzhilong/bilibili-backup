@@ -1,11 +1,11 @@
 package io.github.hzhilong.bilibili.backup.gui.segment;
 
+import io.github.hzhilong.bilibili.backup.app.business.IBusinessType;
+import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreItem;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import io.github.hzhilong.bilibili.backup.app.business.BusinessType;
-import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreItem;
 
 /**
  * 分段处理的配置
@@ -21,7 +21,7 @@ public class SegmentConfig {
 
     public static final String SEPARATOR = "@";
 
-    private BusinessType businessType;
+    private IBusinessType businessType;
 
     private String uid;
 
@@ -32,7 +32,7 @@ public class SegmentConfig {
     private int nextPage;
 
 
-    public static String getAppPropertyKey(String uid, BusinessType businessType, BackupRestoreItem backupRestoreItem) {
+    public static String getAppPropertyKey(String uid, IBusinessType businessType, BackupRestoreItem backupRestoreItem) {
         return uid + SEPARATOR + businessType + SEPARATOR + backupRestoreItem.getName();
     }
 
@@ -44,7 +44,7 @@ public class SegmentConfig {
         return path + SEPARATOR + nextPage;
     }
 
-    public static SegmentConfig parse(String uid, BusinessType businessType, BackupRestoreItem backupRestoreItem, String appPropertyValue) {
+    public static SegmentConfig parse(String uid, IBusinessType businessType, BackupRestoreItem backupRestoreItem, String appPropertyValue) {
         SegmentConfig segmentConfig = new SegmentConfig();
         segmentConfig.setUid(uid);
         segmentConfig.setBusinessType(businessType);

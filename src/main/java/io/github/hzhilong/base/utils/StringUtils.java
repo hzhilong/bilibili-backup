@@ -82,4 +82,13 @@ public class StringUtils {
         return result;
     }
 
+    /**
+     * 获取日志序号的格式化模板
+     *
+     * @param size 列表大小
+     * @return String.format第一个参数值
+     */
+    public static String getLogNoFormat(int size) {
+        return "%" + String.valueOf(size).length() + "d/" + size + ". ";
+    }
 }

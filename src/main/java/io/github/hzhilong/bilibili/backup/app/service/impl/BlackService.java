@@ -6,8 +6,9 @@ import io.github.hzhilong.bilibili.backup.api.bean.RelationAct;
 import io.github.hzhilong.bilibili.backup.api.bean.page.PageData;
 import io.github.hzhilong.bilibili.backup.api.request.PageApi;
 import io.github.hzhilong.bilibili.backup.api.user.User;
-import io.github.hzhilong.bilibili.backup.app.bean.BackupRestoreResult;
+import io.github.hzhilong.bilibili.backup.app.bean.BusinessResult;
 import io.github.hzhilong.bilibili.backup.app.business.BusinessType;
+import io.github.hzhilong.bilibili.backup.app.business.IBusinessType;
 import io.github.hzhilong.bilibili.backup.app.service.RelationService;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
@@ -38,7 +39,7 @@ public class BlackService extends RelationService {
                 Relation.class);
     }
 
-    public List<Relation> getList(BusinessType businessType) throws BusinessException {
+    public List<Relation> getList(IBusinessType businessType) throws BusinessException {
         if (BusinessType.BACKUP.equals(businessType)) {
             return pageApi.getAllData(getSegmentBackupPageNo(), getSegmentBackupMaxSize());
         }
@@ -46,7 +47,7 @@ public class BlackService extends RelationService {
     }
 
     @Override
-    public List<BackupRestoreResult<List<Relation>>> backup() throws BusinessException {
+    public List<BusinessResult<List<Relation>>> backup() throws BusinessException {
         return createResults(backupData("黑名单",
                 new BackupCallback<List<Relation>>() {
                     @Override
@@ -62,7 +63,7 @@ public class BlackService extends RelationService {
     }
 
     @Override
-    public List<BackupRestoreResult<List<Relation>>> restore() throws BusinessException {
+    public List<BusinessResult<List<Relation>>> restore() throws BusinessException {
         return createResults(
                 restoreList("黑名单", Relation.class,
                         getSegmentRestorePageNo(), getSegmentRestoreMaxSize(),
@@ -92,6 +93,27 @@ public class BlackService extends RelationService {
                                 callbackRestoreSegment(oldData);
                             }
                         }));
+    }
+
+    @Override
+    public List<BusinessResult<List<Relation>>> clear() throws BusinessException {
+        return createResults(clearList("黑名单",
+                new ClearListCallback<Relation>() {
+                    @Override
+                    public List<Relation> getList() throws BusinessException {
+                        return BlackService.this.getList(BusinessType.CLEAR);
+                    }
+
+                    @Override
+                    public void delData(Relation data) throws BusinessException {
+                        BlackService.this.modify(data, RelationAct.UNBLOCK, false);
+                    }
+
+                    @Override
+                    public String dataName(Relation data) {
+                        return String.format("黑名单[%s]", data.getUname());
+                    }
+                }));
     }
 
     @Override

@@ -3,6 +3,7 @@ package io.github.hzhilong.bilibili.backup.app.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import io.github.hzhilong.base.error.BusinessException;
 import io.github.hzhilong.base.utils.ListUtil;
+import io.github.hzhilong.base.utils.StringUtils;
 import io.github.hzhilong.bilibili.backup.api.bean.ApiResult;
 import io.github.hzhilong.bilibili.backup.api.bean.FavFolder;
 import io.github.hzhilong.bilibili.backup.api.bean.Media;
@@ -13,11 +14,13 @@ import io.github.hzhilong.bilibili.backup.api.request.ListApi;
 import io.github.hzhilong.bilibili.backup.api.request.ModifyApi;
 import io.github.hzhilong.bilibili.backup.api.request.PageApi;
 import io.github.hzhilong.bilibili.backup.api.user.User;
-import io.github.hzhilong.bilibili.backup.app.bean.BackupRestoreResult;
+import io.github.hzhilong.bilibili.backup.app.bean.BusinessResult;
 import io.github.hzhilong.bilibili.backup.app.business.BusinessType;
 import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreService;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
+import org.apache.commons.collections4.ListUtils;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -28,6 +31,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * 收藏夹
@@ -79,8 +84,8 @@ public class FavoritesService extends BackupRestoreService<FavFolder> {
     }
 
     @Override
-    public List<BackupRestoreResult<List<FavFolder>>> backup() throws BusinessException {
-        BackupRestoreResult<List<FavFolder>> folderResult = backupData("收藏夹", "创建的收藏夹",
+    public List<BusinessResult<List<FavFolder>>> backup() throws BusinessException {
+        BusinessResult<List<FavFolder>> folderResult = backupData("收藏夹", "创建的收藏夹",
                 new BackupCallback<List<FavFolder>>() {
                     @Override
                     public List<FavFolder> getData() throws BusinessException {
@@ -113,16 +118,16 @@ public class FavoritesService extends BackupRestoreService<FavFolder> {
             return createResults(folderResult);
         }
         List<FavFolder> favFolders = folderResult.getData();
-        List<BackupRestoreResult<List<FavFolder>>> results = new ArrayList<>(favFolders.size());
+        List<BusinessResult<List<FavFolder>>> results = new ArrayList<>(favFolders.size());
         for (FavFolder favFolder : favFolders) {
-            BackupRestoreResult<List<FavFolder>> tempResult = new BackupRestoreResult<>();
+            BusinessResult<List<FavFolder>> tempResult = new BusinessResult<>();
             tempResult.setItemName(folderResult.getItemName());
             tempResult.setBusinessType(folderResult.getBusinessType());
             tempResult.setData(Collections.singletonList(favFolder));
             String title = favFolder.getTitle();
             try {
                 log.info("正在备份收藏夹[{}]...", title);
-                BackupRestoreResult<FavPageData> favPageResult = backupData("收藏夹", getFileName(favFolder),
+                BusinessResult<FavPageData> favPageResult = backupData("收藏夹", getFileName(favFolder),
                         new BackupCallback<FavPageData>() {
                             @Override
                             public FavPageData getData() throws BusinessException {
@@ -153,9 +158,9 @@ public class FavoritesService extends BackupRestoreService<FavFolder> {
     }
 
     @Override
-    public List<BackupRestoreResult<List<FavFolder>>> restore() throws BusinessException {
+    public List<BusinessResult<List<FavFolder>>> restore() throws BusinessException {
         log.info("正在还原收藏夹...");
-        BackupRestoreResult<List<FavFolder>> folderResult = restoreList(
+        BusinessResult<List<FavFolder>> folderResult = restoreList(
                 "收藏夹", "创建的收藏夹", FavFolder.class,
                 new RestoreCallback<FavFolder>() {
                     @Override
@@ -170,7 +175,7 @@ public class FavoritesService extends BackupRestoreService<FavFolder> {
 
                     @Override
                     public String dataName(FavFolder data) {
-                        return String.format("收藏夹[%s]", data.getTitle());
+                        return getDataName(data);
                     }
 
                     @Override
@@ -198,7 +203,7 @@ public class FavoritesService extends BackupRestoreService<FavFolder> {
             return createResults(folderResult);
         }
 
-        List<BackupRestoreResult<List<FavFolder>>> results = new ArrayList<>(newFolders.size());
+        List<BusinessResult<List<FavFolder>>> results = new ArrayList<>(newFolders.size());
         // 需获取一下收藏夹，因为id和备份的不一样
         newFolders = getFavFolders();
 
@@ -229,7 +234,7 @@ public class FavoritesService extends BackupRestoreService<FavFolder> {
             handleInterrupt();
 
             String oldFolderTitle = oldFolder.getTitle();
-            BackupRestoreResult<List<FavFolder>> result = new BackupRestoreResult<>();
+            BusinessResult<List<FavFolder>> result = new BusinessResult<>();
             result.setBusinessType(BusinessType.RESTORE);
             result.setItemName("收藏夹：" + oldFolderTitle);
             result.setSuccess(true);
@@ -271,7 +276,10 @@ public class FavoritesService extends BackupRestoreService<FavFolder> {
         }
         log.info("即将收藏{}个视频", videoFavNewIds.size());
         Set<Long> failIds = new HashSet<>();
+        int i = 0;
+        String logNoFormat = StringUtils.getLogNoFormat(videoFavNewIds.size());
         for (Map.Entry<Long, List<Long>> entry : videoFavNewIds.entrySet()) {
+            i++;
             handleInterrupt();
             Long mediaId = entry.getKey();
             List<Long> folderIds = entry.getValue();
@@ -284,7 +292,7 @@ public class FavoritesService extends BackupRestoreService<FavFolder> {
                 }
             }
             if (!isNeedAdd) {
-                log.info("[{}]已收藏", media.getTitle());
+                log.info("{}[{}]已收藏", String.format(logNoFormat, i), media.getTitle());
             } else {
                 ApiResult<Object> apiResult = new ModifyApi<>(client, user,
                         "https://api.bilibili.com/x/v3/fav/resource/deal", JSONObject.class).modify(
@@ -301,10 +309,10 @@ public class FavoritesService extends BackupRestoreService<FavFolder> {
                         }}
                 );
                 if (apiResult.isFail()) {
-                    log.info("收藏[{}]失败：{}({})", media.getTitle(), apiResult.getMessage(), apiResult.getCode());
+                    log.info("{}收藏[{}]失败：{}({})", String.format(logNoFormat, i), media.getTitle(), apiResult.getMessage(), apiResult.getCode());
                     failIds.add(mediaId);
                 } else {
-                    log.info("收藏[{}]成功", media.getTitle());
+                    log.info("{}收藏[{}]成功", String.format(logNoFormat, i), media.getTitle());
                 }
                 try {
                     Thread.sleep(2000);
@@ -313,7 +321,7 @@ public class FavoritesService extends BackupRestoreService<FavFolder> {
             }
         }
         // 统计结果
-        for (BackupRestoreResult<List<FavFolder>> result : results) {
+        for (BusinessResult<List<FavFolder>> result : results) {
             if (result.isSuccess()) {
                 FavFolder favFolder = result.getData().get(0);
                 List<Media> medias = favFolder.getMedias();
@@ -337,12 +345,93 @@ public class FavoritesService extends BackupRestoreService<FavFolder> {
         return results;
     }
 
+    @NotNull
+    private static String getDataName(FavFolder data) {
+        return String.format("收藏夹[%s]", data.getTitle());
+    }
+
     @Override
     public void initFileName(Map<String, String> fileNames) {
         fileNames.put("收藏夹", "Favorites");
         fileNames.put("创建的收藏夹", "CreatedFavorites");
     }
 
+    private BusinessResult<List<FavFolder>> buildClearResult(String buName, boolean success, String msg) {
+        BusinessResult<List<FavFolder>> result = new BusinessResult<>();
+        result.setBusinessType(BusinessType.CLEAR);
+        result.setItemName(buName);
+        if (success) {
+            result.setSuccess(msg);
+        } else {
+            result.setFailed(msg);
+        }
+        return result;
+    }
+
+    @Override
+    public List<BusinessResult<List<FavFolder>>> clear() throws BusinessException {
+        String buName = "收藏夹";
+        log.info("正在清空{}...", buName);
+        List<BusinessResult<List<FavFolder>>> results = new ArrayList<>();
+        List<FavFolder> favFolders = getFavFolders();
+        if (ListUtil.isEmpty(favFolders)) {
+            results.add(buildClearResult(buName, false, "数据为空，无需清空"));
+            return results;
+        }
+        String formatFolder = StringUtils.getLogNoFormat(favFolders.size());
+        for (int i = 0; i < favFolders.size(); i++) {
+            FavFolder favFolder = favFolders.get(i);
+            String favFolderName = getDataName(favFolder);
+            log.info("{}{}", String.format(formatFolder, i + 1), favFolderName);
+            if (favFolder.isDefault()) {
+                FavPageData favPageData = getFavData(favFolder.getId());
+                if (favPageData == null || ListUtil.isEmpty(favPageData.getList())) {
+                    results.add(buildClearResult(favFolderName, false, "收藏夹为空，无需清空"));
+                } else {
+                    List<List<Media>> partition = ListUtils.partition(favPageData.getList(), 40);
+                    for (int i1 = 0; i1 < partition.size(); i1++) {
+                        List<Media> list = partition.get(i1);
+                        log.info("正在删除第{}页，共{}条数据...", i1 + 1, list.size());
+                        String resources = list.stream().map(new Function<Media, String>() {
+                            @Override
+                            public String apply(Media media) {
+                                return String.format("%s:%s", media.getId(), media.getType());
+                            }
+                        }).collect(Collectors.joining(","));
+                        ApiResult<Object> apiResult = new ModifyApi<Object>(client, user,
+                                "https://api.bilibili.com/x/v3/fav/resource/batch-del", Object.class)
+                                .modify(
+                                        new HashMap<String, String>() {{
+                                            put("resources", resources);
+                                            put("platform", "web");
+                                            put("media_id", String.valueOf(favPageData.getInfo().getId()));
+                                        }}
+                                );
+                        if (apiResult.isFail()) {
+                            results.add(buildClearResult(favFolderName, false, "批量取消收藏失败：" + apiResult.getMessage()));
+                            break;
+                        }
+                    }
+                    results.add(buildClearResult(favFolderName, true, "成功清空" + favPageData.getList().size() + "条数据"));
+                }
+            } else {
+                log.info("正在删除{}...", favFolderName);
+                ApiResult<Object> apiResult = new ModifyApi<Object>(client, user,
+                        "https://api.bilibili.com/x/v3/fav/folder/del", Object.class)
+                        .modify(
+                                new HashMap<String, String>() {{
+                                    put("platform", "web");
+                                    put("media_ids", String.valueOf(favFolder.getId()));
+                                }}
+                        );
+                if (apiResult.isFail()) {
+                    throw new BusinessException(apiResult);
+                }
+                results.add(buildClearResult(favFolderName, true, "清空成功"));
+            }
+        }
+        return results;
+    }
 
     @Override
     public int getBackupCount(File dir) throws BusinessException {

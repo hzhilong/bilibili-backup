@@ -32,4 +32,8 @@ public class FavInfo {
     private String cover;
     private Integer ctime;
     private Integer mediaCount;
+
+    public boolean isDefault() {
+        return (attr >> 1 & 1) != 1;
+    }
 }

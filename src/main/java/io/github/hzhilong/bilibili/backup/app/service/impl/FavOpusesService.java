@@ -10,7 +10,7 @@ import io.github.hzhilong.bilibili.backup.api.request.BaseApi;
 import io.github.hzhilong.bilibili.backup.api.request.ModifyApi;
 import io.github.hzhilong.bilibili.backup.api.request.PageApi;
 import io.github.hzhilong.bilibili.backup.api.user.User;
-import io.github.hzhilong.bilibili.backup.app.bean.BackupRestoreResult;
+import io.github.hzhilong.bilibili.backup.app.bean.BusinessResult;
 import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreService;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
@@ -43,12 +43,12 @@ public class FavOpusesService extends BackupRestoreService<Opus> {
     }
 
     @Override
-    public List<BackupRestoreResult<List<Opus>>> backup() throws BusinessException {
+    public List<BusinessResult<List<Opus>>> backup() throws BusinessException {
         return createResults(backupData("收藏的专栏", this::getList));
     }
 
     @Override
-    public List<BackupRestoreResult<List<Opus>>> restore() throws BusinessException {
+    public List<BusinessResult<List<Opus>>> restore() throws BusinessException {
         return createResults(restoreList("收藏的专栏", Opus.class,
                 new RestoreCallback<Opus>() {
                     @Override
@@ -111,5 +111,49 @@ public class FavOpusesService extends BackupRestoreService<Opus> {
     @Override
     public int getBackupCount(File dir) throws BusinessException {
         return getBackupListSize(dir, "", "收藏的专栏");
+    }
+
+    @Override
+    public List<BusinessResult<List<Opus>>> clear() throws BusinessException {
+        return createResults(clearList("收藏的专栏", new ClearListCallback<Opus>() {
+            @Override
+            public List<Opus> getList() throws BusinessException {
+                return FavOpusesService.this.getList();
+            }
+
+            @Override
+            public void delData(Opus data) throws BusinessException {
+                JSONObject reqData = new JSONObject();
+                reqData.put("action", 4);
+                reqData.put("entity", new JSONObject() {{
+                    put("object_id_str", String.valueOf(data.getOpusId()));
+                    put("type", new JSONObject() {{
+                        put("biz", 2);
+                    }});
+                }});
+                reqData.put("", new JSONObject() {{
+                    put("from", "unknown");
+                    put("from_spmid", "333.1387.0.0");
+                    put("spmid", "444.42.0.0");
+                }});
+                ApiResult<Object> apiResult = new BaseApi<Object>(client, user,
+                        "https://api.bilibili.com/x/community/cosmo/interface/simple_action",
+                        new AddQueryParams() {
+                            @Override
+                            public void addQueryParams(Map<String, String> queryParams) {
+                                queryParams.put("csrf", user.getBiliJct());
+                            }
+                        }, true, Object.class)
+                        .apiPost(reqData.toJSONString());
+                if (apiResult.isFail()) {
+                    throw new BusinessException(apiResult);
+                }
+            }
+
+            @Override
+            public String dataName(Opus data) {
+                return String.format("专栏[%s]", data.getTitle());
+            }
+        }));
     }
 }

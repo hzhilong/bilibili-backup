@@ -2,9 +2,10 @@ package io.github.hzhilong.bilibili.backup.gui.worker;
 
 import io.github.hzhilong.base.bean.BuCallback;
 import io.github.hzhilong.base.error.BusinessException;
-import io.github.hzhilong.bilibili.backup.app.bean.BackupRestoreResult;
+import io.github.hzhilong.bilibili.backup.app.bean.BusinessResult;
 import io.github.hzhilong.bilibili.backup.app.bean.SavedUser;
 import io.github.hzhilong.bilibili.backup.app.business.BusinessType;
+import io.github.hzhilong.bilibili.backup.app.business.IBusinessType;
 import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreItem;
 import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreService;
 import lombok.extern.slf4j.Slf4j;
@@ -27,12 +28,12 @@ public class BackupRunnable extends BackupRestoreRunnable {
     }
 
     @Override
-    protected List<BackupRestoreResult> runService(BackupRestoreItem item, BackupRestoreService service) throws BusinessException {
+    protected List<BusinessResult> runService(BackupRestoreItem item, BackupRestoreService service) throws BusinessException {
         return service.backup();
     }
 
     @Override
-    protected BusinessType getBusinessType() {
+    protected IBusinessType getBusinessType() {
         return BusinessType.BACKUP;
     }
 }

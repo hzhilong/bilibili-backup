@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 public class Bangumi {
     private Long seasonId;
     private Long mediaId;
+    private String seasonType;
     private String seasonTypeName;
     private String title;
     private String cover;

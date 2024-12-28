@@ -3,6 +3,7 @@ package io.github.hzhilong.bilibili.backup.app.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import io.github.hzhilong.base.error.BusinessException;
 import io.github.hzhilong.base.utils.ListUtil;
+import io.github.hzhilong.base.utils.StringUtils;
 import io.github.hzhilong.bilibili.backup.api.bean.ApiResult;
 import io.github.hzhilong.bilibili.backup.api.bean.page.SessionPageData;
 import io.github.hzhilong.bilibili.backup.api.request.AddQueryParams;
@@ -68,7 +69,7 @@ public class MessageService extends BaseService {
                 });
         int sessionCount = allSession.size();
         log.info("已获取{}条消息...", sessionCount);
-        String format = "% " + String.valueOf(sessionCount).length() + "d/%d. %s";
+        String logNoFormat = StringUtils.getLogNoFormat(sessionCount);
         if (sessionCount < 1) {
             return;
         }
@@ -81,22 +82,22 @@ public class MessageService extends BaseService {
             Integer sessionType = session.getInteger("session_type");
             Integer unreadCount = session.getInteger("unread_count");
 
-            log.info(String.format(format, i + 1, sessionCount, title));
+            log.info("{}{}", String.format(logNoFormat, i + 1), title);
             if (delete) {
                 ApiResult<Object> apiResult = removeSession(talkerId, sessionType);
                 if (apiResult.isSuccess()) {
-                    log.info("删除成功");
+                    log.info("{}删除成功", String.format(logNoFormat, i + 1));
                 } else {
-                    log.info("删除失败{}", apiResult.getMessage());
+                    log.info("{}删除失败{}", String.format(logNoFormat, i + 1), apiResult.getMessage());
                 }
                 sleep(1);
             } else if (unreadCount > 0) {
-                log.info("存在未读消息");
+                log.info("{}存在未读消息", String.format(logNoFormat, i + 1));
                 ApiResult<Object> apiResult = readSession(talkerId, sessionType, ackSeqno);
                 if (apiResult.isSuccess()) {
-                    log.info("已读成功");
+                    log.info("{}已读成功", String.format(logNoFormat, i + 1));
                 } else {
-                    log.info("已读失败{}", apiResult.getMessage());
+                    log.info("{}已读失败{}", String.format(logNoFormat, i + 1), apiResult.getMessage());
                 }
                 sleep(1);
             }

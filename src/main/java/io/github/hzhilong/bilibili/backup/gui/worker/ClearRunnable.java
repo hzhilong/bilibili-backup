@@ -11,30 +11,29 @@ import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreService;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 
-import java.io.File;
 import java.util.LinkedHashSet;
 import java.util.List;
 
 /**
- * 还原的线程
+ * 清空的线程
  *
  * @author hzhilong
  * @version 1.0
  */
 @Slf4j
-public class RestoreRunnable extends BackupRestoreRunnable {
+public class ClearRunnable extends BackupRestoreRunnable {
 
-    public RestoreRunnable(OkHttpClient client, SavedUser user, LinkedHashSet<BackupRestoreItem> backupRestoreItems, String backupDirPath, BuCallback<Void> buCallback) {
-        super(client, user, backupRestoreItems, backupDirPath.endsWith(File.separator) ? backupDirPath : (backupDirPath + File.separator), buCallback);
-    }
-
-    @Override
-    protected IBusinessType getBusinessType() {
-        return BusinessType.RESTORE;
+    public ClearRunnable(OkHttpClient client, SavedUser user, LinkedHashSet<BackupRestoreItem> backupRestoreItems, BuCallback<Void> buCallback) {
+        super(client, user, backupRestoreItems, null, buCallback);
     }
 
     @Override
     protected List<BusinessResult> runService(BackupRestoreItem item, BackupRestoreService service) throws BusinessException {
-        return service.restore();
+        return service.clear();
+    }
+
+    @Override
+    protected IBusinessType getBusinessType() {
+        return BusinessType.CLEAR;
     }
 }

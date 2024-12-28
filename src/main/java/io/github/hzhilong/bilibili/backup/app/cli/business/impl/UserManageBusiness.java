@@ -1,8 +1,8 @@
-package io.github.hzhilong.bilibili.backup.app.business.impl;
+package io.github.hzhilong.bilibili.backup.app.cli.business.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import io.github.hzhilong.bilibili.backup.app.bean.SavedUser;
-import io.github.hzhilong.bilibili.backup.app.business.BaseBusiness;
+import io.github.hzhilong.bilibili.backup.app.cli.business.BaseBusiness;
 import io.github.hzhilong.bilibili.backup.app.cli.UserMenu;
 import io.github.hzhilong.bilibili.backup.app.state.UserManager;
 import io.github.hzhilong.bilibili.backup.api.bean.Upper;

@@ -89,16 +89,34 @@ public abstract class RelationService extends SegmentableBackupRestoreService<Re
      * 操作用户关系
      */
     public void modify(Relation relation, RelationAct act) throws BusinessException {
-        preventRiskCtrl(relation);
+        modify(relation, act, true);
+    }
+
+    public void modify(Relation relation, RelationAct act, boolean preventRiskCtrl) throws BusinessException {
+        // 防止风控
+        if (preventRiskCtrl) {
+            preventRiskCtrl(relation);
+        }
 
         ApiResult<Void> apiResult = new ModifyApi<Void>(client, user, "https://api.bilibili.com/x/relation/modify",
-                Void.class).modify(
+                new AddQueryParams() {
+                    @Override
+                    public void addQueryParams(Map<String, String> queryParams) {
+                        if (!RelationAct.BLOCK.equals(act)) {
+                            queryParams.put("x-bili-device-req-json", "{\"platform\":\"web\",\"device\":\"pc\",\"spmid\":\"333.1387\"}");
+                        }
+                    }
+                }, Void.class).modify(
                 new HashMap<String, String>() {{
                     put("fid", String.valueOf(relation.getMid()));
                     put("act", String.valueOf(act.getCode()));
-                    put("re_src", "120");
+                    put("re_src", act.getReSrc());
                     put("spmid", "333.337.0.0");
-                    put("extend_content", "{\"entity\":\"query\",\"entity_id\":\"" + relation.getUname() + "\"}");
+                    put("extend_content", "{\"entity\":\"query\",\"entity_id\":\"" + relation.getMid() + "\"}");
+                    put("gaia_source", "web_main");
+                    if (!RelationAct.BLOCK.equals(act)) {
+                        put("is_from_frontend_component", "true");
+                    }
                 }});
         if (apiResult.isSuccess()) {
             log.info("成功{}用户：{}", act.getName(), relation.getUname());

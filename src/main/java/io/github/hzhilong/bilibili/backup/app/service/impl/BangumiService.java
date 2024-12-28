@@ -7,7 +7,7 @@ import io.github.hzhilong.bilibili.backup.api.bean.Bangumi;
 import io.github.hzhilong.bilibili.backup.api.request.ModifyApi;
 import io.github.hzhilong.bilibili.backup.api.request.PageApi;
 import io.github.hzhilong.bilibili.backup.api.user.User;
-import io.github.hzhilong.bilibili.backup.app.bean.BackupRestoreResult;
+import io.github.hzhilong.bilibili.backup.app.bean.BusinessResult;
 import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreService;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
@@ -53,14 +53,14 @@ public class BangumiService extends BackupRestoreService<Bangumi> {
     }
 
     @Override
-    public List<BackupRestoreResult<List<Bangumi>>> backup() throws BusinessException {
+    public List<BusinessResult<List<Bangumi>>> backup() throws BusinessException {
         return createResults(
                 backupData("我的追番", () -> getList("1")),
                 backupData("我的追剧", () -> getList("2")));
     }
 
     @Override
-    public List<BackupRestoreResult<List<Bangumi>>> restore() throws BusinessException {
+    public List<BusinessResult<List<Bangumi>>> restore() throws BusinessException {
         return createResults(
                 restoreList("我的追番", Bangumi.class, getRestoreCallback("1")),
                 restoreList("我的追剧", Bangumi.class, getRestoreCallback("2")));
@@ -81,7 +81,7 @@ public class BangumiService extends BackupRestoreService<Bangumi> {
 
             @Override
             public String dataName(Bangumi data) {
-                return String.format("[%s]", data.getTitle());
+                return getDataName(data);
             }
 
             @Override
@@ -91,10 +91,49 @@ public class BangumiService extends BackupRestoreService<Bangumi> {
         };
     }
 
+    @NotNull
+    private static String getDataName(Bangumi data) {
+        return String.format("[%s]", data.getTitle());
+    }
+
     @Override
     public void initFileName(Map<String, String> fileNames) {
         fileNames.put("我的追番", "Bangumi1");
         fileNames.put("我的追剧", "Bangumi2");
+    }
+
+    @Override
+    public List<BusinessResult<List<Bangumi>>> clear() throws BusinessException {
+        return createResults(clearList("我的追番", getClearCallback("1")),
+                clearList("我的追剧", getClearCallback("2")));
+    }
+
+    @NotNull
+    private ClearListCallback<Bangumi> getClearCallback(String type) {
+        return new ClearListCallback<Bangumi>() {
+            @Override
+            public List<Bangumi> getList() throws BusinessException {
+                return BangumiService.this.getList(type);
+            }
+
+            @Override
+            public void delData(Bangumi data) throws BusinessException {
+                ApiResult<Object> apiResult = new ModifyApi<Object>(client, user,
+                        "https://api.bilibili.com/pgc/web/follow/del", Object.class)
+                        .modify(new HashMap<String, String>() {{
+                            put("season_id", String.valueOf(data.getSeasonId()));
+                            put("season_type", String.valueOf(data.getSeasonType()));
+                        }});
+                if (apiResult.isFail()) {
+                    throw new BusinessException(apiResult);
+                }
+            }
+
+            @Override
+            public String dataName(Bangumi data) {
+                return getDataName(data);
+            }
+        };
     }
 
     @Override

@@ -6,6 +6,7 @@ import io.github.hzhilong.bilibili.backup.app.service.impl.BlackService;
 import io.github.hzhilong.bilibili.backup.app.service.impl.FavCollectedService;
 import io.github.hzhilong.bilibili.backup.app.service.impl.FavOpusesService;
 import io.github.hzhilong.bilibili.backup.app.service.impl.FavoritesService;
+import io.github.hzhilong.bilibili.backup.app.service.impl.FollowerService;
 import io.github.hzhilong.bilibili.backup.app.service.impl.FollowingService;
 import io.github.hzhilong.bilibili.backup.app.service.impl.HistoryService;
 import io.github.hzhilong.bilibili.backup.app.service.impl.ToViewService;
@@ -24,7 +25,8 @@ public enum BackupRestoreItem {
     FAV_OPUSES("收藏的专栏", FavOpusesService::new),
     BANGUMI("我的追番/追剧", BangumiService::new),
     FAV_COLLECTED("收藏的视频合集", FavCollectedService::new),
-    HISTORY("历史记录", HistoryService::new);
+    HISTORY("历史记录", HistoryService::new),
+    FOLLOWER("粉丝", FollowerService::new);
 
     /**
      * 服务名称

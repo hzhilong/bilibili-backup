@@ -1,10 +1,11 @@
 package io.github.hzhilong.bilibili.backup.api.request;
 
-import okhttp3.OkHttpClient;
-import io.github.hzhilong.bilibili.backup.api.bean.ApiResult;
 import io.github.hzhilong.base.error.BusinessException;
+import io.github.hzhilong.bilibili.backup.api.bean.ApiResult;
 import io.github.hzhilong.bilibili.backup.api.user.User;
+import okhttp3.OkHttpClient;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -24,6 +25,9 @@ public class ModifyApi<D> extends BaseApi<D> {
     }
 
     public ApiResult<D> modify(Map<String, String> formParams) throws BusinessException {
+        if (formParams == null) {
+            formParams = new HashMap<>(1);
+        }
         formParams.put("csrf", user.getBiliJct());
         return apiPost(formParams);
     }

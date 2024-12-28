@@ -10,7 +10,7 @@ import io.github.hzhilong.base.utils.ListUtil;
 import io.github.hzhilong.base.utils.StringUtils;
 import io.github.hzhilong.bilibili.backup.api.user.User;
 import io.github.hzhilong.bilibili.backup.app.bean.BackupRestoreItemInfo;
-import io.github.hzhilong.bilibili.backup.app.bean.BackupRestoreResult;
+import io.github.hzhilong.bilibili.backup.app.bean.BusinessResult;
 import io.github.hzhilong.bilibili.backup.app.business.BusinessType;
 import lombok.Getter;
 import lombok.Setter;
@@ -64,18 +64,18 @@ public abstract class BackupRestoreService<T> extends BaseService implements Bac
         this.initFileName(mapFileName);
     }
 
-    public abstract List<BackupRestoreResult<List<T>>> backup() throws BusinessException;
+    public abstract List<BusinessResult<List<T>>> backup() throws BusinessException;
 
-    public abstract List<BackupRestoreResult<List<T>>> restore() throws BusinessException;
+    public abstract List<BusinessResult<List<T>>> restore() throws BusinessException;
 
     @SafeVarargs
-    protected final List<BackupRestoreResult<List<T>>> createResults(BackupRestoreResult<List<T>>... results) {
+    protected final List<BusinessResult<List<T>>> createResults(BusinessResult<List<T>>... results) {
         if (results == null) {
             return new ArrayList<>(0);
         } else {
-            List<BackupRestoreResult<List<T>>> backupRestoreResults = new ArrayList<>(results.length);
-            Collections.addAll(backupRestoreResults, results);
-            return backupRestoreResults;
+            List<BusinessResult<List<T>>> businessResults = new ArrayList<>(results.length);
+            Collections.addAll(businessResults, results);
+            return businessResults;
         }
     }
 
@@ -119,24 +119,24 @@ public abstract class BackupRestoreService<T> extends BaseService implements Bac
         }
     }
 
-    protected <D> BackupRestoreResult<D> backupData(String buName, BackupCallback<D> callback) throws BusinessException {
+    protected <D> BusinessResult<D> backupData(String buName, BackupCallback<D> callback) throws BusinessException {
         return backupData(buName, callback, false);
     }
 
-    protected <D> BackupRestoreResult<D> backupData(String buName, BackupCallback<D> callback, boolean isAppendData) throws BusinessException {
+    protected <D> BusinessResult<D> backupData(String buName, BackupCallback<D> callback, boolean isAppendData) throws BusinessException {
         return backupData("", buName, callback, isAppendData);
     }
 
-    protected <D> BackupRestoreResult<D> backupData(String appendDir, String buName, BackupCallback<D> callback) throws BusinessException {
+    protected <D> BusinessResult<D> backupData(String appendDir, String buName, BackupCallback<D> callback) throws BusinessException {
         return backupData(appendDir, buName, callback, false);
     }
 
-    protected <D> BackupRestoreResult<D> backupData(String appendDir, String buName, BackupCallback<D> callback, boolean isAppendData) throws BusinessException {
+    protected <D> BusinessResult<D> backupData(String appendDir, String buName, BackupCallback<D> callback, boolean isAppendData) throws BusinessException {
         return backupData(appendDir, buName, callback, isAppendData, true);
     }
 
-    protected <D> BackupRestoreResult<D> backupData(String appendDir, String buName, BackupCallback<D> callback, boolean isAppendData, boolean printLog) throws BusinessException {
-        BackupRestoreResult<D> result = new BackupRestoreResult<>();
+    protected <D> BusinessResult<D> backupData(String appendDir, String buName, BackupCallback<D> callback, boolean isAppendData, boolean printLog) throws BusinessException {
+        BusinessResult<D> result = new BusinessResult<>();
         result.setBusinessType(BusinessType.BACKUP);
         result.setItemName(buName);
         handleInterrupt();
@@ -194,20 +194,20 @@ public abstract class BackupRestoreService<T> extends BaseService implements Bac
         }
     }
 
-    protected <R> BackupRestoreResult<List<R>> restoreList(String buName, Class<R> dataClass, RestoreCallback<R> callback) throws BusinessException {
+    protected <R> BusinessResult<List<R>> restoreList(String buName, Class<R> dataClass, RestoreCallback<R> callback) throws BusinessException {
         return restoreList("", buName, dataClass, callback);
     }
 
-    protected <R> BackupRestoreResult<List<R>> restoreList(String buName, Class<R> dataClass, int page, int pageSize, RestoreCallback<R> callback) throws BusinessException {
+    protected <R> BusinessResult<List<R>> restoreList(String buName, Class<R> dataClass, int page, int pageSize, RestoreCallback<R> callback) throws BusinessException {
         return restoreList("", buName, dataClass, page, pageSize, callback);
     }
 
-    protected <R> BackupRestoreResult<List<R>> restoreList(String appendDir, String buName, Class<R> dataClass, RestoreCallback<R> callback) throws BusinessException {
+    protected <R> BusinessResult<List<R>> restoreList(String appendDir, String buName, Class<R> dataClass, RestoreCallback<R> callback) throws BusinessException {
         return restoreList(appendDir, buName, dataClass, 1, -1, callback);
     }
 
-    protected <R> BackupRestoreResult<List<R>> restoreList(String appendDir, String buName, Class<R> dataClass, int page, int pageSize, RestoreCallback<R> callback) throws BusinessException {
-        BackupRestoreResult<List<R>> result = new BackupRestoreResult<>();
+    protected <R> BusinessResult<List<R>> restoreList(String appendDir, String buName, Class<R> dataClass, int page, int pageSize, RestoreCallback<R> callback) throws BusinessException {
+        BusinessResult<List<R>> result = new BusinessResult<>();
         result.setBusinessType(BusinessType.RESTORE);
         result.setItemName(buName);
         handleInterrupt();
@@ -255,24 +255,26 @@ public abstract class BackupRestoreService<T> extends BaseService implements Bac
             int start = (page - 1) * pageSize;
             oldList = oldList.subList(start, Math.min(start + pageSize, oldList.size()));
         }
-        for (R oldData : oldList) {
+        String logNoFormat = StringUtils.getLogNoFormat(oldList.size());
+        for (int i = 0; i < oldList.size(); i++) {
+            R oldData = oldList.get(i);
             handleInterrupt();
             if (oldData == null || "null".equals(callback.compareFlag(oldData))) {
-                log.info("失效的{}，跳过还原", buName);
+                log.info("{}失效的{}，跳过还原", String.format(logNoFormat, i + 1), buName);
                 continue;
             }
             String dataName = callback.dataName(oldData);
             if (newListIds.contains(callback.compareFlag(oldData))) {
-                log.info("{}已在新账号{}中", dataName, buName);
+                log.info("{}{}已在新账号{}中", String.format(logNoFormat, i + 1), dataName, buName);
                 restoredList.add(oldData);
             } else {
                 try {
                     callback.restoreData(oldData);
-                    log.info("{}还原成功", dataName);
+                    log.info("{}{}还原成功", String.format(logNoFormat, i + 1), dataName);
                     restoredList.add(oldData);
                     sleep(restoredList.size());
                 } catch (BusinessException e) {
-                    log.info("{}还原失败：{}", dataName, e.getMessage());
+                    log.info("{}{}还原失败：{}", String.format(logNoFormat, i + 1), dataName, e.getMessage());
                     if (!allowFailure && (e instanceof EndLoopBusinessException)) {
                         // 不允许失败继续，且内部项目遇到需跳出循环的异常
                         result.setFailed("还原失败" + e.getMessage());
@@ -297,6 +299,11 @@ public abstract class BackupRestoreService<T> extends BaseService implements Bac
         return ListUtil.getSize(getBackupList(dir.getPath() + File.separator, appendDir, buName, JSONObject.class));
     }
 
+    /**
+     * 初始化文件名映射（兼容旧版本备份文件）
+     *
+     * @param fileNames
+     */
     public abstract void initFileName(Map<String, String> fileNames);
 
     /**
@@ -327,4 +334,89 @@ public abstract class BackupRestoreService<T> extends BaseService implements Bac
         }
     }
 
+    public abstract List<BusinessResult<List<T>>> clear() throws BusinessException;
+
+    public interface ClearListCallback<DR> {
+
+        List<DR> getList() throws BusinessException;
+
+        void delData(DR data) throws BusinessException;
+
+        String dataName(DR data);
+    }
+
+    protected <R> BusinessResult<List<R>> clearList(String buName, ClearListCallback<R> callback) throws BusinessException {
+        BusinessResult<List<R>> result = new BusinessResult<>();
+        result.setBusinessType(BusinessType.CLEAR);
+        result.setItemName(buName);
+        handleInterrupt();
+        log.info("正在清空[{}]...", buName);
+        log.info("获取账号{}...", buName);
+        List<R> list = null;
+        try {
+            list = callback.getList();
+        } catch (BusinessException e) {
+            result.setFailed("获取新账号数据失败：" + e.getMessage());
+            return result;
+        }
+        int size = ListUtil.getSize(list);
+        log.info("获取账号{}：{}条数据", buName, size);
+        List<R> deletedList = new ArrayList<>();
+        // 连续失败的次数
+        int continuousFailCount = 0;
+        String logNoFormat = StringUtils.getLogNoFormat(size);
+        for (int i = 0; i < size; i++) {
+            handleInterrupt();
+            R data = list.get(i);
+            if (data != null) {
+                String dataName = callback.dataName(data);
+                log.info("{}开始删除{}", String.format(logNoFormat, i + 1), dataName);
+                try {
+                    callback.delData(data);
+                    deletedList.add(data);
+                    if (i <= size - 1) {
+                        sleep(deletedList.size());
+                        continuousFailCount = 0;
+                    }
+                } catch (BusinessException e) {
+                    log.info("{}删除{}失败：{}", String.format(logNoFormat, i + 1), dataName, e.getMessage());
+                    continuousFailCount++;
+                    if (continuousFailCount >= 5) {
+                        throw new BusinessException("连续失败的次数过多，已暂停处理");
+                    }
+                }
+            }
+        }
+        if (deletedList.isEmpty()) {
+            if (size == 0) {
+                result.setSuccess("数据为空，无需清空");
+            } else {
+                result.setFailed("清空失败，成功删除的个数为0");
+            }
+        } else {
+            result.setData(deletedList);
+            result.setSuccess(String.format("成功清空%s条[%s]数据", deletedList.size(), buName));
+        }
+        return result;
+    }
+
+    public interface ClearDataCallback {
+        void delData() throws BusinessException;
+    }
+
+    protected <R> BusinessResult<List<R>> clearData(String buName, ClearDataCallback callback) throws BusinessException {
+        BusinessResult<List<R>> result = new BusinessResult<>();
+        result.setBusinessType(BusinessType.CLEAR);
+        result.setItemName(buName);
+        handleInterrupt();
+        log.info("正在清空[{}]...", buName);
+        try {
+            callback.delData();
+            log.info("成功清空[{}]...", buName);
+            result.setSuccess("清空成功");
+        } catch (BusinessException e) {
+            result.setFailed("清空失败：" + e.getMessage());
+        }
+        return result;
+    }
 }

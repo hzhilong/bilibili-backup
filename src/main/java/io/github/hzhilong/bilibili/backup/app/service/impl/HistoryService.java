@@ -11,8 +11,9 @@ import io.github.hzhilong.bilibili.backup.api.bean.page.HistoryPageData;
 import io.github.hzhilong.bilibili.backup.api.request.ModifyApi;
 import io.github.hzhilong.bilibili.backup.api.request.PageApi;
 import io.github.hzhilong.bilibili.backup.api.user.User;
-import io.github.hzhilong.bilibili.backup.app.bean.BackupRestoreResult;
+import io.github.hzhilong.bilibili.backup.app.bean.BusinessResult;
 import io.github.hzhilong.bilibili.backup.app.business.BusinessType;
+import io.github.hzhilong.bilibili.backup.app.business.IBusinessType;
 import io.github.hzhilong.bilibili.backup.app.service.SegmentableBackupRestoreService;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
@@ -45,7 +46,7 @@ public class HistoryService extends SegmentableBackupRestoreService<History> {
                 }, HistoryPageData.class, History.class);
     }
 
-    public List<History> getList(BusinessType businessType) throws BusinessException {
+    public List<History> getList(IBusinessType businessType) throws BusinessException {
         int pn = 1;
         int maxSize = PageApi.MAX_SIZE;
         if (BusinessType.BACKUP.equals(businessType)) {
@@ -104,7 +105,7 @@ public class HistoryService extends SegmentableBackupRestoreService<History> {
     }
 
     @Override
-    public List<BackupRestoreResult<List<History>>> backup() throws BusinessException {
+    public List<BusinessResult<List<History>>> backup() throws BusinessException {
         return createResults(backupData(buName, new BackupCallback<List<History>>() {
             @Override
             public List<History> getData() throws BusinessException {
@@ -119,7 +120,7 @@ public class HistoryService extends SegmentableBackupRestoreService<History> {
     }
 
     @Override
-    public List<BackupRestoreResult<List<History>>> restore() throws BusinessException {
+    public List<BusinessResult<List<History>>> restore() throws BusinessException {
         log.info("还原[历史记录]目前仅支持视频/直播");
         return createResults(restoreList(buName, History.class,
                 getSegmentRestorePageNo(), getSegmentRestoreMaxSize(),
@@ -163,6 +164,18 @@ public class HistoryService extends SegmentableBackupRestoreService<History> {
                         callbackRestoreSegment(oldData);
                     }
                 }));
+    }
+
+    @Override
+    public List<BusinessResult<List<History>>> clear() throws BusinessException {
+        return createResults(clearData(buName, () -> {
+            ApiResult<Object> apiResult = new ModifyApi<Object>(client, user,
+                    "https://api.bilibili.com/x/v2/history/clear", Object.class)
+                    .modify(null);
+            if (apiResult.isFail()) {
+                throw new BusinessException(apiResult);
+            }
+        }));
     }
 
     @Override

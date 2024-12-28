@@ -5,6 +5,7 @@ import io.github.hzhilong.bilibili.backup.api.bean.ApiResult;
 import io.github.hzhilong.base.error.BusinessException;
 import io.github.hzhilong.bilibili.backup.api.user.User;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -24,6 +25,9 @@ public class CreateApi<D> extends BaseApi<D> {
     }
 
     public ApiResult<D> create(Map<String, String> formParams) throws BusinessException {
+        if (formParams == null) {
+            formParams = new HashMap<>(1);
+        }
         formParams.put("csrf", user.getBiliJct());
         return apiPost(formParams);
     }

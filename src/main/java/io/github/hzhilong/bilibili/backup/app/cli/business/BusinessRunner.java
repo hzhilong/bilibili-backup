@@ -1,4 +1,4 @@
-package io.github.hzhilong.bilibili.backup.app.business;
+package io.github.hzhilong.bilibili.backup.app.cli.business;
 
 import lombok.extern.slf4j.Slf4j;
 import io.github.hzhilong.bilibili.backup.api.bean.Upper;
@@ -21,7 +21,7 @@ public class BusinessRunner {
      * @param businessType 业务类型
      * @return 当前登录的UP信息
      */
-    public static Upper processBusiness(BusinessType businessType, Scanner scanner) throws BusinessException {
+    public static Upper processBusiness(CLIBusinessType businessType, Scanner scanner) throws BusinessException {
         log.info("================【{}】================", businessType.getName());
         try {
             // 获取业务类

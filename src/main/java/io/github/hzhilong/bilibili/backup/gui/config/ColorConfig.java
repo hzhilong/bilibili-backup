@@ -19,6 +19,7 @@ public class ColorConfig {
             new Color(25, 190, 46),
             new Color(255, 154, 0),
             new Color(148, 20, 197),
+            new Color(213, 38, 1),
     };
 
     public static Color get(int pos) {

@@ -1,4 +1,4 @@
-package io.github.hzhilong.bilibili.backup.app.business;
+package io.github.hzhilong.bilibili.backup.app.cli.business;
 
 import okhttp3.OkHttpClient;
 import io.github.hzhilong.bilibili.backup.api.bean.Upper;
