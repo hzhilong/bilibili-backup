@@ -3,6 +3,7 @@ package io.github.hzhilong.bilibili.backup.app.service.impl;
 import io.github.hzhilong.base.error.BusinessException;
 import io.github.hzhilong.bilibili.backup.api.bean.ApiResult;
 import io.github.hzhilong.bilibili.backup.api.bean.Video;
+import io.github.hzhilong.bilibili.backup.api.request.AddQueryParams;
 import io.github.hzhilong.bilibili.backup.api.request.ListApi;
 import io.github.hzhilong.bilibili.backup.api.request.ModifyApi;
 import io.github.hzhilong.bilibili.backup.api.user.User;
@@ -86,7 +87,21 @@ public class ToViewService extends BackupRestoreService<Video> {
 
     @Override
     public List<BusinessResult<List<Video>>> clear() throws BusinessException {
-        return createResults(clearList("稍后再看", new ClearListCallback<Video>() {
+        return createResults(clearData("稍后再看", () -> {
+            ApiResult<Object> apiResult = new ModifyApi<Object>(client, user,
+                    "https://api.bilibili.com/x/v2/history/toview/clear",
+                    new AddQueryParams() {
+                        @Override
+                        public void addQueryParams(Map<String, String> queryParams) {
+                            queryParams.put("jsonp", "jsonp");
+                        }
+                    }, Object.class)
+                    .modify(null);
+            if (apiResult.isFail()) {
+                throw new BusinessException(apiResult);
+            }
+        }));
+        /*return createResults(clearList("稍后再看", new ClearListCallback<Video>() {
             @Override
             public List<Video> getList() throws BusinessException {
                 return ToViewService.this.getList();
@@ -111,6 +126,6 @@ public class ToViewService extends BackupRestoreService<Video> {
             public String dataName(Video data) {
                 return String.format("视频[%s]", data.getTitle());
             }
-        }));
+        }));*/
     }
 }
