@@ -8,7 +8,7 @@
     <artifactId>bilibili-backup</artifactId>
     <name>哔哩哔哩账号备份</name>
     <description>一键对B站账号进行数据备份和还原，方便账号数据迁移/快速转生(哗哩哗哩 bilibili)</description>
-    <version>2.0.7</version>
+    <version>2.0.8</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
