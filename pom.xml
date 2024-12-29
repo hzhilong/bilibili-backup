@@ -18,7 +18,7 @@
         <app.email>hzhilong777@outlook.com</app.email>
         <app.github>https://github.com/hzhilong/bilibili-backup</app.github>
         <app.mainClass>io.github.hzhilong.bilibili.backup.App</app.mainClass>
-        <app.ico>assets/windows/${project.name}.ico</app.ico>
+        <app.ico>assets/windows/app.ico</app.ico>
 
         <flatlaf.version>3.5.2</flatlaf.version>
     </properties>
@@ -160,8 +160,43 @@
                             <organizationEmail>${app.email}</organizationEmail>
 
                             <winConfig>
-                                <!--                                <exeCreationTool>why</exeCreationTool>-->
                                 <exeCreationTool>winrun4j</exeCreationTool>
+                                <icoFile>${app.ico}</icoFile>
+                                <!-- https://github.com/kira-96/Inno-Setup-Chinese-Simplified-Translation -->
+                                <setupLanguages>
+                                    <china>compiler:Languages\ChineseSimplified.isl</china>
+                                    <english>compiler:Default.isl</english>
+                                </setupLanguages>
+                                <generateMsi>false</generateMsi>
+                                <disableDirPage>false</disableDirPage>
+                                <disableFinishedPage>false</disableFinishedPage>
+                                <disableRunAfterInstall>false</disableRunAfterInstall>
+                            </winConfig>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>without-jre</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>package</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>${app.mainClass}</mainClass>
+                            <!--                            <displayName>${project.artifactId}</displayName>-->
+                            <name>${project.artifactId}-without-jre</name>
+                            <bundleJre>false</bundleJre>
+                            <jreMinVersion>8</jreMinVersion>
+                            <generateInstaller>true</generateInstaller>
+                            <platform>windows</platform>
+
+                            <url>${app.github}</url>
+                            <organizationUrl>${app.github}</organizationUrl>
+                            <organizationName>${app.author}</organizationName>
+                            <organizationEmail>${app.email}</organizationEmail>
+
+                            <winConfig>
+                                <exeCreationTool>winrun4j</exeCreationTool>
+                                <icoFile>${app.ico}</icoFile>
                                 <!-- https://github.com/kira-96/Inno-Setup-Chinese-Simplified-Translation -->
                                 <setupLanguages>
                                     <china>compiler:Languages\ChineseSimplified.isl</china>
