@@ -279,6 +279,8 @@ public abstract class BackupRestoreService<T> extends BaseService implements Bac
                         // 不允许失败继续，且内部项目遇到需跳出循环的异常
                         result.setFailed("还原失败" + e.getMessage());
                         break;
+                    }else{
+                        sleep(restoredList.size());
                     }
                 }
             }

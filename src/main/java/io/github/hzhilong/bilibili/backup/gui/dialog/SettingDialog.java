@@ -34,7 +34,7 @@ public class SettingDialog extends BaseDialog {
                 "【还原】：忽略新账号现有的数据，直接还原", AppDataItem.DIRECT_RESTORE);
         LayoutUtil.addGridBarY(contentPanel, directRestore, posY++);
         AppCheckBoxSettingItem allowFailure = new AppCheckBoxSettingItem(
-                "【还原】：还原[关注]失败时，继续还原下一个数据", AppDataItem.ALLOW_FAILURE);
+                "【还原】：还原失败时，继续还原下一个数据", AppDataItem.ALLOW_FAILURE);
         LayoutUtil.addGridBarY(contentPanel, allowFailure, posY++);
         AppCheckBoxSettingItem favSaveDefault = new AppCheckBoxSettingItem(
                 "【还原】：创建[收藏夹]达到上限后，将该收藏夹的视频移入默认收藏夹",

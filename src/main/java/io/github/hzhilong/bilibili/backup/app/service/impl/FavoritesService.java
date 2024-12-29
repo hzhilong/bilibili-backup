@@ -63,7 +63,8 @@ public class FavoritesService extends BackupRestoreService<FavFolder> {
 
     private void addFavFolder(FavFolder data) throws BusinessException {
         if ((data.getAttr() >> 1 & 1) == 0) {
-            throw new BusinessException("默认收藏夹，无需创建");
+            // 默认收藏夹，无需创建
+            return;
         }
         ApiResult<FavFolder> apiResult = new ModifyApi<FavFolder>(client, user,
                 "https://api.bilibili.com/x/v3/fav/folder/add", FavFolder.class)
