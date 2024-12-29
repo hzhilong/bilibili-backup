@@ -86,18 +86,18 @@ public class MessageService extends BaseService {
             if (delete) {
                 ApiResult<Object> apiResult = removeSession(talkerId, sessionType);
                 if (apiResult.isSuccess()) {
-                    log.info("{}删除成功", String.format(logNoFormat, i + 1));
+                    log.info("  删除成功");
                 } else {
-                    log.info("{}删除失败{}", String.format(logNoFormat, i + 1), apiResult.getMessage());
+                    log.info("  删除失败{}", apiResult.getMessage());
                 }
                 sleep(1);
             } else if (unreadCount > 0) {
-                log.info("{}存在未读消息", String.format(logNoFormat, i + 1));
+                log.info("  存在未读消息");
                 ApiResult<Object> apiResult = readSession(talkerId, sessionType, ackSeqno);
                 if (apiResult.isSuccess()) {
-                    log.info("{}已读成功", String.format(logNoFormat, i + 1));
+                    log.info("  已读成功");
                 } else {
-                    log.info("{}已读失败{}", String.format(logNoFormat, i + 1), apiResult.getMessage());
+                    log.info("  已读失败{}", apiResult.getMessage());
                 }
                 sleep(1);
             }

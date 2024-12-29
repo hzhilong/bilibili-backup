@@ -38,11 +38,11 @@
     <!-- 这里指定需要包含的其他文件 -->
     <fileSets>
         <fileSet>
-            <directory>jre</directory>
+            <directory>assets/jre</directory>
             <outputDirectory>bin/jre/</outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>bat</directory>
+            <directory>assets/bat</directory>
             <outputDirectory>.</outputDirectory>
         </fileSet>
 

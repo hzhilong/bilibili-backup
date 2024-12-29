@@ -80,7 +80,7 @@ public class BlackService extends RelationService {
 
                             @Override
                             public String dataName(Relation data) {
-                                return String.format("用户[%s]", data.getUname());
+                                return String.format("黑名单[%s]", data.getUname());
                             }
 
                             @Override

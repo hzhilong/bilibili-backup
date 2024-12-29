@@ -50,7 +50,7 @@
 
 ## 软件截图
 
-![软件界面截图](./screenshot/app01.png "软件界面")
+![软件界面截图](assets/screenshot/app01.png "软件界面")
 
 ## 下载使用
 

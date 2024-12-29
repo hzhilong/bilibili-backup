@@ -92,6 +92,7 @@
             </resource>
         </resources>
         <plugins>
+            <!--初版 打包bat命令和环境 -->
             <!--<plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -123,7 +124,7 @@
                             <tarLongFileMode>gnu</tarLongFileMode>
                             <descriptors>
                                 &lt;!&ndash; 配置描述文件路径，一般使用相对目录即可 &ndash;&gt;
-                                <descriptor>assembly.xml</descriptor>
+                                <descriptor>assets/assembly.xml</descriptor>
                             </descriptors>
                             <outputDirectory>target</outputDirectory>
                             &lt;!&ndash; 该标签默认为true，指定为false后包名将不会自动带上描述文件的id &ndash;&gt;
@@ -149,7 +150,7 @@
                             <!--                            <displayName>${project.artifactId}</displayName>-->
                             <name>${project.artifactId}</name>
                             <bundleJre>true</bundleJre>
-                            <jrePath>jre</jrePath>
+                            <jrePath>assets/jre</jrePath>
                             <generateInstaller>true</generateInstaller>
                             <platform>windows</platform>
 
