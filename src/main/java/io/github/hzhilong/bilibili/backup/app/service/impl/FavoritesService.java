@@ -76,7 +76,7 @@ public class FavoritesService extends BackupRestoreService<FavFolder> {
                         }}
                 );
         if (apiResult.isFail()) {
-            if (saveToDefaultOnFailure && apiResult.getCode() == 11002 || apiResult.getMessage().contains("已达到数量上限")) {
+            if (saveToDefaultOnFailure && (apiResult.getCode() == 11002 || apiResult.getMessage().contains("已达到数量上限"))) {
                 data.setSaveToDefault(true);
                 log.info("收藏夹数量已达到上限，[{}]内的视频将被保存到默认收藏夹", data.getTitle());
                 return;
