@@ -17,6 +17,7 @@ import io.github.hzhilong.bilibili.backup.api.user.User;
 import io.github.hzhilong.bilibili.backup.app.bean.BusinessResult;
 import io.github.hzhilong.bilibili.backup.app.business.BusinessType;
 import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreService;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import org.apache.commons.collections4.ListUtils;
@@ -43,6 +44,9 @@ import java.util.stream.Collectors;
 @Slf4j
 public class FavoritesService extends BackupRestoreService<FavFolder> {
 
+    @Setter
+    private boolean saveToDefaultOnFailure = false;
+
     private PageApi<FavPageData, Media> pageApi;
 
     public FavoritesService(OkHttpClient client, User user, String path) {
@@ -55,6 +59,30 @@ public class FavoritesService extends BackupRestoreService<FavFolder> {
                 queryParams -> {
                     queryParams.put("up_mid", user.getUid());
                 }, FavFolder.class).getList();
+    }
+
+    private void addFavFolder(FavFolder data) throws BusinessException {
+        if ((data.getAttr() >> 1 & 1) == 0) {
+            throw new BusinessException("默认收藏夹，无需创建");
+        }
+        ApiResult<FavFolder> apiResult = new ModifyApi<FavFolder>(client, user,
+                "https://api.bilibili.com/x/v3/fav/folder/add", FavFolder.class)
+                .modify(
+                        new HashMap<String, String>() {{
+                            put("title", data.getTitle());
+                            put("intro", data.getIntro());
+                            put("privacy", String.valueOf(data.getAttr() & 1));
+                            put("cover", data.getCover());
+                        }}
+                );
+        if (apiResult.isFail()) {
+            if (saveToDefaultOnFailure && apiResult.getCode() == 11002 || apiResult.getMessage().contains("已达到数量上限")) {
+                data.setSaveToDefault(true);
+                log.info("收藏夹数量已达到上限，[{}]内的视频将被保存到默认收藏夹", data.getTitle());
+                return;
+            }
+            throw new BusinessException(apiResult);
+        }
     }
 
     public FavPageData getFavData(Long mediaId) throws BusinessException {
@@ -180,41 +208,48 @@ public class FavoritesService extends BackupRestoreService<FavFolder> {
 
                     @Override
                     public void restoreData(FavFolder data) throws BusinessException {
-                        if ((data.getAttr() >> 1 & 1) == 0) {
-                            throw new BusinessException("默认收藏夹，无需创建");
-                        }
-                        ApiResult<FavFolder> apiResult = new ModifyApi<FavFolder>(client, user,
-                                "https://api.bilibili.com/x/v3/fav/folder/add", FavFolder.class)
-                                .modify(
-                                        new HashMap<String, String>() {{
-                                            put("title", data.getTitle());
-                                            put("intro", data.getIntro());
-                                            put("privacy", String.valueOf(data.getAttr() & 1));
-                                            put("cover", data.getCover());
-                                        }}
-                                );
-                        if (apiResult.isFail()) {
-                            throw new BusinessException(apiResult);
-                        }
+                        addFavFolder(data);
                     }
+
                 });
         List<FavFolder> newFolders = folderResult.getData();
         if (ListUtil.isEmpty(newFolders)) {
             return createResults(folderResult);
         }
 
+        Set<String> saveToDefaultMap = new HashSet<>(newFolders.size());
+        for (FavFolder favFolder : newFolders) {
+            if (favFolder != null && favFolder.isSaveToDefault()) {
+                saveToDefaultMap.add(favFolder.getTitle());
+            }
+        }
+
         List<BusinessResult<List<FavFolder>>> results = new ArrayList<>(newFolders.size());
         // 需获取一下收藏夹，因为id和备份的不一样
         newFolders = getFavFolders();
+        FavFolder defaultFolder = null;
+        for (FavFolder favFolder : newFolders) {
+            if (favFolder.isDefault()) {
+                defaultFolder = favFolder;
+            }
+        }
 
         List<FavFolder> oldFolders = JSONObject.parseArray(readJsonFile(path, "收藏夹", "创建的收藏夹"), FavFolder.class);
 
         Map<String, FavFolder> mapNewFolders = new HashMap<>();
+        for (String title : saveToDefaultMap) {
+            mapNewFolders.put(title, defaultFolder);
+        }
         Map<Long, Set<Long>> newUserFavMedias = new HashMap<>();
-        // 获取新账号的数据
-        for (FavFolder folder : newFolders) {
-            mapNewFolders.put(folder.getTitle(), folder);
+        log.info("获取新账号的数据...");
+        String logNoFormat2 = StringUtils.getLogNoFormat(newFolders.size());
+        for (int i = 0; i < newFolders.size(); i++) {
+            handleInterrupt();
+            FavFolder folder = newFolders.get(i);
+            String title = folder.getTitle();
+            mapNewFolders.put(title, folder);
             if (!isDirectRestore()) {
+                log.info("{}获取新账号收藏夹[{}]的内容...", String.format(logNoFormat2, i + 1), folder.getTitle());
                 FavPageData favData = getFavData(String.valueOf(folder.getId()));
                 List<Media> medias = favData.getMedias();
                 if (ListUtil.notEmpty(medias)) {
@@ -253,12 +288,12 @@ public class FavoritesService extends BackupRestoreService<FavFolder> {
                 oldFolder.setMedias(favData.getMedias());
                 result.setData(Collections.singletonList(oldFolder));
 
-                if (favData != null && ListUtil.notEmpty(favData.getMedias())) {
+                if (ListUtil.notEmpty(favData.getMedias())) {
                     Collections.reverse(favData.getMedias());
                     for (Media media : favData.getMedias()) {
                         mapMedias.put(media.getId(), media);
                         List<Long> idList;
-                        // 解析数据：旧收藏夹id<>旧收藏夹ids
+                        // 解析数据：旧收藏id<>旧收藏夹ids
                         if (videoFavNewIds.containsKey(media.getId())) {
                             idList = videoFavNewIds.get(media.getId());
                             idList.add(newFolderId);

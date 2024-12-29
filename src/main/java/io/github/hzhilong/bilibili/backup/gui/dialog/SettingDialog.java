@@ -30,12 +30,16 @@ public class SettingDialog extends BaseDialog {
         JPanel contentPanel = new JPanel();
         contentPanel.setLayout(new GridBagLayout());
         int posY = 0;
-        AppCheckBoxSettingItem allowFailure = new AppCheckBoxSettingItem(
-                "[关注]还原失败时，继续还原下一个数据", AppDataItem.ALLOW_FAILURE);
-        LayoutUtil.addGridBarY(contentPanel, allowFailure, posY++);
         AppCheckBoxSettingItem directRestore = new AppCheckBoxSettingItem(
-                "还原时忽略新账号现有的数据，直接还原", AppDataItem.DIRECT_RESTORE);
+                "【还原】：忽略新账号现有的数据，直接还原", AppDataItem.DIRECT_RESTORE);
         LayoutUtil.addGridBarY(contentPanel, directRestore, posY++);
+        AppCheckBoxSettingItem allowFailure = new AppCheckBoxSettingItem(
+                "【还原】：还原[关注]失败时，继续还原下一个数据", AppDataItem.ALLOW_FAILURE);
+        LayoutUtil.addGridBarY(contentPanel, allowFailure, posY++);
+        AppCheckBoxSettingItem favSaveDefault = new AppCheckBoxSettingItem(
+                "【还原】：创建[收藏夹]达到上限后，将该收藏夹的视频移入默认收藏夹",
+                AppDataItem.FAV_SAVE_TO_DEFAULT_ON_FAILURE);
+        LayoutUtil.addGridBarY(contentPanel, favSaveDefault, posY++);
         // 左上角显示
         add(contentPanel, new GridBagConstraints(0, 0, 1, 1,
                 1, 1, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE,
@@ -44,7 +48,7 @@ public class SettingDialog extends BaseDialog {
 
     @Override
     public void setVisible(boolean visible) {
-        if(visible){
+        if (visible) {
             pack();
             setMinimumSize(getSize());
         }

@@ -20,4 +20,6 @@ public class FavFolder extends FavInfo {
     private Integer favState;
 
     private List<Media> medias;
+
+    private boolean saveToDefault;
 }

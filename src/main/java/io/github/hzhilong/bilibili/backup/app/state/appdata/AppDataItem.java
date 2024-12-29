@@ -36,6 +36,10 @@ public class AppDataItem<D> {
             = new AppDataItem<>("setting.allow-failure", new BooleanItemValue(false));
     public static AppDataItem<Boolean> DIRECT_RESTORE
             = new AppDataItem<>("setting.direct-restore", new BooleanItemValue(false));
+    // 失败时保存到默认收藏夹
+    public static AppDataItem<Boolean> FAV_SAVE_TO_DEFAULT_ON_FAILURE
+            = new AppDataItem<>("setting.fav-save-to-default-on-failure", new BooleanItemValue(false));
+
 
     private final PersistenceData persistenceData;
     private final String key;
