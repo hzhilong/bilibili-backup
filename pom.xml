@@ -147,7 +147,7 @@
                         </goals>
                         <configuration>
                             <mainClass>${app.mainClass}</mainClass>
-                            <!--                            <displayName>${project.artifactId}</displayName>-->
+                            <displayName>${project.name}</displayName>
                             <name>${project.artifactId}</name>
                             <bundleJre>true</bundleJre>
                             <jrePath>assets/jre</jrePath>
@@ -182,7 +182,7 @@
                         </goals>
                         <configuration>
                             <mainClass>${app.mainClass}</mainClass>
-                            <!--                            <displayName>${project.artifactId}</displayName>-->
+                            <displayName>${project.name}</displayName>
                             <name>${project.artifactId}-without-jre</name>
                             <bundleJre>false</bundleJre>
                             <jreMinVersion>8</jreMinVersion>
