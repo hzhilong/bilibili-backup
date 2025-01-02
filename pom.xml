@@ -21,6 +21,7 @@
         <app.ico>assets/windows/app.ico</app.ico>
 
         <flatlaf.version>3.5.2</flatlaf.version>
+        <javapackager.jrePath>D:\Java\jdk1.8.0_201\jre</javapackager.jrePath>
     </properties>
 
     <dependencies>
@@ -150,7 +151,7 @@
                             <displayName>${project.name}</displayName>
                             <name>${project.artifactId}</name>
                             <bundleJre>true</bundleJre>
-                            <jrePath>assets/jre</jrePath>
+                            <jrePath>${javapackager.jrePath}</jrePath>
                             <generateInstaller>true</generateInstaller>
                             <platform>windows</platform>
 
