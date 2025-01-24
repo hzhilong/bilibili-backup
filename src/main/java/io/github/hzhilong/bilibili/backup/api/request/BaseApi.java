@@ -252,7 +252,7 @@ public class BaseApi<D> implements AddQueryParams {
             }
         } catch (IOException e) {
             log.error("请求出错", e);
-            throw new BusinessException("请求出错");
+            throw new BusinessException("请求出错：" + e.getMessage());
         }
     }
 
