@@ -1,5 +1,6 @@
 package io.github.hzhilong.bilibili.backup.app.business;
 
+import io.github.hzhilong.baseapp.business.IBusinessType;
 import lombok.Getter;
 
 /**

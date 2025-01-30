@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import io.github.hzhilong.base.error.BusinessException;
-import io.github.hzhilong.base.error.EndLoopBusinessException;
+import io.github.hzhilong.bilibili.backup.app.error.NeedEndLoopException;
 import io.github.hzhilong.base.utils.FileUtil;
 import io.github.hzhilong.base.utils.ListUtil;
 import io.github.hzhilong.base.utils.StringUtils;
@@ -275,7 +275,7 @@ public abstract class BackupRestoreService<T> extends BaseService implements Bac
                     sleep(restoredList.size());
                 } catch (BusinessException e) {
                     log.info("{}{}还原失败：{}", String.format(logNoFormat, i + 1), dataName, e.getMessage());
-                    if (!allowFailure && (e instanceof EndLoopBusinessException)) {
+                    if (!allowFailure && (e instanceof NeedEndLoopException)) {
                         // 不允许失败继续，且内部项目遇到需跳出循环的异常
                         result.setFailed("还原失败" + e.getMessage());
                         break;

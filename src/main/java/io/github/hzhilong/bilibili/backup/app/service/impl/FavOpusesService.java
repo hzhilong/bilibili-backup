@@ -11,6 +11,7 @@ import io.github.hzhilong.bilibili.backup.api.request.ModifyApi;
 import io.github.hzhilong.bilibili.backup.api.request.PageApi;
 import io.github.hzhilong.bilibili.backup.api.user.User;
 import io.github.hzhilong.bilibili.backup.app.bean.BusinessResult;
+import io.github.hzhilong.bilibili.backup.app.error.ApiException;
 import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreService;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
@@ -79,7 +80,7 @@ public class FavOpusesService extends BackupRestoreService<Opus> {
                                 },
                                 true, JSONObject.class).apiGet();
                         if (retInfo.isFail()) {
-                            throw new BusinessException(retInfo);
+                            throw new ApiException(retInfo);
                         }
                         JSONObject retInfoData = retInfo.getData();
                         if (retInfoData == null || !retInfoData.containsKey("fallback")) {
@@ -97,7 +98,7 @@ public class FavOpusesService extends BackupRestoreService<Opus> {
                                     put("id", id);
                                 }});
                         if (apiResult.isFail()) {
-                            throw new BusinessException(apiResult);
+                            throw new ApiException(apiResult);
                         }
                     }
                 }));
@@ -146,7 +147,7 @@ public class FavOpusesService extends BackupRestoreService<Opus> {
                         }, true, Object.class)
                         .apiPost(reqData.toJSONString());
                 if (apiResult.isFail()) {
-                    throw new BusinessException(apiResult);
+                    throw new ApiException(apiResult);
                 }
             }
 

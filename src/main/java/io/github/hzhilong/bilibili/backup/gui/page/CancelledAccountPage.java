@@ -3,6 +3,7 @@ package io.github.hzhilong.bilibili.backup.gui.page;
 import io.github.hzhilong.base.bean.BuCallback;
 import io.github.hzhilong.base.error.BusinessException;
 import io.github.hzhilong.base.utils.StringUtils;
+import io.github.hzhilong.baseapp.utils.LayoutUtil;
 import io.github.hzhilong.bilibili.backup.api.bean.CancelledAccountInfo;
 import io.github.hzhilong.bilibili.backup.api.bean.Upper;
 import io.github.hzhilong.bilibili.backup.api.bean.Video;
@@ -10,8 +11,6 @@ import io.github.hzhilong.bilibili.backup.app.bean.SavedUser;
 import io.github.hzhilong.bilibili.backup.app.constant.AppConstant;
 import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreItem;
 import io.github.hzhilong.bilibili.backup.app.state.GlobalState;
-import io.github.hzhilong.bilibili.backup.gui.component.PagePanel;
-import io.github.hzhilong.bilibili.backup.gui.utils.LayoutUtil;
 import io.github.hzhilong.bilibili.backup.gui.worker.BackupRestoreRunnable;
 import io.github.hzhilong.bilibili.backup.gui.worker.BackupRunnable;
 import io.github.hzhilong.bilibili.backup.gui.worker.CancelledAccountInfoRunnable;
@@ -51,8 +50,8 @@ public class CancelledAccountPage extends PagePanel {
     private UpperVideosRunnable upperVideosRunnable;
     private BackupRestoreRunnable backupRunnable;
 
-    public CancelledAccountPage(OkHttpClient client) {
-        super(client);
+    public CancelledAccountPage(Window parent, String appIconPath, OkHttpClient client) {
+        super(parent, appIconPath, client);
     }
 
     @Override
@@ -101,13 +100,13 @@ public class CancelledAccountPage extends PagePanel {
     private String getUid(int btnNo) throws BusinessException {
         String uid = txtUid.getText();
         if (GlobalState.getProcessing() && (btnNo != 3 || !isBackingUp())) {
-            JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this), "有其他任务在运行！", "提示", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(parent, "有其他任务在运行！", "提示", JOptionPane.WARNING_MESSAGE);
             throw new BusinessException("有其他任务在运行！");
         } else if (StringUtils.isEmpty(uid)) {
-            JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this), "请输入用户UID！", "提示", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(parent, "请输入用户UID！", "提示", JOptionPane.ERROR_MESSAGE);
             throw new BusinessException("请输入用户UID！");
         } else if (!AppConstant.NUM_PATTERN.matcher(uid).find()) {
-            JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this), "用户UID为纯数字！", "提示", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(parent, "用户UID为纯数字！", "提示", JOptionPane.ERROR_MESSAGE);
             throw new BusinessException("用户UID为纯数字！");
         } else {
             return uid;
@@ -176,13 +175,13 @@ public class CancelledAccountPage extends PagePanel {
         try {
             String uid = getUid(3);
             if (!isBackingUp()) {
-                int result = JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(this),
+                int result = JOptionPane.showConfirmDialog(parent,
                         "是否开始备份？", "提示", JOptionPane.YES_NO_OPTION);
                 if (result == JOptionPane.YES_OPTION) {
                     backup(uid);
                 }
             } else {
-                int result = JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(this),
+                int result = JOptionPane.showConfirmDialog(parent,
                         "正在进行备份，是否取消？", "提示", JOptionPane.YES_NO_OPTION);
                 if (result == JOptionPane.YES_OPTION) {
                     stopBackup();

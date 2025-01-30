@@ -1,7 +1,7 @@
 package io.github.hzhilong.bilibili.backup.app.bean;
 
 import io.github.hzhilong.base.bean.BuResult;
-import io.github.hzhilong.bilibili.backup.app.business.IBusinessType;
+import io.github.hzhilong.baseapp.business.IBusinessType;
 import lombok.Data;
 
 /**

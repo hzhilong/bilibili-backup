@@ -1,12 +1,13 @@
 package io.github.hzhilong.bilibili.backup.gui.component;
 
 import io.github.hzhilong.base.utils.ListUtil;
+import io.github.hzhilong.baseapp.component.BasePanel;
+import io.github.hzhilong.baseapp.config.ColorConfig;
+import io.github.hzhilong.baseapp.utils.LayoutUtil;
 import io.github.hzhilong.bilibili.backup.app.bean.BackupDir;
 import io.github.hzhilong.bilibili.backup.app.bean.BackupFile;
 import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreItem;
 import io.github.hzhilong.bilibili.backup.app.utils.BackupFileUtil;
-import io.github.hzhilong.bilibili.backup.gui.config.ColorConfig;
-import io.github.hzhilong.bilibili.backup.gui.utils.LayoutUtil;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,7 +28,7 @@ import java.util.Map;
  * @version 1.0
  */
 @Slf4j
-public class BackupFileSelector extends JPanel {
+public class BackupFileSelector extends BasePanel {
 
     protected EventListenerList listenerList = new EventListenerList();
     private boolean firingActionEvent = false;
@@ -68,12 +69,14 @@ public class BackupFileSelector extends JPanel {
 
     private final int numberOfRows;
 
-    public BackupFileSelector() {
+    public BackupFileSelector(Window parent, String appIconPath) {
+        super(parent, appIconPath);
         this.numberOfRows = BackupRestoreItem.values().length;
         init();
     }
 
-    public BackupFileSelector(int numberOfRows) {
+    public BackupFileSelector(Window parent, String appIconPath, int numberOfRows) {
+        super(parent, appIconPath);
         this.numberOfRows = numberOfRows;
         init();
     }

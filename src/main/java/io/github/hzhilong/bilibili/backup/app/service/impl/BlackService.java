@@ -1,6 +1,7 @@
 package io.github.hzhilong.bilibili.backup.app.service.impl;
 
 import io.github.hzhilong.base.error.BusinessException;
+import io.github.hzhilong.baseapp.business.IBusinessType;
 import io.github.hzhilong.bilibili.backup.api.bean.Relation;
 import io.github.hzhilong.bilibili.backup.api.bean.RelationAct;
 import io.github.hzhilong.bilibili.backup.api.bean.page.PageData;
@@ -8,7 +9,6 @@ import io.github.hzhilong.bilibili.backup.api.request.PageApi;
 import io.github.hzhilong.bilibili.backup.api.user.User;
 import io.github.hzhilong.bilibili.backup.app.bean.BusinessResult;
 import io.github.hzhilong.bilibili.backup.app.business.BusinessType;
-import io.github.hzhilong.bilibili.backup.app.business.IBusinessType;
 import io.github.hzhilong.bilibili.backup.app.service.RelationService;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;

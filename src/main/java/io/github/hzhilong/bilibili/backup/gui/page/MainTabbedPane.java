@@ -1,8 +1,8 @@
 package io.github.hzhilong.bilibili.backup.gui.page;
 
-import okhttp3.OkHttpClient;
-import io.github.hzhilong.bilibili.backup.gui.component.PagePanel;
+import io.github.hzhilong.bilibili.backup.app.constant.AppConstant;
 import io.github.hzhilong.bilibili.backup.app.state.GlobalState;
+import okhttp3.OkHttpClient;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -15,17 +15,21 @@ import javax.swing.border.EmptyBorder;
  */
 public class MainTabbedPane extends JTabbedPane {
 
-    public MainTabbedPane() {
+    private JFrame frame;
+
+    public MainTabbedPane(JFrame frame) {
+        this.frame = frame;
         initUI();
     }
 
     public void initUI() {
         OkHttpClient client = GlobalState.CLIENT;
-        addView("备份", new BackupPage(client));
-        addView("还原", new RestorePage(client));
-        addView("清空", new ClearPage(client));
-        addView("已注销账号数据", new CancelledAccountPage(client));
-        addView("其他工具", new ToolsPage(client));
+        String appIcon = AppConstant.APP_ICON;
+        addView("备份", new BackupPage(frame, appIcon, client));
+        addView("还原", new RestorePage(frame, appIcon, client));
+        addView("清空", new ClearPage(frame, appIcon, client));
+        addView("已注销账号数据", new CancelledAccountPage(frame, appIcon, client));
+        addView("其他工具", new ToolsPage(frame, appIcon, client));
     }
 
     private void addView(String title, PagePanel page) {

@@ -1,9 +1,10 @@
 package io.github.hzhilong.bilibili.backup.gui.dialog;
 
 import io.github.hzhilong.base.error.BusinessException;
+import io.github.hzhilong.baseapp.dialog.BaseDialog;
+import io.github.hzhilong.baseapp.utils.LayoutUtil;
 import io.github.hzhilong.bilibili.backup.api.bean.QRCode;
 import io.github.hzhilong.bilibili.backup.app.bean.SavedUser;
-import io.github.hzhilong.bilibili.backup.gui.utils.LayoutUtil;
 import io.github.hzhilong.bilibili.backup.gui.worker.GetLoginQRWorker;
 import io.github.hzhilong.bilibili.backup.gui.worker.LoginRunnable;
 import lombok.Getter;
@@ -38,8 +39,8 @@ public class LoginUserDialog extends BaseDialog {
     @Setter
     private SavedUser savedUser;
 
-    public LoginUserDialog(Window parent, OkHttpClient client) {
-        super(parent, "登录新账号");
+    public LoginUserDialog(Window parent, String appIconPath, OkHttpClient client) {
+        super(parent, appIconPath, "登录新账号");
         this.client = client;
         try {
             initData();

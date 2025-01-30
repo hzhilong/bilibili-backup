@@ -6,6 +6,7 @@ import io.github.hzhilong.bilibili.backup.api.bean.ApiResult;
 import io.github.hzhilong.bilibili.backup.api.bean.page.PageCallback;
 import io.github.hzhilong.bilibili.backup.api.bean.page.PageData;
 import io.github.hzhilong.bilibili.backup.api.user.User;
+import io.github.hzhilong.bilibili.backup.app.error.ApiException;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -194,7 +195,7 @@ public class PageApi<D extends PageData<L>, L> extends BaseApi<D> {
                     }
                 }
             } else {
-                throw new BusinessException(apiResult);
+                throw new ApiException(apiResult);
             }
             break;
         }

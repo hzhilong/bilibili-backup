@@ -2,7 +2,7 @@ package io.github.hzhilong.bilibili.backup.app.service;
 
 import com.alibaba.fastjson.JSONObject;
 import io.github.hzhilong.base.error.BusinessException;
-import io.github.hzhilong.base.error.EndLoopBusinessException;
+import io.github.hzhilong.bilibili.backup.app.error.NeedEndLoopException;
 import io.github.hzhilong.bilibili.backup.api.bean.ApiResult;
 import io.github.hzhilong.bilibili.backup.api.bean.Relation;
 import io.github.hzhilong.bilibili.backup.api.bean.RelationAct;
@@ -137,7 +137,7 @@ public abstract class RelationService extends SegmentableBackupRestoreService<Re
             } else if (40061 == apiResult.getCode()) {
                 log.info("用户不存在");
             } else {
-                throw new EndLoopBusinessException(act.getName() + "失败，可能被风控，建议晚点再试");
+                throw new NeedEndLoopException(act.getName() + "失败，可能被风控，建议晚点再试");
             }
         }
         modifyCount++;

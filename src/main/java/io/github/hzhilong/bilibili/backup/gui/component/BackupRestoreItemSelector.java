@@ -1,9 +1,10 @@
 package io.github.hzhilong.bilibili.backup.gui.component;
 
+import io.github.hzhilong.baseapp.component.BasePanel;
+import io.github.hzhilong.baseapp.utils.LayoutUtil;
 import io.github.hzhilong.bilibili.backup.app.bean.BackupDir;
 import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreItem;
 import io.github.hzhilong.bilibili.backup.app.utils.BackupFileUtil;
-import io.github.hzhilong.bilibili.backup.gui.utils.LayoutUtil;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,7 +22,7 @@ import java.util.LinkedHashSet;
  * @version 1.0
  */
 @Slf4j
-public class BackupRestoreItemSelector extends JPanel {
+public class BackupRestoreItemSelector extends BasePanel {
 
     private LinkedHashMap<String, BackupRestoreItem> items;
     @Getter
@@ -31,13 +32,15 @@ public class BackupRestoreItemSelector extends JPanel {
     private JPanel itemsPanel;
     private final int numberOfRows;
 
-    public BackupRestoreItemSelector(LinkedHashMap<String, BackupRestoreItem> items) {
+    public BackupRestoreItemSelector(Window parent, String appIconPath, LinkedHashMap<String, BackupRestoreItem> items) {
+        super(parent, appIconPath);
         this.items = items;
         this.numberOfRows = BackupRestoreItem.values().length;
         init();
     }
 
-    public BackupRestoreItemSelector(LinkedHashMap<String, BackupRestoreItem> items, int numberOfRows) {
+    public BackupRestoreItemSelector(Window parent, String appIconPath, LinkedHashMap<String, BackupRestoreItem> items, int numberOfRows) {
+        super(parent, appIconPath);
         this.items = items;
         this.numberOfRows = numberOfRows;
         init();

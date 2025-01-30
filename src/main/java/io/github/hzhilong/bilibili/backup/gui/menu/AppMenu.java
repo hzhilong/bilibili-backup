@@ -1,13 +1,16 @@
 package io.github.hzhilong.bilibili.backup.gui.menu;
 
-import io.github.hzhilong.bilibili.backup.App;
-import io.github.hzhilong.bilibili.backup.gui.dialog.SettingDialog;
+import io.github.hzhilong.baseapp.component.CheckBoxSettingItem;
+import io.github.hzhilong.baseapp.dialog.BaseSettingDialog;
+import io.github.hzhilong.baseapp.menu.BaseMenu;
+import io.github.hzhilong.bilibili.backup.app.state.setting.AppSettingItems;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 
 /**
  * 【应用】菜单
@@ -16,10 +19,10 @@ import java.awt.*;
  * @version 1.0
  */
 @Slf4j
-public class AppMenu extends JMenu {
+public class AppMenu extends BaseMenu {
 
-    public AppMenu() throws HeadlessException {
-        super("应用");
+    public AppMenu(Window parent, String appIconPath) {
+        super("应用", parent, appIconPath);
         JCheckBoxMenuItem showLogs = new JCheckBoxMenuItem("显示日志");
         add(showLogs);
         showLogs.addActionListener(e -> {
@@ -32,12 +35,23 @@ public class AppMenu extends JMenu {
             }
         });
 
-        JMenuItem setting = new JMenuItem("设置");
-        setting.addActionListener(e -> new SettingDialog(App.mainFrame).setVisible(true));
+        JMenuItem setting = getSettingMenu();
         add(setting);
 
         JMenuItem exitApp = new JMenuItem("退出");
         add(exitApp);
-        exitApp.addActionListener(e -> App.exitApp());
+        exitApp.addActionListener(e -> parent.dispose());
+    }
+
+    private JMenuItem getSettingMenu() {
+        JMenuItem setting = new JMenuItem("设置");
+        setting.addActionListener(e ->
+                new BaseSettingDialog(parent, appIconPath,
+                        new ArrayList() {{
+                            add(new CheckBoxSettingItem(AppSettingItems.DIRECT_RESTORE));
+                            add(new CheckBoxSettingItem(AppSettingItems.ALLOW_FAILURE));
+                            add(new CheckBoxSettingItem(AppSettingItems.FAV_SAVE_TO_DEFAULT_ON_FAILURE));
+                        }}).setVisible(true));
+        return setting;
     }
 }

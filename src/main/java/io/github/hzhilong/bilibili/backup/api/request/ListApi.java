@@ -1,5 +1,6 @@
 package io.github.hzhilong.bilibili.backup.api.request;
 
+import io.github.hzhilong.bilibili.backup.app.error.ApiException;
 import lombok.EqualsAndHashCode;
 import okhttp3.OkHttpClient;
 import io.github.hzhilong.bilibili.backup.api.bean.ApiResult;
@@ -56,7 +57,7 @@ public class ListApi<D, L> extends BaseApi<D> {
                 return (List<L>) resultData;
             }
         }
-        throw new BusinessException(apiResult);
+        throw new ApiException(apiResult);
     }
 
 }

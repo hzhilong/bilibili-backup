@@ -2,6 +2,7 @@ package io.github.hzhilong.bilibili.backup.app.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import io.github.hzhilong.base.error.BusinessException;
+import io.github.hzhilong.baseapp.business.IBusinessType;
 import io.github.hzhilong.bilibili.backup.api.bean.ApiResult;
 import io.github.hzhilong.bilibili.backup.api.bean.Cursor;
 import io.github.hzhilong.bilibili.backup.api.bean.History;
@@ -13,7 +14,7 @@ import io.github.hzhilong.bilibili.backup.api.request.PageApi;
 import io.github.hzhilong.bilibili.backup.api.user.User;
 import io.github.hzhilong.bilibili.backup.app.bean.BusinessResult;
 import io.github.hzhilong.bilibili.backup.app.business.BusinessType;
-import io.github.hzhilong.bilibili.backup.app.business.IBusinessType;
+import io.github.hzhilong.bilibili.backup.app.error.ApiException;
 import io.github.hzhilong.bilibili.backup.app.service.SegmentableBackupRestoreService;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
@@ -100,7 +101,7 @@ public class HistoryService extends SegmentableBackupRestoreService<History> {
             throw new BusinessException(String.format("历史记录[%s]：该类型不支持还原", data.getTitle()));
         }
         if (apiResult.isFail()) {
-            throw new BusinessException(apiResult);
+            throw new ApiException(apiResult);
         }
     }
 
@@ -173,7 +174,7 @@ public class HistoryService extends SegmentableBackupRestoreService<History> {
                     "https://api.bilibili.com/x/v2/history/clear", Object.class)
                     .modify(null);
             if (apiResult.isFail()) {
-                throw new BusinessException(apiResult);
+                throw new ApiException(apiResult);
             }
         }));
     }

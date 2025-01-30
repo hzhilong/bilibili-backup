@@ -7,6 +7,7 @@ import io.github.hzhilong.bilibili.backup.api.request.ModifyApi;
 import io.github.hzhilong.bilibili.backup.api.request.PageApi;
 import io.github.hzhilong.bilibili.backup.api.user.User;
 import io.github.hzhilong.bilibili.backup.app.bean.BusinessResult;
+import io.github.hzhilong.bilibili.backup.app.error.ApiException;
 import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreService;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
@@ -73,7 +74,7 @@ public class FavCollectedService extends BackupRestoreService<FavCollected> {
                                         }}
                                 );
                         if (apiResult.isFail()) {
-                            throw new BusinessException(apiResult);
+                            throw new ApiException(apiResult);
                         }
                     }
                 }));
@@ -108,7 +109,7 @@ public class FavCollectedService extends BackupRestoreService<FavCollected> {
                                 }}
                         );
                 if (apiResult.isFail()) {
-                    throw new BusinessException(apiResult);
+                    throw new ApiException(apiResult);
                 }
             }
 

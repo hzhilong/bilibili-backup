@@ -1,6 +1,6 @@
 package io.github.hzhilong.bilibili.backup.app.cli.business;
 
-import io.github.hzhilong.bilibili.backup.app.business.IBusinessType;
+import io.github.hzhilong.baseapp.business.IBusinessType;
 import io.github.hzhilong.bilibili.backup.app.cli.business.impl.BackupBusiness;
 import io.github.hzhilong.bilibili.backup.app.cli.business.impl.CancelledAccountsBusiness;
 import io.github.hzhilong.bilibili.backup.app.cli.business.impl.ReadAllMessageBusiness;

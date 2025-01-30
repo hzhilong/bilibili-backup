@@ -1,6 +1,7 @@
 package io.github.hzhilong.bilibili.backup.app.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import io.github.hzhilong.bilibili.backup.app.error.ApiException;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import io.github.hzhilong.bilibili.backup.api.bean.ApiResult;
@@ -41,7 +42,7 @@ public class LoginService extends BaseService {
         if (apiResult.isSuccess()) {
             return apiResult.getData();
         } else {
-            throw new BusinessException(apiResult);
+            throw new ApiException(apiResult);
         }
     }
 
@@ -63,12 +64,12 @@ public class LoginService extends BaseService {
                 }
                 return perfectCookie(sb.toString());
             } else {
-                throw new BusinessException(apiResult);
+                throw new ApiException(apiResult);
             }
         } else if (86038 != apiResult.getCode()) {
             return "";
         } else {
-            throw new BusinessException(apiResult);
+            throw new ApiException(apiResult);
         }
     }
 
@@ -76,7 +77,7 @@ public class LoginService extends BaseService {
         ApiResult<JSONObject> apiResult = new BaseApi<JSONObject>(client, user, "https://api.bilibili.com/x/frontend/finger/spi",
                 false, JSONObject.class).apiGet();
         if (apiResult.isFail()) {
-            throw new BusinessException("获取buvid3失败", apiResult);
+            throw new ApiException("获取buvid3失败", apiResult);
         }
         JSONObject data = apiResult.getData();
         return String.format("%sbuvid3=%s; buvid4=%s; ", cookie, data.getString("b_3"), data.getString("b_4"));

@@ -11,6 +11,11 @@ import java.util.regex.Pattern;
 public class AppConstant {
 
     /**
+     * 应用图标
+     */
+    public static final String APP_ICON = "/icon/app_logo.svg";
+
+    /**
      * 备份路径前缀
      */
     public static final String BACKUP_PATH_PREFIX = "backup-data/";

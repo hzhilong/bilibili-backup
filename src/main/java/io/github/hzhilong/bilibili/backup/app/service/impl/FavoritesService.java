@@ -16,6 +16,7 @@ import io.github.hzhilong.bilibili.backup.api.request.PageApi;
 import io.github.hzhilong.bilibili.backup.api.user.User;
 import io.github.hzhilong.bilibili.backup.app.bean.BusinessResult;
 import io.github.hzhilong.bilibili.backup.app.business.BusinessType;
+import io.github.hzhilong.bilibili.backup.app.error.ApiException;
 import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreService;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -82,7 +83,7 @@ public class FavoritesService extends BackupRestoreService<FavFolder> {
                 log.info("收藏夹数量已达到上限，[{}]内的视频将被保存到默认收藏夹", data.getTitle());
                 return;
             }
-            throw new BusinessException(apiResult);
+            throw new ApiException(apiResult);
         }
     }
 
@@ -461,7 +462,7 @@ public class FavoritesService extends BackupRestoreService<FavFolder> {
                                 }}
                         );
                 if (apiResult.isFail()) {
-                    throw new BusinessException(apiResult);
+                    throw new ApiException(apiResult);
                 }
                 results.add(buildClearResult(favFolderName, true, "清空成功"));
             }

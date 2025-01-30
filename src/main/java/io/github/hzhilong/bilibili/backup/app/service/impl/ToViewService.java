@@ -8,6 +8,7 @@ import io.github.hzhilong.bilibili.backup.api.request.ListApi;
 import io.github.hzhilong.bilibili.backup.api.request.ModifyApi;
 import io.github.hzhilong.bilibili.backup.api.user.User;
 import io.github.hzhilong.bilibili.backup.app.bean.BusinessResult;
+import io.github.hzhilong.bilibili.backup.app.error.ApiException;
 import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreService;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
@@ -69,7 +70,7 @@ public class ToViewService extends BackupRestoreService<Video> {
                                         }}
                                 );
                         if (apiResult.isFail()) {
-                            throw new BusinessException(apiResult);
+                            throw new ApiException(apiResult);
                         }
                     }
                 }));
@@ -98,7 +99,7 @@ public class ToViewService extends BackupRestoreService<Video> {
                     }, Object.class)
                     .modify(null);
             if (apiResult.isFail()) {
-                throw new BusinessException(apiResult);
+                throw new ApiException(apiResult);
             }
         }));
         /*return createResults(clearList("稍后再看", new ClearListCallback<Video>() {

@@ -8,7 +8,7 @@
     <artifactId>bilibili-backup</artifactId>
     <name>哔哩哔哩账号备份</name>
     <description>一键对B站账号进行数据备份和还原，方便账号数据迁移/快速转生(哗哩哗哩 bilibili)</description>
-    <version>2.0.8</version>
+    <version>2.0.9</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -16,11 +16,13 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <app.author>hzhilong</app.author>
         <app.email>hzhilong777@outlook.com</app.email>
-        <app.github>https://github.com/hzhilong/bilibili-backup</app.github>
+        <app.url>https://github.com/hzhilong/bilibili-backup</app.url>
         <app.mainClass>io.github.hzhilong.bilibili.backup.App</app.mainClass>
         <app.ico>assets/windows/app.ico</app.ico>
 
         <flatlaf.version>3.5.2</flatlaf.version>
+        <ybgnb-base.version>0.0.2-SNAPSHOT</ybgnb-base.version>
+        <ybgnb-base-app.version>0.0.4-SNAPSHOT</ybgnb-base-app.version>
         <javapackager.jrePath>D:\Java\jdk1.8.0_201\jre</javapackager.jrePath>
     </properties>
 
@@ -62,19 +64,14 @@
             <version>3.5.3</version>
         </dependency>
         <dependency>
-            <groupId>com.formdev</groupId>
-            <artifactId>flatlaf</artifactId>
-            <version>${flatlaf.version}</version>
+            <groupId>io.github.hzhilong</groupId>
+            <artifactId>ybgnb-base</artifactId>
+            <version>${ybgnb-base.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.formdev</groupId>
-            <artifactId>flatlaf-extras</artifactId>
-            <version>${flatlaf.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.formdev</groupId>
-            <artifactId>flatlaf-intellij-themes</artifactId>
-            <version>${flatlaf.version}</version>
+            <groupId>io.github.hzhilong</groupId>
+            <artifactId>ybgnb-base-app</artifactId>
+            <version>${ybgnb-base-app.version}</version>
         </dependency>
         <!-- apache 集合工具类 -->
         <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-collections4 -->

@@ -3,15 +3,15 @@ package io.github.hzhilong.bilibili.backup.gui.worker;
 import io.github.hzhilong.base.bean.BuCallback;
 import io.github.hzhilong.base.error.BusinessException;
 import io.github.hzhilong.base.utils.StringUtils;
+import io.github.hzhilong.baseapp.business.IBusinessType;
 import io.github.hzhilong.bilibili.backup.api.user.User;
 import io.github.hzhilong.bilibili.backup.app.bean.BusinessResult;
 import io.github.hzhilong.bilibili.backup.app.bean.SavedUser;
-import io.github.hzhilong.bilibili.backup.app.business.IBusinessType;
 import io.github.hzhilong.bilibili.backup.app.constant.AppConstant;
 import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreItem;
 import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreService;
 import io.github.hzhilong.bilibili.backup.app.service.impl.FavoritesService;
-import io.github.hzhilong.bilibili.backup.app.state.appdata.AppDataItem;
+import io.github.hzhilong.bilibili.backup.app.state.setting.AppSettingItems;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
@@ -59,11 +59,11 @@ public abstract class BackupRestoreRunnable extends BaseRunnable {
         this.apiUser = new User(user.getCookie());
         for (BackupRestoreItem item : backupRestoreItems) {
             BackupRestoreService<?> service = item.getServiceBuilder().build(this.client, this.apiUser, this.backupDirPath);
-            service.setDirectRestore(AppDataItem.DIRECT_RESTORE.getValue());
-            service.setAllowFailure(AppDataItem.ALLOW_FAILURE.getValue());
+            service.setDirectRestore(AppSettingItems.DIRECT_RESTORE.getValue());
+            service.setAllowFailure(AppSettingItems.ALLOW_FAILURE.getValue());
             if(service instanceof FavoritesService){
                 FavoritesService favoritesService = (FavoritesService) service;
-                favoritesService.setSaveToDefaultOnFailure(AppDataItem.FAV_SAVE_TO_DEFAULT_ON_FAILURE.getValue());
+                favoritesService.setSaveToDefaultOnFailure(AppSettingItems.FAV_SAVE_TO_DEFAULT_ON_FAILURE.getValue());
             }
             backupRestoreItemServices.put(item, service);
         }

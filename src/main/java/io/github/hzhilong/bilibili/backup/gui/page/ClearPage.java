@@ -1,12 +1,11 @@
 package io.github.hzhilong.bilibili.backup.gui.page;
 
 import io.github.hzhilong.base.bean.BuCallback;
+import io.github.hzhilong.baseapp.utils.LayoutUtil;
 import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreItem;
 import io.github.hzhilong.bilibili.backup.app.state.GlobalState;
 import io.github.hzhilong.bilibili.backup.gui.component.BackupRestoreItemSelector;
-import io.github.hzhilong.bilibili.backup.gui.component.PagePanel;
 import io.github.hzhilong.bilibili.backup.gui.component.UserSelector;
-import io.github.hzhilong.bilibili.backup.gui.utils.LayoutUtil;
 import io.github.hzhilong.bilibili.backup.gui.worker.ClearRunnable;
 import io.github.hzhilong.bilibili.backup.gui.worker.DelaySetProcessingLoggerRunnable;
 import lombok.extern.slf4j.Slf4j;
@@ -39,8 +38,8 @@ public class ClearPage extends PagePanel {
 
     private ClearRunnable clearRunnable;
 
-    public ClearPage(OkHttpClient client) {
-        super(client);
+    public ClearPage(Window parent, String appIconPath, OkHttpClient client) {
+        super(parent, appIconPath, client);
     }
 
     @Override
@@ -52,12 +51,12 @@ public class ClearPage extends PagePanel {
     public void initUI() {
         int posY = 0;
 
-        userSelector = new UserSelector(client);
+        userSelector = new UserSelector(parent, appIconPath, client);
         addFixedContent(userSelector, 0, posY++);
         addSeparatorToFixed(0, posY++);
 
         posY = 0;
-        backupRestoreItemSelector = new BackupRestoreItemSelector(null, 3);
+        backupRestoreItemSelector = new BackupRestoreItemSelector(parent, appIconPath, null, 3);
         addDynamicContent(backupRestoreItemSelector, 0, posY++);
 
         JPanel btnPanel = new JPanel();
@@ -83,25 +82,25 @@ public class ClearPage extends PagePanel {
     private void onBtnBackup() {
         if (ACTIVE_BTN_NAME.equals(this.btnBackup.getText())) {
             if (GlobalState.getProcessing()) {
-                JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this), "有其他任务在运行！", "提示", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(parent, "有其他任务在运行！", "提示", JOptionPane.WARNING_MESSAGE);
                 return;
             }
             LinkedHashSet<BackupRestoreItem> items = backupRestoreItemSelector.getSelectedItems();
             if (items.isEmpty()) {
-                JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this), "请至少选择一项！", "提示", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(parent, "请至少选择一项！", "提示", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            int result = JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(this),
+            int result = JOptionPane.showConfirmDialog(parent,
                     "是否开始" + BU_NAME + "？", "提示",
                     JOptionPane.YES_NO_OPTION);
             if (result == JOptionPane.YES_OPTION) {
-                result = JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(this),
+                result = JOptionPane.showConfirmDialog(parent,
                         "是否开始" + BU_NAME + "？\n" +
                                 "请注意：这会清空所选的数据，\n" +
                                 "请检查数据是否已备份完成再继续。", "提示",
                         JOptionPane.YES_NO_OPTION);
                 if (result == JOptionPane.YES_OPTION) {
-                    result = JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(this),
+                    result = JOptionPane.showConfirmDialog(parent,
                             "最后一次提示，是否清空所选的数据？", "提示",
                             JOptionPane.YES_NO_OPTION);
                     if (result == JOptionPane.YES_OPTION) {
@@ -110,9 +109,8 @@ public class ClearPage extends PagePanel {
                 }
             }
         } else {
-            int result = JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(this),
-                    "正在进行" + BU_NAME + "，是否取消？", "提示",
-                    JOptionPane.YES_NO_OPTION);
+            int result = JOptionPane.showConfirmDialog(parent,
+                    "正在进行" + BU_NAME + "，是否取消？", "提示", JOptionPane.YES_NO_OPTION);
             if (result == JOptionPane.YES_OPTION) {
                 stopBackup();
             }

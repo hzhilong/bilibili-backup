@@ -1,18 +1,18 @@
 package io.github.hzhilong.bilibili.backup.gui.page;
 
 import io.github.hzhilong.base.bean.BuCallback;
+import io.github.hzhilong.baseapp.dialog.BaseLoadingDialog;
+import io.github.hzhilong.baseapp.utils.LayoutUtil;
 import io.github.hzhilong.bilibili.backup.app.bean.BackupDir;
 import io.github.hzhilong.bilibili.backup.app.bean.SavedUser;
 import io.github.hzhilong.bilibili.backup.app.business.BusinessType;
+import io.github.hzhilong.bilibili.backup.app.constant.AppConstant;
 import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreItem;
 import io.github.hzhilong.bilibili.backup.app.state.GlobalState;
 import io.github.hzhilong.bilibili.backup.gui.component.BackupFileSelector;
 import io.github.hzhilong.bilibili.backup.gui.component.BackupRestoreItemSelector;
-import io.github.hzhilong.bilibili.backup.gui.component.PagePanel;
 import io.github.hzhilong.bilibili.backup.gui.component.UserSelector;
-import io.github.hzhilong.bilibili.backup.gui.dialog.LoadingDialog;
 import io.github.hzhilong.bilibili.backup.gui.segment.SegmentUtil;
-import io.github.hzhilong.bilibili.backup.gui.utils.LayoutUtil;
 import io.github.hzhilong.bilibili.backup.gui.worker.BackupRestoreRunnable;
 import io.github.hzhilong.bilibili.backup.gui.worker.DelaySetProcessingLoggerRunnable;
 import io.github.hzhilong.bilibili.backup.gui.worker.RestoreRunnable;
@@ -51,10 +51,10 @@ public class RestorePage extends PagePanel {
 
     private BackupRestoreRunnable restoreRunnable;
 
-    private LoadingDialog loadingDialog;
+    private BaseLoadingDialog loadingDialog;
 
-    public RestorePage(OkHttpClient client) {
-        super(client);
+    public RestorePage(Window parent, String appIconPath, OkHttpClient client) {
+        super(parent, appIconPath, client);
     }
 
     @Override
@@ -66,15 +66,15 @@ public class RestorePage extends PagePanel {
     public void initUI() {
         int posY = 0;
 
-        userSelector = new UserSelector(client);
+        userSelector = new UserSelector(parent, appIconPath, client);
         addFixedContent(userSelector, 0, posY++);
         addSeparatorToFixed(0, posY++);
 
-        backupFileSelector = new BackupFileSelector();
+        backupFileSelector = new BackupFileSelector(parent, appIconPath);
         addFixedContent(backupFileSelector, 0, posY++);
         addSeparatorToFixed(0, posY++);
 
-        backupRestoreItemSelector = new BackupRestoreItemSelector(null);
+        backupRestoreItemSelector = new BackupRestoreItemSelector(parent, appIconPath, null);
         addDynamicContent(backupRestoreItemSelector, 0, posY++);
 
         JPanel btnPanel = new JPanel();
@@ -92,7 +92,7 @@ public class RestorePage extends PagePanel {
 
         setDynamicContentVisible(false);
 
-        loadingDialog = new LoadingDialog("解析备份数据中，请稍后...");
+        loadingDialog = new BaseLoadingDialog(parent, AppConstant.APP_ICON, "提示", "解析备份数据中，请稍后...");
 
         initListener();
     }
@@ -123,28 +123,26 @@ public class RestorePage extends PagePanel {
     private void onBtnRestore() {
         if (ACTIVE_BTN_NAME.equals(this.btnRestore.getText())) {
             if (GlobalState.getProcessing()) {
-                JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this), "有其他任务在运行！", "提示", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(parent, "有其他任务在运行！", "提示", JOptionPane.WARNING_MESSAGE);
                 return;
             }
             SavedUser currUser = userSelector.getCurrUser();
             if (currUser == null) {
-                JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this), "请选择新账号！", "提示", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(parent, "请选择新账号！", "提示", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             LinkedHashSet<BackupRestoreItem> items = backupRestoreItemSelector.getSelectedItems();
             if (items.isEmpty()) {
-                JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this), "请至少选择一项！", "提示", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(parent, "请至少选择一项！", "提示", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            int result = JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(this),
-                    "是否开始" + BU_NAME + "？", "提示",
+            int result = JOptionPane.showConfirmDialog(parent, "是否开始" + BU_NAME + "？", "提示",
                     JOptionPane.YES_NO_OPTION);
             if (result == JOptionPane.YES_OPTION) {
                 restore(items);
             }
         } else {
-            int result = JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(this),
-                    "正在进行" + BU_NAME + "，是否取消？", "提示",
+            int result = JOptionPane.showConfirmDialog(parent, "正在进行" + BU_NAME + "，是否取消？", "提示",
                     JOptionPane.YES_NO_OPTION);
             if (result == JOptionPane.YES_OPTION) {
                 stopRestore();

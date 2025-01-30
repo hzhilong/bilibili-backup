@@ -2,7 +2,6 @@ package io.github.hzhilong.bilibili.backup.gui.page;
 
 import io.github.hzhilong.bilibili.backup.app.bean.SavedUser;
 import io.github.hzhilong.bilibili.backup.app.state.GlobalState;
-import io.github.hzhilong.bilibili.backup.gui.component.PagePanel;
 import io.github.hzhilong.bilibili.backup.gui.component.UserSelector;
 import io.github.hzhilong.bilibili.backup.gui.worker.DelaySetProcessingLoggerRunnable;
 import io.github.hzhilong.bilibili.backup.gui.worker.tools.OpenAutoReplyRunnable;
@@ -42,8 +41,8 @@ public class ToolsPage extends PagePanel {
     private Map<String, ToolRunnable<?, ?>> toolsRunnable;
     private Map<Tool, JButton> toolsBtn;
 
-    public ToolsPage(OkHttpClient client) {
-        super(client);
+    public ToolsPage(Window parent, String appIconPath, OkHttpClient client) {
+        super(parent, appIconPath, client);
     }
 
     @Override
@@ -72,7 +71,7 @@ public class ToolsPage extends PagePanel {
     public void initUI() {
         int posY = 0;
 
-        userSelector = new UserSelector(client);
+        userSelector = new UserSelector(parent, appIconPath, client);
         addFixedContent(userSelector, 0, posY++);
         addSeparatorToFixed(0, posY++);
 
@@ -109,8 +108,7 @@ public class ToolsPage extends PagePanel {
     private void startRunnable(JButton button, String name, RunnableBuilder builder) {
         if (button.getText().startsWith(INACTIVE_BTN_NAME_BEGIN)) {
             // 停止
-            int result = JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(this),
-                    "正在进行" + name + "，是否取消？", "提示",
+            int result = JOptionPane.showConfirmDialog(parent, "正在进行" + name + "，是否取消？", "提示",
                     JOptionPane.YES_NO_OPTION);
             if (result == JOptionPane.YES_OPTION) {
                 log.info("中断任务中...");
@@ -120,16 +118,15 @@ public class ToolsPage extends PagePanel {
         } else {
             // 开始
             if (GlobalState.getProcessing()) {
-                JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this), "有其他任务在运行！", "提示", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(parent, "有其他任务在运行！", "提示", JOptionPane.WARNING_MESSAGE);
                 return;
             }
             SavedUser currUser = userSelector.getCurrUser();
             if (currUser == null) {
-                JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this), "请选择账号！", "提示", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(parent, "请选择账号！", "提示", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            int result = JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(this),
-                    "是否开始" + name + "？", "提示",
+            int result = JOptionPane.showConfirmDialog(parent, "是否开始" + name + "？", "提示",
                     JOptionPane.YES_NO_OPTION);
             if (result == JOptionPane.YES_OPTION) {
                 setBusyStatus(button, name, true);
@@ -167,6 +164,5 @@ public class ToolsPage extends PagePanel {
         }
         GlobalState.setProcessing(flag);
     }
-
 
 }

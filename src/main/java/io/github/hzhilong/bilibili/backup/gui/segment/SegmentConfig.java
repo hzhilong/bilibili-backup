@@ -1,6 +1,6 @@
 package io.github.hzhilong.bilibili.backup.gui.segment;
 
-import io.github.hzhilong.bilibili.backup.app.business.IBusinessType;
+import io.github.hzhilong.baseapp.business.IBusinessType;
 import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreItem;
 import lombok.AllArgsConstructor;
 import lombok.Data;

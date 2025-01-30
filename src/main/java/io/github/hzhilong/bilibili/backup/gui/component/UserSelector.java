@@ -2,10 +2,12 @@ package io.github.hzhilong.bilibili.backup.gui.component;
 
 import io.github.hzhilong.base.error.BusinessException;
 import io.github.hzhilong.base.utils.ListUtil;
+import io.github.hzhilong.baseapp.component.BasePanel;
+import io.github.hzhilong.baseapp.utils.LayoutUtil;
 import io.github.hzhilong.bilibili.backup.app.bean.SavedUser;
-import io.github.hzhilong.bilibili.backup.gui.dialog.LoginUserDialog;
+import io.github.hzhilong.bilibili.backup.app.constant.AppConstant;
 import io.github.hzhilong.bilibili.backup.app.state.UserManager;
-import io.github.hzhilong.bilibili.backup.gui.utils.LayoutUtil;
+import io.github.hzhilong.bilibili.backup.gui.dialog.LoginUserDialog;
 import lombok.Getter;
 import okhttp3.OkHttpClient;
 
@@ -22,8 +24,9 @@ import java.util.List;
  * @author hzhilong
  * @version 1.0
  */
-public class UserSelector extends JPanel {
+public class UserSelector extends BasePanel {
 
+    private String appIcon;
     private final OkHttpClient client;
 
     protected EventListenerList listenerList = new EventListenerList();
@@ -59,7 +62,8 @@ public class UserSelector extends JPanel {
 
     private boolean resetting = false;
 
-    public UserSelector(OkHttpClient client) {
+    public UserSelector(Window parent, String appIconPath, OkHttpClient client) {
+        super(parent, appIconPath);
         this.client = client;
         initUI();
     }
@@ -100,8 +104,7 @@ public class UserSelector extends JPanel {
         });
         btnRefresh.addActionListener(e -> UserSelector.this.refreshUser());
         btnLogin.addActionListener(e -> {
-            int result = JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(this),
-                    "是否登录新账号？", "提示",
+            int result = JOptionPane.showConfirmDialog(parent, "是否登录新账号？", "提示",
                     JOptionPane.YES_NO_OPTION);
             if (result == JOptionPane.OK_OPTION) {
                 loginUser();
@@ -109,10 +112,10 @@ public class UserSelector extends JPanel {
         });
         btnLogOut.addActionListener(e -> {
             if (currUser == null) {
-                JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this), "请先选择账号！", "提示", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(parent, "请先选择账号！", "提示", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            int result = JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(this),
+            int result = JOptionPane.showConfirmDialog(parent,
                     "是否退出登录当前账号[" + currUser + "]？", "提示",
                     JOptionPane.YES_NO_OPTION);
             if (result == JOptionPane.OK_OPTION) {
@@ -123,7 +126,7 @@ public class UserSelector extends JPanel {
     }
 
     private void loginUser() {
-        LoginUserDialog loginUserDialog = new LoginUserDialog(SwingUtilities.getWindowAncestor(this), client);
+        LoginUserDialog loginUserDialog = new LoginUserDialog(parent, AppConstant.APP_ICON, client);
         loginUserDialog.setVisible(true);
         SavedUser savedUser = loginUserDialog.getSavedUser();
         if (savedUser != null) {

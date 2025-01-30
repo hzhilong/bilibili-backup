@@ -6,6 +6,7 @@ import com.alibaba.fastjson.TypeReference;
 import io.github.hzhilong.base.error.BusinessException;
 import io.github.hzhilong.base.utils.ListUtil;
 import io.github.hzhilong.base.utils.StringUtils;
+import io.github.hzhilong.baseapp.business.IBusinessType;
 import io.github.hzhilong.bilibili.backup.api.bean.ApiResult;
 import io.github.hzhilong.bilibili.backup.api.bean.Relation;
 import io.github.hzhilong.bilibili.backup.api.bean.RelationAct;
@@ -18,7 +19,7 @@ import io.github.hzhilong.bilibili.backup.api.request.PageApi;
 import io.github.hzhilong.bilibili.backup.api.user.User;
 import io.github.hzhilong.bilibili.backup.app.bean.BusinessResult;
 import io.github.hzhilong.bilibili.backup.app.business.BusinessType;
-import io.github.hzhilong.bilibili.backup.app.business.IBusinessType;
+import io.github.hzhilong.bilibili.backup.app.error.ApiException;
 import io.github.hzhilong.bilibili.backup.app.service.RelationService;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
@@ -127,7 +128,7 @@ public class FollowingService extends RelationService {
                 if (apiResult.isSuccess()) {
                     oldIdMapNewId.put(needCreateTag.getTagId(), apiResult.getData().getTagId());
                 } else {
-                    throw new BusinessException("新建关注分组失败", apiResult);
+                    throw new ApiException("新建关注分组失败", apiResult);
                 }
             }
         }

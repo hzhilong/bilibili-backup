@@ -5,6 +5,7 @@ import io.github.hzhilong.base.utils.ListUtil;
 import io.github.hzhilong.bilibili.backup.api.bean.ApiResult;
 import io.github.hzhilong.bilibili.backup.api.bean.page.PageCallback;
 import io.github.hzhilong.bilibili.backup.api.user.User;
+import io.github.hzhilong.bilibili.backup.app.error.ApiException;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -121,7 +122,7 @@ public class CursorPageApi<D> extends BaseApi<List<D>> {
                     continue;
                 }
             } else {
-                throw new BusinessException(apiResult);
+                throw new ApiException(apiResult);
             }
             break;
         }
