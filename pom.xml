@@ -152,8 +152,8 @@
                             <generateInstaller>true</generateInstaller>
                             <platform>windows</platform>
 
-                            <url>${app.github}</url>
-                            <organizationUrl>${app.github}</organizationUrl>
+                            <url>${app.url}</url>
+                            <organizationUrl>${app.url}</organizationUrl>
                             <organizationName>${app.author}</organizationName>
                             <organizationEmail>${app.email}</organizationEmail>
 
@@ -187,8 +187,8 @@
                             <generateInstaller>true</generateInstaller>
                             <platform>windows</platform>
 
-                            <url>${app.github}</url>
-                            <organizationUrl>${app.github}</organizationUrl>
+                            <url>${app.url}</url>
+                            <organizationUrl>${app.url}</organizationUrl>
                             <organizationName>${app.author}</organizationName>
                             <organizationEmail>${app.email}</organizationEmail>
 
