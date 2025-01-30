@@ -18,6 +18,7 @@ public class PagePanel extends BasePagePanel {
     public PagePanel(Window parent, String appIconPath, OkHttpClient client) {
         super(parent, appIconPath);
         this.client = client;
+        init();
     }
 
     @Override
