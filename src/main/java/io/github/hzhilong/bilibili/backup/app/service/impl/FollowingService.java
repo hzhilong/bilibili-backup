@@ -74,7 +74,7 @@ public class FollowingService extends RelationService {
             public void finished(List<Relation> data) {
                 callbackBackupSegment(pageApi, data);
             }
-        }, getSegmentBackupPageNo() > 1));
+        }, getSegmentPageNo() > 1));
     }
 
     private List<RelationTag> getRelationTags() throws BusinessException {
@@ -84,7 +84,7 @@ public class FollowingService extends RelationService {
 
     private List<Relation> getRelations(IBusinessType businessType) throws BusinessException {
         if (BusinessType.BACKUP.equals(businessType)) {
-            return pageApi.getAllData(getSegmentBackupPageNo(), getSegmentBackupMaxSize());
+            return pageApi.getAllData(getSegmentPageNo(), getSegmentMaxSize());
         }
         pageApi.setPageSize(50);
         return pageApi.getAllData();
@@ -157,8 +157,8 @@ public class FollowingService extends RelationService {
         Map<String, CopyUser> copyUsers = new HashMap<>();
         Collections.reverse(oldFollowings);
 
-        int page = getSegmentRestorePageNo();
-        int pageSize = getSegmentRestoreMaxSize();
+        int page = getSegmentPageNo();
+        int pageSize = getSegmentMaxSize();
         // 截取旧数据
         if (pageSize > 0 && page > 0) {
             log.info("正在还原第{}页，分页大小：{}", page, pageSize);

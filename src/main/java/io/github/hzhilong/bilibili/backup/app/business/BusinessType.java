@@ -1,7 +1,6 @@
 package io.github.hzhilong.bilibili.backup.app.business;
 
 import io.github.hzhilong.baseapp.business.IBusinessType;
-import lombok.Getter;
 
 /**
  * 业务类型
@@ -9,7 +8,6 @@ import lombok.Getter;
  * @author hzhilong
  * @version 1.0
  */
-@Getter
 public enum BusinessType implements IBusinessType {
 
     BACKUP("备份"),
@@ -19,10 +17,15 @@ public enum BusinessType implements IBusinessType {
     /**
      * 业务名
      */
-    private final String name;
+    private String name;
 
     BusinessType(String name) {
         this.name = name;
+    }
+
+    @Override
+    public String getName() {
+        return name;
     }
 
     @Override

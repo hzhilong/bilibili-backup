@@ -98,7 +98,13 @@ public class RestorePage extends PagePanel {
     }
 
     private void initListener() {
-        btnRestore.addActionListener(e -> onBtnRestore());
+        btnRestore.addActionListener(e -> {
+            try {
+                onBtnRestore();
+            } catch (Exception ex) {
+                log.error(ex.getMessage(), ex);
+            }
+        });
         backupFileSelector.addActionListener(e -> {
             BackupDir currBackupDir = backupFileSelector.getCurrBackupDir();
             if (currBackupDir == null) {

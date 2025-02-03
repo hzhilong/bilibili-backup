@@ -41,7 +41,7 @@ public class BlackService extends RelationService {
 
     public List<Relation> getList(IBusinessType businessType) throws BusinessException {
         if (BusinessType.BACKUP.equals(businessType)) {
-            return pageApi.getAllData(getSegmentBackupPageNo(), getSegmentBackupMaxSize());
+            return pageApi.getAllData(getSegmentPageNo(), getSegmentMaxSize());
         }
         return pageApi.getAllData();
     }
@@ -59,14 +59,14 @@ public class BlackService extends RelationService {
                     public void finished(List<Relation> data) {
                         callbackBackupSegment(pageApi, data);
                     }
-                }, getSegmentBackupPageNo() > 1));
+                }, getSegmentPageNo() > 1));
     }
 
     @Override
     public List<BusinessResult<List<Relation>>> restore() throws BusinessException {
         return createResults(
                 restoreList("黑名单", Relation.class,
-                        getSegmentRestorePageNo(), getSegmentRestoreMaxSize(),
+                        getSegmentPageNo(), getSegmentMaxSize(),
                         new RestoreCallback<Relation>() {
                             @Override
                             public List<Relation> getNewList() throws BusinessException {

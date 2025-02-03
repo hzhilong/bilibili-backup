@@ -27,24 +27,22 @@ public class AppData extends BaseAppData {
         return Base.INSTANCE;
     }
 
-    /**
-     * 获取存在的分段处理配置
-     */
     public SegmentConfig getSegmentConfig(String uid, IBusinessType businessType, BackupRestoreItem backupRestoreItem) {
-        String property = read(SegmentConfig.getAppPropertyKey(uid, businessType, backupRestoreItem));
+        String key = SegmentConfig.getPersistenceDataKey(uid, businessType, backupRestoreItem);
+        String property = read(key);
         if (StringUtils.isEmpty(property)) {
             return null;
         }
-        return SegmentConfig.parse(uid, businessType, backupRestoreItem, property);
+        return SegmentConfig.parsePersistenceData(property);
     }
 
-    public void setSegmentConfig(SegmentConfig segmentConfig) {
-        write(segmentConfig.getAppPropertyKey(), segmentConfig.getAppPropertyValue());
+    public void setSegmentConfig(SegmentConfig config) {
+        write(config.getPersistenceDataKey(), config.getPersistenceDataValue());
         persistent();
     }
 
-    public void delSegmentConfig(SegmentConfig segmentConfig) {
-        remove(segmentConfig.getAppPropertyKey());
+    public void delSegmentConfig(SegmentConfig config) {
+        remove(config.getPersistenceDataKey());
         persistent();
     }
 

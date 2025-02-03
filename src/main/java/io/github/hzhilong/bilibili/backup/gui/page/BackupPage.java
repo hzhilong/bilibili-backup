@@ -84,7 +84,13 @@ public class BackupPage extends PagePanel {
 
     private void initListener() {
         userSelector.addActionListener(e -> setDynamicContentVisible(userSelector.getCurrUser() != null));
-        btnBackup.addActionListener(e -> onBtnBackup());
+        btnBackup.addActionListener(e -> {
+            try {
+                onBtnBackup();
+            } catch (Exception ex) {
+                log.error(ex.getMessage(), ex);
+            }
+        });
     }
 
     private void onBtnBackup() {

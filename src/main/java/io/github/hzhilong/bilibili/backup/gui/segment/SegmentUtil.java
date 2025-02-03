@@ -1,6 +1,5 @@
 package io.github.hzhilong.bilibili.backup.gui.segment;
 
-import io.github.hzhilong.baseapp.business.IBusinessType;
 import io.github.hzhilong.bilibili.backup.app.bean.SavedUser;
 import io.github.hzhilong.bilibili.backup.app.business.BusinessType;
 import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreItem;
@@ -52,8 +51,8 @@ public class SegmentUtil {
         return SegmentMaxSize.SIZE_ALL;
     }
 
-    public static void handle(Component windows, IBusinessType businessType, BackupRestoreRunnable runnable, List<JRadioButton> segmentButtons) {
-        if(segmentButtons == null){
+    public static void handle(Component windows, BusinessType businessType, BackupRestoreRunnable runnable, List<JRadioButton> segmentButtons) {
+        if (segmentButtons == null) {
             return;
         }
         SegmentMaxSize segmentMaxSize = getSegmentMaxSize(segmentButtons);
@@ -78,35 +77,28 @@ public class SegmentUtil {
             if (service instanceof SegmentableBackupRestoreService) {
                 SegmentableBackupRestoreService segmentService = (SegmentableBackupRestoreService) service;
                 log.info("可分段处理：{}", item.getName());
+
+                log.info("设置新的分段处理：{}", item.getName());
+                newSegmentItems.add(item);
+                segmentService.setSegmentConfig(new SegmentConfig(uid, businessType, item, backupDirPath, maxSize));
+
                 SegmentConfig segmentConfig = appData.getSegmentConfig(uid, businessType, item);
                 if (segmentConfig != null) {
                     log.info("存在未完成的分段处理：{}", item.getName());
+                    segmentConfig.setMaxSize(maxSize);
                     oldSegmentItems.put(item, segmentConfig);
                     oldSegmentServices.put(item, segmentService);
-                } else {
-                    log.info("设置新的分段处理：{}", item.getName());
-                    newSegmentItems.add(item);
-                    segmentConfig = new SegmentConfig(businessType, uid, item, backupDirPath, 1);
                 }
-                SegmentConfig finalSegmentConfig = segmentConfig;
-                if (BusinessType.BACKUP.equals(businessType)) {
-                    segmentService.setSegmentBackupMaxSize(maxSize);
-                } else if (BusinessType.RESTORE.equals(businessType)) {
-                    segmentService.setSegmentRestoreMaxSize(maxSize);
-                }
-                segmentService.setSegmentCallBack(new SegmentableBackupRestoreService.SegmentCallback() {
+                segmentService.setSegmentCallBack(new SegmentCallback() {
                     @Override
-                    public void unfinished(int currPage, int currPageSize, int currSize) {
-                        finalSegmentConfig.setPath(segmentService.getPath());
-                        finalSegmentConfig.setBusinessType(businessType);
-                        finalSegmentConfig.setNextPage(currPage + 1);
-                        appData.setSegmentConfig(finalSegmentConfig);
-                        log.info("当前[{} {}]分段处理完成，页码：{}", businessType, item.getName(), currPage);
+                    public void unfinished(SegmentConfig config) {
+                        appData.setSegmentConfig(config);
+                        log.info("当前[{} {}]分段处理完成，页码：{}", businessType, item.getName(), config.getNextPage() - 1);
                     }
 
                     @Override
-                    public void finished(int currPage, int currPageSize, int currSize) {
-                        appData.delSegmentConfig(finalSegmentConfig);
+                    public void finished(SegmentConfig config) {
+                        appData.delSegmentConfig(config);
                         log.info("[{} {}]分段处理已全部完成", businessType, item.getName());
                     }
                 });
@@ -130,13 +122,10 @@ public class SegmentUtil {
             if (result == JOptionPane.YES_OPTION) {
                 for (Map.Entry<BackupRestoreItem, SegmentableBackupRestoreService> entry : oldSegmentServices.entrySet()) {
                     // 设置为上一次处理的进度
+                    BackupRestoreItem item = entry.getKey();
                     SegmentableBackupRestoreService service = entry.getValue();
-                    SegmentConfig config = oldSegmentItems.get(entry.getKey());
-                    if (BusinessType.BACKUP.equals(businessType)) {
-                        service.setSegmentBackupPageNo(config.getNextPage());
-                    } else if (BusinessType.RESTORE.equals(businessType)) {
-                        service.setSegmentRestorePageNo(config.getNextPage());
-                    }
+                    SegmentConfig config = oldSegmentItems.get(item);
+                    service.setSegmentConfig(config);
                     service.setPath(config.getPath());
                 }
                 // 重置线程执行的服务

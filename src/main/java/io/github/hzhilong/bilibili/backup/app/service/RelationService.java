@@ -2,7 +2,6 @@ package io.github.hzhilong.bilibili.backup.app.service;
 
 import com.alibaba.fastjson.JSONObject;
 import io.github.hzhilong.base.error.BusinessException;
-import io.github.hzhilong.bilibili.backup.app.error.NeedEndLoopException;
 import io.github.hzhilong.bilibili.backup.api.bean.ApiResult;
 import io.github.hzhilong.bilibili.backup.api.bean.Relation;
 import io.github.hzhilong.bilibili.backup.api.bean.RelationAct;
@@ -10,6 +9,7 @@ import io.github.hzhilong.bilibili.backup.api.request.AddQueryParams;
 import io.github.hzhilong.bilibili.backup.api.request.BaseApi;
 import io.github.hzhilong.bilibili.backup.api.request.ModifyApi;
 import io.github.hzhilong.bilibili.backup.api.user.User;
+import io.github.hzhilong.bilibili.backup.app.error.NeedEndLoopException;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 
@@ -30,7 +30,6 @@ public abstract class RelationService extends SegmentableBackupRestoreService<Re
     public RelationService(OkHttpClient client, User user, String path) {
         super(client, user, path);
     }
-
 
     /**
      * 防止风控

@@ -31,12 +31,22 @@ public enum BackupRestoreItem {
     /**
      * 服务名称
      */
-    private final String name;
+    private String name;
 
     /**
      * 服务执行类
      */
-    private final ServiceBuilder serviceBuilder;
+    private ServiceBuilder serviceBuilder;
+
+    BackupRestoreItem(String name) {
+        this.name = name;
+        for (BackupRestoreItem item : values()) {
+            if (name.equals(item.getName())) {
+                this.serviceBuilder = item.getServiceBuilder();
+                break;
+            }
+        }
+    }
 
     BackupRestoreItem(String name, ServiceBuilder serviceBuilder) {
         this.name = name;

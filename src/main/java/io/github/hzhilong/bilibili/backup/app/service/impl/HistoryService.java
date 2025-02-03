@@ -51,8 +51,8 @@ public class HistoryService extends SegmentableBackupRestoreService<History> {
         int pn = 1;
         int maxSize = PageApi.MAX_SIZE;
         if (BusinessType.BACKUP.equals(businessType)) {
-            pn = getSegmentBackupPageNo();
-            maxSize = getSegmentBackupMaxSize();
+            pn = getSegmentPageNo();
+            maxSize = getSegmentMaxSize();
         }
         return pageApi.getAllData((pageData, queryParams) -> {
             if (pageData != null) {
@@ -117,14 +117,14 @@ public class HistoryService extends SegmentableBackupRestoreService<History> {
             public void finished(List<History> data) {
                 callbackBackupSegment(pageApi, data);
             }
-        }, getSegmentBackupPageNo() > 1));
+        }, getSegmentPageNo() > 1));
     }
 
     @Override
     public List<BusinessResult<List<History>>> restore() throws BusinessException {
         log.info("还原[历史记录]目前仅支持视频/直播");
         return createResults(restoreList(buName, History.class,
-                getSegmentRestorePageNo(), getSegmentRestoreMaxSize(),
+                getSegmentPageNo(), getSegmentMaxSize(),
                 new RestoreCallback<History>() {
                     @Override
                     public List<History> getNewList() throws BusinessException {
