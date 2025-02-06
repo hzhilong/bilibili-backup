@@ -7,6 +7,7 @@ import io.github.hzhilong.base.utils.QRUtil;
 import io.github.hzhilong.bilibili.backup.api.bean.QRCode;
 import io.github.hzhilong.bilibili.backup.app.service.impl.LoginService;
 import io.github.hzhilong.bilibili.backup.gui.dialog.LoginUserDialog;
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 
 import javax.swing.*;
@@ -19,6 +20,7 @@ import java.util.List;
  * @author hzhilong
  * @version 1.0
  */
+@Slf4j
 public class GetLoginQRWorker extends SwingWorker<BuResult<QRCode>, BuResult<Image>> {
 
     private final OkHttpClient client;
@@ -55,8 +57,10 @@ public class GetLoginQRWorker extends SwingWorker<BuResult<QRCode>, BuResult<Ima
         if (ListUtil.notEmpty(chunks)) {
             BuResult<Image> buResult = chunks.get(chunks.size() - 1);
             if (buResult.isFail()) {
+                log.info("获取二维码失败，{}", buResult.getMsg());
                 lblTipMsg.setText(buResult.getMsg());
             } else {
+                log.info("获取二维码成功，等待扫码中...");
                 lblQRCode.setIcon(new ImageIcon(buResult.getData()));
                 lblTipMsg.setText("获取二维码成功，等待扫码中...");
             }

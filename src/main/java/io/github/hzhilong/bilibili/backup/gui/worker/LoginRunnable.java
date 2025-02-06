@@ -5,9 +5,9 @@ import io.github.hzhilong.base.utils.StringUtils;
 import io.github.hzhilong.bilibili.backup.api.bean.QRCode;
 import io.github.hzhilong.bilibili.backup.api.bean.Upper;
 import io.github.hzhilong.bilibili.backup.api.bean.UpperInfoCallback;
-import io.github.hzhilong.bilibili.backup.app.service.impl.LoginService;
 import io.github.hzhilong.bilibili.backup.api.user.User;
 import io.github.hzhilong.bilibili.backup.app.bean.SavedUser;
+import io.github.hzhilong.bilibili.backup.app.service.impl.LoginService;
 import io.github.hzhilong.bilibili.backup.gui.dialog.LoginUserDialog;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
@@ -42,7 +42,7 @@ public class LoginRunnable extends BaseRunnable {
         loginService = new LoginService(client);
         String cookie = null;
         try {
-            // 等待扫码
+            log.info("等待扫码...");
             long startTime = System.currentTimeMillis();
             while (System.currentTimeMillis() - startTime < 180000 && StringUtils.isEmpty(cookie)) {
                 if (isInterrupt()) {
@@ -72,13 +72,14 @@ public class LoginRunnable extends BaseRunnable {
         loginService.getUpper(new User(cookie), new UpperInfoCallback() {
             @Override
             public void success(Upper upper) {
+                log.info("获取账号信息成功：{}", upper);
                 LoginRunnable.this.upper = upper;
                 loginComplete();
             }
 
             @Override
             public void fail(User user) {
-
+                log.info("获取账号信息失败");
             }
         });
     }
@@ -92,6 +93,7 @@ public class LoginRunnable extends BaseRunnable {
     }
 
     private void updateTipMsg(String msg) {
+        log.info(msg);
         SwingUtilities.invokeLater(() -> lblTipMsg.setText(msg));
     }
 }

@@ -9,6 +9,7 @@ import io.github.hzhilong.bilibili.backup.app.constant.AppConstant;
 import io.github.hzhilong.bilibili.backup.app.state.UserManager;
 import io.github.hzhilong.bilibili.backup.gui.dialog.LoginUserDialog;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 
 import javax.swing.*;
@@ -24,6 +25,7 @@ import java.util.List;
  * @author hzhilong
  * @version 1.0
  */
+@Slf4j
 public class UserSelector extends BasePanel {
 
     private String appIcon;
@@ -126,14 +128,17 @@ public class UserSelector extends BasePanel {
     }
 
     private void loginUser() {
+        log.info("开始登录新账号");
         LoginUserDialog loginUserDialog = new LoginUserDialog(parent, AppConstant.APP_ICON, client);
         loginUserDialog.setVisible(true);
         SavedUser savedUser = loginUserDialog.getSavedUser();
+        log.info("登录结果：{}", savedUser);
         if (savedUser != null) {
             try {
                 UserManager.save(savedUser);
                 refreshUser(savedUser);
             } catch (BusinessException e) {
+                log.error(e.getMessage(), e);
                 throw new RuntimeException(e);
             }
         }

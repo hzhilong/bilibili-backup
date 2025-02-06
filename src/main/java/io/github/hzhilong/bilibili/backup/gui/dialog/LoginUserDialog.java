@@ -93,12 +93,14 @@ public class LoginUserDialog extends BaseDialog {
 
     private void refreshQRCode() {
         stopTask();
+        log.info("正在获取登录二维码...");
         lblTipMsg.setText("正在获取登录二维码...");
         getLoginQRWorker = new GetLoginQRWorker(client, this, lblQRCode, lblTipMsg);
         getLoginQRWorker.execute();
     }
 
     public void waitLogin(QRCode qrCode) {
+        log.info("等待扫码中...");
         loginRunnable = new LoginRunnable(client, this, lblTipMsg, qrCode);
         new Thread(loginRunnable).start();
     }
