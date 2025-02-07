@@ -34,6 +34,9 @@ public class FavInfo {
     private Integer mediaCount;
 
     public boolean isDefault() {
+        if(attr == null){
+            return false;
+        }
         return (attr >> 1 & 1) != 1;
     }
 }

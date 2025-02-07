@@ -15,15 +15,18 @@ import io.github.hzhilong.bilibili.backup.api.request.ModifyApi;
 import io.github.hzhilong.bilibili.backup.api.request.PageApi;
 import io.github.hzhilong.bilibili.backup.api.user.User;
 import io.github.hzhilong.bilibili.backup.app.bean.BusinessResult;
+import io.github.hzhilong.bilibili.backup.app.bean.NeedContext;
 import io.github.hzhilong.bilibili.backup.app.business.BusinessType;
 import io.github.hzhilong.bilibili.backup.app.error.ApiException;
 import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreService;
+import io.github.hzhilong.bilibili.backup.gui.dialog.FavFolderSelectDialog;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import org.apache.commons.collections4.ListUtils;
 import org.jetbrains.annotations.NotNull;
 
+import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,7 +46,13 @@ import java.util.stream.Collectors;
  * @version 1.0
  */
 @Slf4j
-public class FavoritesService extends BackupRestoreService<FavFolder> {
+public class FavoritesService extends BackupRestoreService<FavFolder> implements NeedContext {
+
+    @Setter
+    private Window window;
+
+    @Setter
+    private String appIconPath;
 
     @Setter
     private boolean saveToDefaultOnFailure = false;
@@ -124,6 +133,14 @@ public class FavoritesService extends BackupRestoreService<FavFolder> {
 
                     @Override
                     public List<FavFolder> processData(List<FavFolder> list) throws BusinessException {
+                        if (window != null) {
+                            FavFolderSelectDialog dialog = new FavFolderSelectDialog(window, appIconPath, list);
+                            dialog.setVisible(true);
+                            list = dialog.getSelectedList();
+                            if (list == null) {
+                                throw new BusinessException("未选择收藏夹");
+                            }
+                        }
                         for (FavFolder favFolder : list) {
                             log.info("获取收藏夹[{}]的信息", favFolder.getTitle());
                             ApiResult<FavFolder> apiResult = new BaseApi<FavFolder>(client, signUser(),
@@ -238,6 +255,15 @@ public class FavoritesService extends BackupRestoreService<FavFolder> {
 
         List<FavFolder> oldFolders = JSONObject.parseArray(readJsonFile(path, "收藏夹", "创建的收藏夹"), FavFolder.class);
 
+        if (window != null) {
+            FavFolderSelectDialog dialog = new FavFolderSelectDialog(window, appIconPath, oldFolders);
+            dialog.setVisible(true);
+            oldFolders = dialog.getSelectedList();
+            if (oldFolders == null) {
+                throw new BusinessException("未选择收藏夹");
+            }
+        }
+
         Map<String, FavFolder> mapNewFolders = new HashMap<>();
         for (String title : saveToDefaultMap) {
             mapNewFolders.put(title, defaultFolder);
@@ -251,6 +277,18 @@ public class FavoritesService extends BackupRestoreService<FavFolder> {
             String title = folder.getTitle();
             mapNewFolders.put(title, folder);
             if (!isDirectRestore()) {
+                if (oldFolders != null) {
+                    boolean needGetNewData = true;
+                    for (FavFolder oldFolder : oldFolders) {
+                        if (!oldFolder.getTitle().equals(folder.getTitle())) {
+                            needGetNewData = false;
+                        }
+                    }
+                    if (!needGetNewData) {
+                        log.info("{}新账号收藏夹[{}]不在还原的数据内，跳过", String.format(logNoFormat2, i + 1), folder.getTitle());
+                        continue;
+                    }
+                }
                 log.info("{}获取新账号收藏夹[{}]的内容...", String.format(logNoFormat2, i + 1), folder.getTitle());
                 FavPageData favData = getFavData(String.valueOf(folder.getId()));
                 List<Media> medias = favData.getMedias();

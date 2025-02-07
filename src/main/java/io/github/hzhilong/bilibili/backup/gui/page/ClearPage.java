@@ -61,7 +61,7 @@ public class ClearPage extends PagePanel {
 
         JPanel btnPanel = new JPanel();
         btnPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-        GridBagConstraints temp = LayoutUtil.getSeparatorConstraints(0, posY++, 1);
+        GridBagConstraints temp = LayoutUtil.getSeparatorConstraints(0, posY++, 1, 1);
         addDynamicContent(btnPanel, temp);
 
         btnBackup = new JButton(ACTIVE_BTN_NAME);

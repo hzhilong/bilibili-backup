@@ -153,6 +153,7 @@ public abstract class BackupRestoreService<T> extends BaseService implements Bac
         result.setData(data);
         try {
             data = callback.processData(data);
+            result.setData(data);
         } catch (BusinessException e) {
             result.setFailed("处理数据失败：" + e.getMessage());
             return result;

@@ -9,6 +9,7 @@ import io.github.hzhilong.bilibili.backup.app.business.BusinessType;
 import io.github.hzhilong.bilibili.backup.app.constant.AppConstant;
 import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreItem;
 import io.github.hzhilong.bilibili.backup.app.state.GlobalState;
+import io.github.hzhilong.bilibili.backup.app.state.setting.AppSettingItems;
 import io.github.hzhilong.bilibili.backup.gui.component.BackupFileSelector;
 import io.github.hzhilong.bilibili.backup.gui.component.BackupRestoreItemSelector;
 import io.github.hzhilong.bilibili.backup.gui.component.UserSelector;
@@ -79,7 +80,7 @@ public class RestorePage extends PagePanel {
 
         JPanel btnPanel = new JPanel();
         btnPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-        GridBagConstraints temp = LayoutUtil.getSeparatorConstraints(0, posY++, 1);
+        GridBagConstraints temp = LayoutUtil.getSeparatorConstraints(0, posY++, 1, 1);
         addDynamicContent(btnPanel, temp);
 
         btnRestore = new JButton(ACTIVE_BTN_NAME);
@@ -175,7 +176,8 @@ public class RestorePage extends PagePanel {
 
     private void restore(LinkedHashSet<BackupRestoreItem> items) {
         setBusyStatus(true);
-        restoreRunnable = new RestoreRunnable(client, userSelector.getCurrUser(), items,
+        restoreRunnable = new RestoreRunnable(AppSettingItems.SELECT_FAV.getValue() ? parent : null,
+                appIconPath, client, userSelector.getCurrUser(), items,
                 backupFileSelector.getCurrBackupDir().getDirFile().getPath(),
                 new BuCallback<Void>() {
                     @Override

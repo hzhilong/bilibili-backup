@@ -28,7 +28,6 @@ import java.util.List;
 @Slf4j
 public class UserSelector extends BasePanel {
 
-    private String appIcon;
     private final OkHttpClient client;
 
     protected EventListenerList listenerList = new EventListenerList();

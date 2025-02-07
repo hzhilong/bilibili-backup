@@ -24,7 +24,7 @@ import java.util.List;
 public class ClearRunnable extends BackupRestoreRunnable {
 
     public ClearRunnable(OkHttpClient client, SavedUser user, LinkedHashSet<BackupRestoreItem> backupRestoreItems, BuCallback<Void> buCallback) {
-        super(client, user, backupRestoreItems, null, buCallback);
+        super(null, null, client, user, backupRestoreItems, null, buCallback);
     }
 
     @Override

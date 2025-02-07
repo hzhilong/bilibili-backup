@@ -6,6 +6,7 @@ import io.github.hzhilong.base.utils.StringUtils;
 import io.github.hzhilong.baseapp.business.IBusinessType;
 import io.github.hzhilong.bilibili.backup.api.user.User;
 import io.github.hzhilong.bilibili.backup.app.bean.BusinessResult;
+import io.github.hzhilong.bilibili.backup.app.bean.NeedContext;
 import io.github.hzhilong.bilibili.backup.app.bean.SavedUser;
 import io.github.hzhilong.bilibili.backup.app.constant.AppConstant;
 import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreItem;
@@ -16,6 +17,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 
+import java.awt.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,7 +46,7 @@ public abstract class BackupRestoreRunnable extends BaseRunnable {
     protected String backupDirPath;
     protected User apiUser;
 
-    public BackupRestoreRunnable(OkHttpClient client, SavedUser user, LinkedHashSet<BackupRestoreItem> backupRestoreItems, String backupDirPath, BuCallback<Void> buCallback) {
+    public BackupRestoreRunnable(Window parent, String appIconPath, OkHttpClient client, SavedUser user, LinkedHashSet<BackupRestoreItem> backupRestoreItems, String backupDirPath, BuCallback<Void> buCallback) {
         super(client);
         this.client = client;
         this.user = user;
@@ -59,9 +61,14 @@ public abstract class BackupRestoreRunnable extends BaseRunnable {
         this.apiUser = new User(user.getCookie());
         for (BackupRestoreItem item : backupRestoreItems) {
             BackupRestoreService<?> service = item.getServiceBuilder().build(this.client, this.apiUser, this.backupDirPath);
+            if (service instanceof NeedContext) {
+                NeedContext needContext = (NeedContext) service;
+                needContext.setWindow(parent);
+                needContext.setAppIconPath(appIconPath);
+            }
             service.setDirectRestore(AppSettingItems.DIRECT_RESTORE.getValue());
             service.setAllowFailure(AppSettingItems.ALLOW_FAILURE.getValue());
-            if(service instanceof FavoritesService){
+            if (service instanceof FavoritesService) {
                 FavoritesService favoritesService = (FavoritesService) service;
                 favoritesService.setSaveToDefaultOnFailure(AppSettingItems.FAV_SAVE_TO_DEFAULT_ON_FAILURE.getValue());
             }

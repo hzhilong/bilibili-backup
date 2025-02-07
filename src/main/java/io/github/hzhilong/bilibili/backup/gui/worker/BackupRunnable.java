@@ -11,6 +11,7 @@ import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreService;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 
+import java.awt.*;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -23,8 +24,8 @@ import java.util.List;
 @Slf4j
 public class BackupRunnable extends BackupRestoreRunnable {
 
-    public BackupRunnable(OkHttpClient client, SavedUser user, LinkedHashSet<BackupRestoreItem> backupRestoreItems, BuCallback<Void> buCallback) {
-        super(client, user, backupRestoreItems, null, buCallback);
+    public BackupRunnable(Window parent, String appIconPath, OkHttpClient client, SavedUser user, LinkedHashSet<BackupRestoreItem> backupRestoreItems, BuCallback<Void> buCallback) {
+        super(parent, appIconPath, client, user, backupRestoreItems, null, buCallback);
     }
 
     @Override

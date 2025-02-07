@@ -5,6 +5,7 @@ import io.github.hzhilong.baseapp.utils.LayoutUtil;
 import io.github.hzhilong.bilibili.backup.app.business.BusinessType;
 import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreItem;
 import io.github.hzhilong.bilibili.backup.app.state.GlobalState;
+import io.github.hzhilong.bilibili.backup.app.state.setting.AppSettingItems;
 import io.github.hzhilong.bilibili.backup.gui.component.BackupRestoreItemSelector;
 import io.github.hzhilong.bilibili.backup.gui.component.UserSelector;
 import io.github.hzhilong.bilibili.backup.gui.segment.SegmentUtil;
@@ -66,7 +67,7 @@ public class BackupPage extends PagePanel {
 
         JPanel btnPanel = new JPanel();
         btnPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-        GridBagConstraints temp = LayoutUtil.getSeparatorConstraints(0, posY++, 1);
+        GridBagConstraints temp = LayoutUtil.getSeparatorConstraints(0, posY++, 1, 1);
         addDynamicContent(btnPanel, temp);
 
         btnBackup = new JButton(ACTIVE_BTN_NAME);
@@ -138,7 +139,8 @@ public class BackupPage extends PagePanel {
 
     private void backup(LinkedHashSet<BackupRestoreItem> items) {
         setBusyStatus(true);
-        backupRunnable = new BackupRunnable(client, userSelector.getCurrUser(), items,
+        backupRunnable = new BackupRunnable(AppSettingItems.SELECT_FAV.getValue() ? parent : null,
+                appIconPath, client, userSelector.getCurrUser(), items,
                 new BuCallback<Void>() {
                     @Override
                     public void success(Void data) {

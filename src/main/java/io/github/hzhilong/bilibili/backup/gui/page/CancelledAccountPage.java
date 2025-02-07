@@ -75,7 +75,7 @@ public class CancelledAccountPage extends PagePanel {
 
         JPanel btnPanel = new JPanel();
         btnPanel.setLayout(new FlowLayout());
-        tempConstraints = LayoutUtil.getSeparatorConstraints(0, posY++, 2);
+        tempConstraints = LayoutUtil.getSeparatorConstraints(0, posY++, 2, 1);
         addFixedContent(btnPanel, tempConstraints);
 
         btnGetInfo = new JButton("获取信息");
@@ -223,7 +223,7 @@ public class CancelledAccountPage extends PagePanel {
         items.add(BackupRestoreItem.BANGUMI);
 
         SavedUser user = new SavedUser(new Upper(Long.valueOf(uid), AppConstant.CANCELLED_ACCOUNT_NAME, ""), uid);
-        backupRunnable = new BackupRunnable(client, user, items,
+        backupRunnable = new BackupRunnable(parent, appIconPath, client, user, items,
                 new BuCallback<Void>() {
                     @Override
                     public void success(Void data) {
