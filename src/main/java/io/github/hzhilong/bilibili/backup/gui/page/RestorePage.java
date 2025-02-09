@@ -67,15 +67,15 @@ public class RestorePage extends PagePanel {
     public void initUI() {
         int posY = 0;
 
-        userSelector = new UserSelector(parent, appIconPath, client);
+        userSelector = new UserSelector(parentWindow, appIconPath, client);
         addFixedContent(userSelector, 0, posY++);
         addSeparatorToFixed(0, posY++);
 
-        backupFileSelector = new BackupFileSelector(parent, appIconPath);
+        backupFileSelector = new BackupFileSelector(parentWindow, appIconPath);
         addFixedContent(backupFileSelector, 0, posY++);
         addSeparatorToFixed(0, posY++);
 
-        backupRestoreItemSelector = new BackupRestoreItemSelector(parent, appIconPath, null);
+        backupRestoreItemSelector = new BackupRestoreItemSelector(parentWindow, appIconPath, null);
         addDynamicContent(backupRestoreItemSelector, 0, posY++);
 
         JPanel btnPanel = new JPanel();
@@ -93,7 +93,7 @@ public class RestorePage extends PagePanel {
 
         setDynamicContentVisible(false);
 
-        loadingDialog = new BaseLoadingDialog(parent, AppConstant.APP_ICON, "提示", "解析备份数据中，请稍后...");
+        loadingDialog = new BaseLoadingDialog(parentWindow, AppConstant.APP_ICON, "提示", "解析备份数据中，请稍后...");
 
         initListener();
     }
@@ -130,26 +130,26 @@ public class RestorePage extends PagePanel {
     private void onBtnRestore() {
         if (ACTIVE_BTN_NAME.equals(this.btnRestore.getText())) {
             if (GlobalState.getProcessing()) {
-                JOptionPane.showMessageDialog(parent, "有其他任务在运行！", "提示", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(parentWindow, "有其他任务在运行！", "提示", JOptionPane.WARNING_MESSAGE);
                 return;
             }
             SavedUser currUser = userSelector.getCurrUser();
             if (currUser == null) {
-                JOptionPane.showMessageDialog(parent, "请选择新账号！", "提示", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(parentWindow, "请选择新账号！", "提示", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             LinkedHashSet<BackupRestoreItem> items = backupRestoreItemSelector.getSelectedItems();
             if (items.isEmpty()) {
-                JOptionPane.showMessageDialog(parent, "请至少选择一项！", "提示", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(parentWindow, "请至少选择一项！", "提示", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            int result = JOptionPane.showConfirmDialog(parent, "是否开始" + BU_NAME + "？", "提示",
+            int result = JOptionPane.showConfirmDialog(parentWindow, "是否开始" + BU_NAME + "？", "提示",
                     JOptionPane.YES_NO_OPTION);
             if (result == JOptionPane.YES_OPTION) {
                 restore(items);
             }
         } else {
-            int result = JOptionPane.showConfirmDialog(parent, "正在进行" + BU_NAME + "，是否取消？", "提示",
+            int result = JOptionPane.showConfirmDialog(parentWindow, "正在进行" + BU_NAME + "，是否取消？", "提示",
                     JOptionPane.YES_NO_OPTION);
             if (result == JOptionPane.YES_OPTION) {
                 stopRestore();
@@ -176,7 +176,7 @@ public class RestorePage extends PagePanel {
 
     private void restore(LinkedHashSet<BackupRestoreItem> items) {
         setBusyStatus(true);
-        restoreRunnable = new RestoreRunnable(AppSettingItems.SELECT_FAV.getValue() ? parent : null,
+        restoreRunnable = new RestoreRunnable(AppSettingItems.SELECT_FAV.getValue() ? parentWindow : null,
                 appIconPath, client, userSelector.getCurrUser(), items,
                 backupFileSelector.getCurrBackupDir().getDirFile().getPath(),
                 new BuCallback<Void>() {

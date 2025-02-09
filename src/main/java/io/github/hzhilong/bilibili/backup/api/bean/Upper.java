@@ -18,6 +18,15 @@ public class Upper {
     private Long mid;
     private String name;
     private String face;
+    private String sex;
+    private Integer level;
+    private Boolean noFace;
+
+    public Upper(Long mid, String name, String face) {
+        this.mid = mid;
+        this.name = name;
+        this.face = face;
+    }
 
     /**
      * 是否已注销

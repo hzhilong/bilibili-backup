@@ -21,8 +21,8 @@
         <app.ico>assets/windows/app.ico</app.ico>
 
         <flatlaf.version>3.5.2</flatlaf.version>
-        <ybgnb-base.version>0.0.2-SNAPSHOT</ybgnb-base.version>
-        <ybgnb-base-app.version>0.0.4-SNAPSHOT</ybgnb-base-app.version>
+        <ybgnb-base.version>0.0.2</ybgnb-base.version>
+        <ybgnb-base-app.version>0.0.5</ybgnb-base-app.version>
         <javapackager.jrePath>D:\Java\jdk1.8.0_201\jre</javapackager.jrePath>
     </properties>
 
@@ -80,6 +80,21 @@
             <artifactId>commons-collections4</artifactId>
             <version>4.4</version>
         </dependency>
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+            <version>4.29.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java-util</artifactId>
+            <version>4.29.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+            <version>2.3.34</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -90,6 +105,7 @@
                 <includes>
                     <include>**/*.properties</include>
                     <include>**/*.svg</include>
+                    <include>**/*.ftl</include>
                 </includes>
             </resource>
         </resources>
@@ -176,41 +192,41 @@
                             </winConfig>
                         </configuration>
                     </execution>
-<!--                    <execution>-->
-<!--                        <id>without-jre</id>-->
-<!--                        <phase>package</phase>-->
-<!--                        <goals>-->
-<!--                            <goal>package</goal>-->
-<!--                        </goals>-->
-<!--                        <configuration>-->
-<!--                            <mainClass>${app.mainClass}</mainClass>-->
-<!--                            <displayName>${project.name}</displayName>-->
-<!--                            <name>${project.artifactId}-without-jre</name>-->
-<!--                            <bundleJre>false</bundleJre>-->
-<!--                            <jreMinVersion>8</jreMinVersion>-->
-<!--                            <generateInstaller>true</generateInstaller>-->
-<!--                            <platform>windows</platform>-->
+                    <execution>
+                        <id>without-jre</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>package</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>${app.mainClass}</mainClass>
+                            <displayName>${project.name}</displayName>
+                            <name>${project.artifactId}-without-jre</name>
+                            <bundleJre>false</bundleJre>
+                            <jreMinVersion>8</jreMinVersion>
+                            <generateInstaller>true</generateInstaller>
+                            <platform>windows</platform>
 
-<!--                            <url>${app.url}</url>-->
-<!--                            <organizationUrl>${app.url}</organizationUrl>-->
-<!--                            <organizationName>${app.author}</organizationName>-->
-<!--                            <organizationEmail>${app.email}</organizationEmail>-->
+                            <url>${app.url}</url>
+                            <organizationUrl>${app.url}</organizationUrl>
+                            <organizationName>${app.author}</organizationName>
+                            <organizationEmail>${app.email}</organizationEmail>
 
-<!--                            <winConfig>-->
-<!--                                <exeCreationTool>winrun4j</exeCreationTool>-->
-<!--                                <icoFile>${app.ico}</icoFile>-->
-<!--                                &lt;!&ndash; https://github.com/kira-96/Inno-Setup-Chinese-Simplified-Translation &ndash;&gt;-->
-<!--                                <setupLanguages>-->
-<!--                                    <china>compiler:Languages\ChineseSimplified.isl</china>-->
-<!--                                    <english>compiler:Default.isl</english>-->
-<!--                                </setupLanguages>-->
-<!--                                <generateMsi>false</generateMsi>-->
-<!--                                <disableDirPage>false</disableDirPage>-->
-<!--                                <disableFinishedPage>false</disableFinishedPage>-->
-<!--                                <disableRunAfterInstall>false</disableRunAfterInstall>-->
-<!--                            </winConfig>-->
-<!--                        </configuration>-->
-<!--                    </execution>-->
+                            <winConfig>
+                                <exeCreationTool>winrun4j</exeCreationTool>
+                                <icoFile>${app.ico}</icoFile>
+                                <!-- https://github.com/kira-96/Inno-Setup-Chinese-Simplified-Translation -->
+                                <setupLanguages>
+                                    <china>compiler:Languages\ChineseSimplified.isl</china>
+                                    <english>compiler:Default.isl</english>
+                                </setupLanguages>
+                                <generateMsi>false</generateMsi>
+                                <disableDirPage>false</disableDirPage>
+                                <disableFinishedPage>false</disableFinishedPage>
+                                <disableRunAfterInstall>false</disableRunAfterInstall>
+                            </winConfig>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>

@@ -51,12 +51,12 @@ public class ClearPage extends PagePanel {
     public void initUI() {
         int posY = 0;
 
-        userSelector = new UserSelector(parent, appIconPath, client);
+        userSelector = new UserSelector(parentWindow, appIconPath, client);
         addFixedContent(userSelector, 0, posY++);
         addSeparatorToFixed(0, posY++);
 
         posY = 0;
-        backupRestoreItemSelector = new BackupRestoreItemSelector(parent, appIconPath, null, 3);
+        backupRestoreItemSelector = new BackupRestoreItemSelector(parentWindow, appIconPath, null, 3);
         addDynamicContent(backupRestoreItemSelector, 0, posY++);
 
         JPanel btnPanel = new JPanel();
@@ -82,25 +82,25 @@ public class ClearPage extends PagePanel {
     private void onBtnBackup() {
         if (ACTIVE_BTN_NAME.equals(this.btnBackup.getText())) {
             if (GlobalState.getProcessing()) {
-                JOptionPane.showMessageDialog(parent, "有其他任务在运行！", "提示", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(parentWindow, "有其他任务在运行！", "提示", JOptionPane.WARNING_MESSAGE);
                 return;
             }
             LinkedHashSet<BackupRestoreItem> items = backupRestoreItemSelector.getSelectedItems();
             if (items.isEmpty()) {
-                JOptionPane.showMessageDialog(parent, "请至少选择一项！", "提示", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(parentWindow, "请至少选择一项！", "提示", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            int result = JOptionPane.showConfirmDialog(parent,
+            int result = JOptionPane.showConfirmDialog(parentWindow,
                     "是否开始" + BU_NAME + "？", "提示",
                     JOptionPane.YES_NO_OPTION);
             if (result == JOptionPane.YES_OPTION) {
-                result = JOptionPane.showConfirmDialog(parent,
+                result = JOptionPane.showConfirmDialog(parentWindow,
                         "是否开始" + BU_NAME + "？\n" +
                                 "请注意：这会清空所选的数据，\n" +
                                 "请检查数据是否已备份完成再继续。", "提示",
                         JOptionPane.YES_NO_OPTION);
                 if (result == JOptionPane.YES_OPTION) {
-                    result = JOptionPane.showConfirmDialog(parent,
+                    result = JOptionPane.showConfirmDialog(parentWindow,
                             "最后一次提示，是否清空所选的数据？", "提示",
                             JOptionPane.YES_NO_OPTION);
                     if (result == JOptionPane.YES_OPTION) {
@@ -109,7 +109,7 @@ public class ClearPage extends PagePanel {
                 }
             }
         } else {
-            int result = JOptionPane.showConfirmDialog(parent,
+            int result = JOptionPane.showConfirmDialog(parentWindow,
                     "正在进行" + BU_NAME + "，是否取消？", "提示", JOptionPane.YES_NO_OPTION);
             if (result == JOptionPane.YES_OPTION) {
                 stopBackup();

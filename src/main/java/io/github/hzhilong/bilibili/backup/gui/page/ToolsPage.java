@@ -1,10 +1,15 @@
 package io.github.hzhilong.bilibili.backup.gui.page;
 
+import io.github.hzhilong.baseapp.utils.JContextUtil;
+import io.github.hzhilong.baseapp.utils.LayoutUtil;
 import io.github.hzhilong.bilibili.backup.app.bean.SavedUser;
 import io.github.hzhilong.bilibili.backup.app.state.GlobalState;
 import io.github.hzhilong.bilibili.backup.gui.component.UserSelector;
+import io.github.hzhilong.bilibili.backup.gui.frame.ViewDMFrame;
 import io.github.hzhilong.bilibili.backup.gui.worker.DelaySetProcessingLoggerRunnable;
+import io.github.hzhilong.bilibili.backup.gui.worker.tools.BackupDMRunnable;
 import io.github.hzhilong.bilibili.backup.gui.worker.tools.OpenAutoReplyRunnable;
+import io.github.hzhilong.bilibili.backup.gui.worker.tools.OpenFrameRunnable;
 import io.github.hzhilong.bilibili.backup.gui.worker.tools.RunnableBuilder;
 import io.github.hzhilong.bilibili.backup.gui.worker.tools.SessionRunnable;
 import io.github.hzhilong.bilibili.backup.gui.worker.tools.Tool;
@@ -65,32 +70,41 @@ public class ToolsPage extends PagePanel {
         tools.add(new Tool("关闭私信自动回复功能", "B站达到1000粉丝才能开启消息自动回复的功能",
                 (client, user, buCallback)
                         -> new OpenAutoReplyRunnable(client, user, buCallback, false)));
+
+        tools.add(new Tool("备份视频弹幕", "备份视频弹幕，弹幕实际数量可能比视频页面显示的弹幕数少。支持反查发送者。",
+                BackupDMRunnable::new, false));
+        tools.add(new Tool(ViewDMFrame.NAME, "查看已备份的弹幕文件，方便在反查发送者的同时，过滤掉不存在的uid", new RunnableBuilder() {
+            @Override
+            public ToolRunnable build(OkHttpClient client, SavedUser user, ToolBuCallback<Void> buCallback) {
+                return new OpenFrameRunnable(client, user, buCallback, new ViewDMFrame(parentWindow, userSelector.getCurrUser().getCookie(), client));
+            }
+        }, false));
     }
 
     @Override
     public void initUI() {
         int posY = 0;
 
-        userSelector = new UserSelector(parent, appIconPath, client);
+        userSelector = new UserSelector(parentWindow, appIconPath, client);
         addFixedContent(userSelector, 0, posY++);
         addSeparatorToFixed(0, posY++);
 
         JPanel btnPanel = new JPanel();
-        btnPanel.setLayout(new FlowLayout());
+        btnPanel.setLayout(new GridBagLayout());
         addDynamicContent(btnPanel, 0, posY++);
 
+        int column = 5;
         for (int i = 0; i < tools.size(); i++) {
             Tool tool = tools.get(i);
             String name = tool.getName();
             RunnableBuilder builder = tool.getRunnableBuilder();
             JButton button = new JButton(tool.getName());
             button.setToolTipText(tool.getDesc());
-            btnPanel.add(button);
-//            addDynamicContent(button, i % 3, (i / 3) + posY);
+            LayoutUtil.addGridBar(btnPanel, button, i % column, (i / column) + posY);
             button.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    startRunnable(button, name, builder);
+                    startRunnable(button, name, builder, tool.isTip());
                 }
             });
             toolsBtn.put(tool, button);
@@ -105,10 +119,10 @@ public class ToolsPage extends PagePanel {
     }
 
 
-    private void startRunnable(JButton button, String name, RunnableBuilder builder) {
+    private void startRunnable(JButton button, String name, RunnableBuilder builder, boolean isTip) {
         if (button.getText().startsWith(INACTIVE_BTN_NAME_BEGIN)) {
             // 停止
-            int result = JOptionPane.showConfirmDialog(parent, "正在进行" + name + "，是否取消？", "提示",
+            int result = JOptionPane.showConfirmDialog(parentWindow, "正在进行" + name + "，是否取消？", "提示",
                     JOptionPane.YES_NO_OPTION);
             if (result == JOptionPane.YES_OPTION) {
                 log.info("中断任务中...");
@@ -118,16 +132,19 @@ public class ToolsPage extends PagePanel {
         } else {
             // 开始
             if (GlobalState.getProcessing()) {
-                JOptionPane.showMessageDialog(parent, "有其他任务在运行！", "提示", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(parentWindow, "有其他任务在运行！", "提示", JOptionPane.WARNING_MESSAGE);
                 return;
             }
             SavedUser currUser = userSelector.getCurrUser();
             if (currUser == null) {
-                JOptionPane.showMessageDialog(parent, "请选择账号！", "提示", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(parentWindow, "请选择账号！", "提示", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            int result = JOptionPane.showConfirmDialog(parent, "是否开始" + name + "？", "提示",
-                    JOptionPane.YES_NO_OPTION);
+            int result = JOptionPane.YES_OPTION;
+            if (isTip) {
+                result = JOptionPane.showConfirmDialog(parentWindow, "是否开始" + name + "？", "提示",
+                        JOptionPane.YES_NO_OPTION);
+            }
             if (result == JOptionPane.YES_OPTION) {
                 setBusyStatus(button, name, true);
                 ToolRunnable toolRunnable = builder.build(client, userSelector.getCurrUser(),
@@ -137,6 +154,7 @@ public class ToolsPage extends PagePanel {
                                 setBusyStatus(button, name, busyStatus);
                             }
                         });
+                JContextUtil.init(this, toolRunnable);
                 toolsRunnable.put(name, toolRunnable);
                 new Thread(toolRunnable).start();
             }

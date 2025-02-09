@@ -7,6 +7,8 @@ import io.github.hzhilong.bilibili.backup.app.service.impl.MessageService;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 
+import java.util.LinkedHashSet;
+
 /**
  * 已读所有消息的线程
  *
@@ -21,6 +23,7 @@ public class SessionRunnable extends ToolRunnable<MessageService, Void> {
     public static final int TYPE_DELETE_ALL_SYS_MSG = 3;
 
     private int type;
+    private MessageService messageService;
 
     public SessionRunnable(OkHttpClient client, SavedUser user, ToolBuCallback<Void> buCallback, int type) {
         super(client, user, buCallback);
@@ -28,18 +31,19 @@ public class SessionRunnable extends ToolRunnable<MessageService, Void> {
     }
 
     @Override
-    protected MessageService getService() {
-        return new MessageService(client, new User(user.getCookie()));
+    protected void newServices(LinkedHashSet<MessageService> services) {
+        messageService = new MessageService(client, new User(user.getCookie()));
+        services.add(messageService);
     }
 
     @Override
-    protected Void runService(MessageService service) throws BusinessException {
+    protected Void runTool() throws BusinessException {
         if (type == TYPE_READ_ALL_SESSION) {
-            service.readAllSession();
+            messageService.readAllSession();
         } else if (type == TYPE_DELETE_ALL_SESSION) {
-            service.readAllSession(true);
+            messageService.readAllSession(true);
         } else if (type == TYPE_DELETE_ALL_SYS_MSG) {
-            service.deleteAllSysMsg();
+            messageService.deleteAllSysMsg();
         }
         return null;
     }

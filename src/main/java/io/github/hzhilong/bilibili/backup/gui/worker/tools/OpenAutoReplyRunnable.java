@@ -7,6 +7,8 @@ import io.github.hzhilong.bilibili.backup.app.service.impl.UserService;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 
+import java.util.LinkedHashSet;
+
 /**
  * 设置私信自动回复功能的线程
  *
@@ -17,6 +19,7 @@ import okhttp3.OkHttpClient;
 public class OpenAutoReplyRunnable extends ToolRunnable<UserService, Void> {
 
     private boolean flag;
+    private UserService userService;
 
     public OpenAutoReplyRunnable(OkHttpClient client, SavedUser user, ToolBuCallback<Void> buCallback, boolean flag) {
         super(client, user, buCallback);
@@ -24,13 +27,14 @@ public class OpenAutoReplyRunnable extends ToolRunnable<UserService, Void> {
     }
 
     @Override
-    protected UserService getService() {
-        return new UserService(client, new User(user.getCookie()));
+    protected void newServices(LinkedHashSet<UserService> services) {
+        userService = new UserService(client, new User(user.getCookie()));
+        services.add(userService);
     }
 
     @Override
-    protected Void runService(UserService service) throws BusinessException {
-        service.openAutoReplyMsg(flag);
+    protected Void runTool() throws BusinessException {
+        userService.openAutoReplyMsg(flag);
         return null;
     }
 }

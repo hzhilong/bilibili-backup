@@ -100,13 +100,13 @@ public class CancelledAccountPage extends PagePanel {
     private String getUid(int btnNo) throws BusinessException {
         String uid = txtUid.getText();
         if (GlobalState.getProcessing() && (btnNo != 3 || !isBackingUp())) {
-            JOptionPane.showMessageDialog(parent, "有其他任务在运行！", "提示", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(parentWindow, "有其他任务在运行！", "提示", JOptionPane.WARNING_MESSAGE);
             throw new BusinessException("有其他任务在运行！");
         } else if (StringUtils.isEmpty(uid)) {
-            JOptionPane.showMessageDialog(parent, "请输入用户UID！", "提示", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(parentWindow, "请输入用户UID！", "提示", JOptionPane.ERROR_MESSAGE);
             throw new BusinessException("请输入用户UID！");
         } else if (!AppConstant.NUM_PATTERN.matcher(uid).find()) {
-            JOptionPane.showMessageDialog(parent, "用户UID为纯数字！", "提示", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(parentWindow, "用户UID为纯数字！", "提示", JOptionPane.ERROR_MESSAGE);
             throw new BusinessException("用户UID为纯数字！");
         } else {
             return uid;
@@ -175,13 +175,13 @@ public class CancelledAccountPage extends PagePanel {
         try {
             String uid = getUid(3);
             if (!isBackingUp()) {
-                int result = JOptionPane.showConfirmDialog(parent,
+                int result = JOptionPane.showConfirmDialog(parentWindow,
                         "是否开始备份？", "提示", JOptionPane.YES_NO_OPTION);
                 if (result == JOptionPane.YES_OPTION) {
                     backup(uid);
                 }
             } else {
-                int result = JOptionPane.showConfirmDialog(parent,
+                int result = JOptionPane.showConfirmDialog(parentWindow,
                         "正在进行备份，是否取消？", "提示", JOptionPane.YES_NO_OPTION);
                 if (result == JOptionPane.YES_OPTION) {
                     stopBackup();
@@ -223,7 +223,7 @@ public class CancelledAccountPage extends PagePanel {
         items.add(BackupRestoreItem.BANGUMI);
 
         SavedUser user = new SavedUser(new Upper(Long.valueOf(uid), AppConstant.CANCELLED_ACCOUNT_NAME, ""), uid);
-        backupRunnable = new BackupRunnable(parent, appIconPath, client, user, items,
+        backupRunnable = new BackupRunnable(parentWindow, appIconPath, client, user, items,
                 new BuCallback<Void>() {
                     @Override
                     public void success(Void data) {

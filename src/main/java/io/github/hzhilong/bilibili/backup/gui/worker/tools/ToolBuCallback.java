@@ -5,7 +5,7 @@ import io.github.hzhilong.base.bean.BuCallback;
 import javax.swing.*;
 
 /**
- * 工具箱线程
+ * 工具箱线程回调
  *
  * @author hzhilong
  * @version 1.0

@@ -18,5 +18,11 @@ public class Tool {
     private String name;
     private String desc;
     private RunnableBuilder runnableBuilder;
+    private boolean isTip = true;
 
+    public Tool(String name, String desc, RunnableBuilder runnableBuilder) {
+        this.name = name;
+        this.desc = desc;
+        this.runnableBuilder = runnableBuilder;
+    }
 }

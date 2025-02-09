@@ -105,7 +105,7 @@ public class UserSelector extends BasePanel {
         });
         btnRefresh.addActionListener(e -> UserSelector.this.refreshUser());
         btnLogin.addActionListener(e -> {
-            int result = JOptionPane.showConfirmDialog(parent, "是否登录新账号？", "提示",
+            int result = JOptionPane.showConfirmDialog(parentWindow, "是否登录新账号？", "提示",
                     JOptionPane.YES_NO_OPTION);
             if (result == JOptionPane.OK_OPTION) {
                 loginUser();
@@ -113,10 +113,10 @@ public class UserSelector extends BasePanel {
         });
         btnLogOut.addActionListener(e -> {
             if (currUser == null) {
-                JOptionPane.showMessageDialog(parent, "请先选择账号！", "提示", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(parentWindow, "请先选择账号！", "提示", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            int result = JOptionPane.showConfirmDialog(parent,
+            int result = JOptionPane.showConfirmDialog(parentWindow,
                     "是否退出登录当前账号[" + currUser + "]？", "提示",
                     JOptionPane.YES_NO_OPTION);
             if (result == JOptionPane.OK_OPTION) {
@@ -128,7 +128,7 @@ public class UserSelector extends BasePanel {
 
     private void loginUser() {
         log.info("开始登录新账号");
-        LoginUserDialog loginUserDialog = new LoginUserDialog(parent, AppConstant.APP_ICON, client);
+        LoginUserDialog loginUserDialog = new LoginUserDialog(parentWindow, AppConstant.APP_ICON, client);
         loginUserDialog.setVisible(true);
         SavedUser savedUser = loginUserDialog.getSavedUser();
         log.info("登录结果：{}", savedUser);

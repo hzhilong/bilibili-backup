@@ -1,7 +1,13 @@
-package io.github.hzhilong.bilibili.backup.gui.page;
+package io.github.hzhilong.bilibili.backup.gui.component;
 
 import io.github.hzhilong.bilibili.backup.app.constant.AppConstant;
 import io.github.hzhilong.bilibili.backup.app.state.GlobalState;
+import io.github.hzhilong.bilibili.backup.gui.page.BackupPage;
+import io.github.hzhilong.bilibili.backup.gui.page.CancelledAccountPage;
+import io.github.hzhilong.bilibili.backup.gui.page.ClearPage;
+import io.github.hzhilong.bilibili.backup.gui.page.PagePanel;
+import io.github.hzhilong.bilibili.backup.gui.page.RestorePage;
+import io.github.hzhilong.bilibili.backup.gui.page.ToolsPage;
 import okhttp3.OkHttpClient;
 
 import javax.swing.*;

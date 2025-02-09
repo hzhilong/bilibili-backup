@@ -35,5 +35,6 @@ build/
 .DS_Store
 
 backup-data/
+backup-other/
 bin/
 qr/

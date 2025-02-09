@@ -1,4 +1,4 @@
-package io.github.hzhilong.bilibili.backup.gui.page;
+package io.github.hzhilong.bilibili.backup.gui.frame;
 
 import io.github.hzhilong.baseapp.component.BaseMainFrame;
 import io.github.hzhilong.baseapp.menu.BaseAppearanceMenu;
@@ -6,6 +6,7 @@ import io.github.hzhilong.baseapp.menu.BaseHelpMenu;
 import io.github.hzhilong.bilibili.backup.app.constant.AppConstant;
 import io.github.hzhilong.bilibili.backup.app.state.GlobalState;
 import io.github.hzhilong.bilibili.backup.gui.menu.AppMenu;
+import io.github.hzhilong.bilibili.backup.gui.component.MainTabbedPane;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
@@ -33,9 +34,9 @@ public class MainFrame extends BaseMainFrame {
                 new Insets(0, 0, 0, 0), 0, 0));
 
         JMenuBar menuBar = new JMenuBar();
-        menuBar.add(new AppMenu(this, appIcon));
-        menuBar.add(new BaseAppearanceMenu(this, appIcon));
-        menuBar.add(new BaseHelpMenu(this, appIcon));
+        menuBar.add(new AppMenu(this, appIconPath));
+        menuBar.add(new BaseAppearanceMenu(this, appIconPath));
+        menuBar.add(new BaseHelpMenu(this, appIconPath));
         this.setJMenuBar(menuBar);
     }
 

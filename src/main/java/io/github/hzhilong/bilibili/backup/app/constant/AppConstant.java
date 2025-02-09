@@ -19,6 +19,10 @@ public class AppConstant {
      * 备份路径前缀
      */
     public static final String BACKUP_PATH_PREFIX = "backup-data/";
+    /**
+     * 备份路径前缀
+     */
+    public static final String BACKUP_OTHER_PATH_PREFIX = "backup-other/";
 
     /**
      * cookie路径前缀

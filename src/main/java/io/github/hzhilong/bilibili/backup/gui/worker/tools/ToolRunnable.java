@@ -7,6 +7,8 @@ import io.github.hzhilong.bilibili.backup.gui.worker.BaseRunnable;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 
+import java.util.LinkedHashSet;
+
 /**
  * 工具箱的线程
  *
@@ -20,33 +22,36 @@ public abstract class ToolRunnable<S extends BaseService, D> extends BaseRunnabl
 
     private final ToolBuCallback<D> buCallback;
 
-    private S service;
+    private LinkedHashSet<S> services;
 
     public ToolRunnable(OkHttpClient client, SavedUser user, ToolBuCallback<D> buCallback) {
         super(client);
         this.user = user;
         this.buCallback = buCallback;
+        this.services = new LinkedHashSet<>();
     }
 
     @Override
     public void setInterrupt(boolean interrupt) {
         this.interrupt = interrupt;
-        if (service != null) {
-            service.setInterrupt(interrupt);
+        if (services != null) {
+            for (S service : services) {
+                service.setInterrupt(interrupt);
+            }
         }
     }
 
-    protected abstract S getService();
+    protected abstract void newServices(LinkedHashSet<S> services);
 
-    protected abstract D runService(S service) throws BusinessException;
+    protected abstract D runTool() throws BusinessException;
 
     @Override
     public void run() {
         boolean onceSuccessful = false;
         D result = null;
         try {
-            service = getService();
-            result = runService(service);
+            newServices(services);
+            result = runTool();
             onceSuccessful = true;
         } catch (Exception e) {
             if (e instanceof BusinessException) {

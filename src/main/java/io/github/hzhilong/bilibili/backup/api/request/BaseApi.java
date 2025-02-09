@@ -2,10 +2,12 @@ package io.github.hzhilong.bilibili.backup.api.request;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.util.ParameterizedTypeImpl;
+import com.google.protobuf.GeneratedMessageV3;
 import io.github.hzhilong.base.error.BusinessException;
 import io.github.hzhilong.base.utils.StringUtils;
 import io.github.hzhilong.bilibili.backup.api.bean.ApiResult;
 import io.github.hzhilong.bilibili.backup.api.user.User;
+import io.github.hzhilong.bilibili.backup.app.bean.ProtoCallback;
 import io.github.hzhilong.bilibili.backup.app.service.impl.SignService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -63,6 +65,9 @@ public class BaseApi<D> implements AddQueryParams {
     private SignService signService;
 
     private final Random random;
+
+    @Setter
+    private ProtoCallback<D> protoCallback;
 
     public BaseApi(OkHttpClient client, User user, String url, boolean isWbiSign, Class<?>... dataClasses) {
         this(client, user, url, null, isWbiSign, dataClasses);
@@ -232,19 +237,32 @@ public class BaseApi<D> implements AddQueryParams {
         Call call = client.newCall(this.getRequest(formParams, jsonBody));
         try (Response response = call.execute()) {
             if (response.isSuccessful() && response.body() != null) {
-                String result = response.body().string();
-                log.debug("响应：({})", result);
-                if (!StringUtils.isEmpty(result)) {
+                if (this.dataClasses != null && GeneratedMessageV3.class.isAssignableFrom(this.dataClasses[0]) && protoCallback != null) {
+                    D data = protoCallback.parse(response.body().byteStream());
                     ApiResponse<D> apiResponse = new ApiResponse<>();
-                    apiResponse.setBody(result);
+                    apiResponse.setBody("");
                     apiResponse.setHeaders(response.headers());
-                    if (isParseBody) {
-                        apiResponse.setApiResult(parseApiResult(this.dataClasses, result));
-                    }
+                    ApiResult<D> apiResult = new ApiResult<>();
+                    apiResult.setCode(0);
+                    apiResult.setMessage("");
+                    apiResult.setData(data);
+                    apiResponse.setApiResult(apiResult);
                     return apiResponse;
                 } else {
-                    log.error("响应为空({})", response.code());
-                    throw new BusinessException(String.format("响应为空(%s)", response.code()));
+                    String result = response.body().string();
+                    log.debug("响应：({})", result);
+                    if (!StringUtils.isEmpty(result)) {
+                        ApiResponse<D> apiResponse = new ApiResponse<>();
+                        apiResponse.setBody(result);
+                        apiResponse.setHeaders(response.headers());
+                        if (isParseBody) {
+                            apiResponse.setApiResult(parseApiResult(this.dataClasses, result));
+                        }
+                        return apiResponse;
+                    } else {
+                        log.error("响应为空({})", response.code());
+                        throw new BusinessException(String.format("响应为空(%s)", response.code()));
+                    }
                 }
             } else {
                 log.debug("请求失败，code：{}", response.code());

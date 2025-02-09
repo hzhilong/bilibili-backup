@@ -46,7 +46,7 @@ public class AppMenu extends BaseMenu {
     private JMenuItem getSettingMenu() {
         JMenuItem setting = new JMenuItem("设置");
         setting.addActionListener(e ->
-                new BaseSettingDialog(parent, appIconPath,
+                new BaseSettingDialog(parentWindow, appIconPath,
                         new ArrayList() {{
                             add(new CheckBoxSettingItem(AppSettingItems.DIRECT_RESTORE));
                             add(new CheckBoxSettingItem(AppSettingItems.ALLOW_FAILURE));

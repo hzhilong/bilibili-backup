@@ -1,7 +1,7 @@
 package io.github.hzhilong.bilibili.backup;
 
 import io.github.hzhilong.baseapp.BaseApp;
-import io.github.hzhilong.bilibili.backup.gui.page.MainFrame;
+import io.github.hzhilong.bilibili.backup.gui.frame.MainFrame;
 
 /**
  * GUI程序

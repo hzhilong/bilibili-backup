@@ -4,9 +4,9 @@ import io.github.hzhilong.base.bean.BuCallback;
 import io.github.hzhilong.base.error.BusinessException;
 import io.github.hzhilong.base.utils.StringUtils;
 import io.github.hzhilong.baseapp.business.IBusinessType;
+import io.github.hzhilong.baseapp.utils.JContextUtil;
 import io.github.hzhilong.bilibili.backup.api.user.User;
 import io.github.hzhilong.bilibili.backup.app.bean.BusinessResult;
-import io.github.hzhilong.bilibili.backup.app.bean.NeedContext;
 import io.github.hzhilong.bilibili.backup.app.bean.SavedUser;
 import io.github.hzhilong.bilibili.backup.app.constant.AppConstant;
 import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreItem;
@@ -61,11 +61,7 @@ public abstract class BackupRestoreRunnable extends BaseRunnable {
         this.apiUser = new User(user.getCookie());
         for (BackupRestoreItem item : backupRestoreItems) {
             BackupRestoreService<?> service = item.getServiceBuilder().build(this.client, this.apiUser, this.backupDirPath);
-            if (service instanceof NeedContext) {
-                NeedContext needContext = (NeedContext) service;
-                needContext.setWindow(parent);
-                needContext.setAppIconPath(appIconPath);
-            }
+            JContextUtil.init(parent, appIconPath, service);
             service.setDirectRestore(AppSettingItems.DIRECT_RESTORE.getValue());
             service.setAllowFailure(AppSettingItems.ALLOW_FAILURE.getValue());
             if (service instanceof FavoritesService) {

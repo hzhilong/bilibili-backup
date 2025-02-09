@@ -3,6 +3,9 @@ package io.github.hzhilong.bilibili.backup.app.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import io.github.hzhilong.base.error.BusinessException;
 import io.github.hzhilong.bilibili.backup.api.bean.ApiResult;
+import io.github.hzhilong.bilibili.backup.api.bean.UserCard;
+import io.github.hzhilong.bilibili.backup.api.request.AddQueryParams;
+import io.github.hzhilong.bilibili.backup.api.request.BaseApi;
 import io.github.hzhilong.bilibili.backup.api.request.ModifyApi;
 import io.github.hzhilong.bilibili.backup.api.user.User;
 import io.github.hzhilong.bilibili.backup.app.service.BaseService;
@@ -10,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 
 import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -37,6 +41,29 @@ public class UserService extends BaseService {
         } else {
             log.info("{}失败，{}", optName, apiResult.getMessage());
         }
+    }
+
+    /**
+     * 获取用户名片信息
+     *
+     * @param uid
+     * @return
+     */
+    public UserCard getCard(String uid, boolean ignoreResult) throws BusinessException {
+        log.info("正在获取用户{}的名片信息，请稍候...", uid);
+        ApiResult<UserCard> apiResult = new BaseApi<UserCard>(client, new User(user.getCookie()),
+                "https://api.bilibili.com/x/web-interface/card",
+                new AddQueryParams() {
+                    @Override
+                    public void addQueryParams(Map<String, String> queryParams) {
+                        queryParams.put("mid", uid);
+                    }
+                }, true, UserCard.class).apiGet();
+        if (!ignoreResult && apiResult.isFail()) {
+            log.error(apiResult.getMessage());
+            throw new BusinessException("获取当前用户信息失败");
+        }
+        return apiResult.getData();
     }
 
 }
