@@ -143,7 +143,10 @@ public abstract class RelationService extends SegmentableBackupRestoreService<Re
         if (modifyCount % 100 == 0) {
             log.info("已操作[{}]100次，请休息10分钟（我也不知道要等多久，反正短时间内频繁操作容易风控 －_－b）", act.getName());
             try {
-                Thread.sleep(10 * 60 * 1000);
+                for (int i = 0; i < 60; i++) {
+                    handleInterrupt();
+                    Thread.sleep(10 * 1000);
+                }
             } catch (InterruptedException ignored) {
             }
         }

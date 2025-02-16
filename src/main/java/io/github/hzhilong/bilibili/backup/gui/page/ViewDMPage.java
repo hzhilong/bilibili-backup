@@ -51,22 +51,18 @@ import java.util.List;
  */
 @Slf4j
 public class ViewDMPage extends PagePanel {
-    private static final int ROW_HEIGHT = 50;
-
     private String cookie;
     private JFileChooser choFile;
     private File currFile;
     private java.util.List<SimpleDM> listData;
     private JTable table;
     private JScrollPane tablePanel;
-    private BaseFrame baseFrame;
     private JTextField txtSearchContent;
     private TableRowSorter<TableModel> rowSorter;
     private BaseLoadingDialog loadingDialog;
 
     public ViewDMPage(BaseFrame parent, String appIconPath, OkHttpClient client, String cookie) {
         super(parent, appIconPath, client);
-        this.baseFrame = parent;
         this.cookie = cookie;
         this.loadingDialog = new BaseLoadingDialog(parentWindow, AppConstant.APP_ICON, "提示", "请求数据中，请稍后...");
     }
@@ -220,7 +216,7 @@ public class ViewDMPage extends PagePanel {
         if (table.getRowCount() <= 0) {
             return;
         }
-        Component comp0 = table.prepareRenderer(table.getCellRenderer(0, 0), 0, 0);
+        Component comp0 = table.prepareRenderer(table.getCellRenderer(0, 7), 0, 0);
         int minHeight = comp0.getPreferredSize().height;
         for (int row = 0; row < table.getRowCount(); row++) {
             // 获取单元格渲染器组件

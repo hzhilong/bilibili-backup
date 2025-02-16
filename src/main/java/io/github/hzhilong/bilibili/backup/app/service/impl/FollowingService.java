@@ -83,10 +83,10 @@ public class FollowingService extends RelationService {
     }
 
     private List<Relation> getRelations(IBusinessType businessType) throws BusinessException {
+        pageApi.setPageSize(50);
         if (BusinessType.BACKUP.equals(businessType)) {
             return pageApi.getAllData(getSegmentPageNo(), getSegmentMaxSize());
         }
-        pageApi.setPageSize(50);
         return pageApi.getAllData();
     }
 
