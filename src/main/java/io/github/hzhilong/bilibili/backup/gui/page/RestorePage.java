@@ -1,9 +1,11 @@
 package io.github.hzhilong.bilibili.backup.gui.page;
 
 import io.github.hzhilong.base.bean.BuCallback;
+import io.github.hzhilong.baseapp.component.OptItemSelector;
 import io.github.hzhilong.baseapp.dialog.BaseLoadingDialog;
 import io.github.hzhilong.baseapp.utils.LayoutUtil;
 import io.github.hzhilong.bilibili.backup.app.bean.BackupDir;
+import io.github.hzhilong.bilibili.backup.app.bean.BackupFile;
 import io.github.hzhilong.bilibili.backup.app.bean.SavedUser;
 import io.github.hzhilong.bilibili.backup.app.business.BusinessType;
 import io.github.hzhilong.bilibili.backup.app.constant.AppConstant;
@@ -11,7 +13,6 @@ import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreItem;
 import io.github.hzhilong.bilibili.backup.app.state.GlobalState;
 import io.github.hzhilong.bilibili.backup.app.state.setting.AppSettingItems;
 import io.github.hzhilong.bilibili.backup.gui.component.BackupFileSelector;
-import io.github.hzhilong.bilibili.backup.gui.component.BackupRestoreItemSelector;
 import io.github.hzhilong.bilibili.backup.gui.component.UserSelector;
 import io.github.hzhilong.bilibili.backup.gui.segment.SegmentUtil;
 import io.github.hzhilong.bilibili.backup.gui.worker.BackupRestoreRunnable;
@@ -22,8 +23,10 @@ import okhttp3.OkHttpClient;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 备份页面
@@ -42,7 +45,7 @@ public class RestorePage extends PagePanel {
 
     private BackupFileSelector backupFileSelector;
 
-    private BackupRestoreItemSelector backupRestoreItemSelector;
+    private OptItemSelector<BackupRestoreItem> backupRestoreItemSelector;
 
     private JButton btnRestore;
 
@@ -75,7 +78,7 @@ public class RestorePage extends PagePanel {
         addFixedContent(backupFileSelector, 0, posY++);
         addSeparatorToFixed(0, posY++);
 
-        backupRestoreItemSelector = new BackupRestoreItemSelector(parentWindow, appIconPath, null);
+        backupRestoreItemSelector = new OptItemSelector<>(parentWindow, appIconPath, Arrays.asList(BackupRestoreItem.values()));
         addDynamicContent(backupRestoreItemSelector, 0, posY++);
 
         JPanel btnPanel = new JPanel();
@@ -112,7 +115,7 @@ public class RestorePage extends PagePanel {
                 setDynamicContentVisible(false);
             } else {
 //                    showLoadingDialog(true);
-                backupRestoreItemSelector.refreshItems(currBackupDir);
+                backupRestoreItemSelector.refreshItems(currBackupDir.getBackupFiles().stream().map(BackupFile::getItem).collect(Collectors.toList()));
                 setDynamicContentVisible(true);
 //                    showLoadingDialog(false);
             }

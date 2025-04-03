@@ -64,12 +64,17 @@
 
 ## 注意事项
 
-- 新号请先升到2级。
+- 新号请先升到2级，刚注册的号建议先自己用两天。
 - 数据过多的话，容易遇到风控，特别是还原关注的时候。建议勾选分段处理。
 - 还原时新账号数据过多的话，可勾选设置项【还原时忽略新账号现有的数据，直接还原】。
 - 部分UP主可能无法关注，还原时会导致失败从而停止整个备份，可勾选设置项【还原失败时，继续还原下一个数据】。
+- 收藏夹数量过多的话，可打开设置项【手动选择需要操作的收藏夹】
 
 ## 感谢
 
 - [bilibili-API-collect](https://github.com/SocialSisterYi/bilibili-API-collect)
 - [FlatLaf](https://github.com/JFormDesigner/FlatLaf)  
+
+## 其他
+
+需要备份 Windows 软件数据的可以看看这个：[app-data-backup](https://github.com/hzhilong/app-data-backup)

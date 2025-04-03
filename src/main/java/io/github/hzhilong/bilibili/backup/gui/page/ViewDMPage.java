@@ -216,7 +216,7 @@ public class ViewDMPage extends PagePanel {
         if (table.getRowCount() <= 0) {
             return;
         }
-        Component comp0 = table.prepareRenderer(table.getCellRenderer(0, 7), 0, 0);
+        Component comp0 = table.prepareRenderer(table.getCellRenderer(0, 7), 0, 7);
         int minHeight = comp0.getPreferredSize().height;
         for (int row = 0; row < table.getRowCount(); row++) {
             // 获取单元格渲染器组件

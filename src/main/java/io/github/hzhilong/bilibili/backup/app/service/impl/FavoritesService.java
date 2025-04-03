@@ -277,10 +277,11 @@ public class FavoritesService extends BackupRestoreService<FavFolder> implements
             mapNewFolders.put(title, folder);
             if (!isDirectRestore()) {
                 if (oldFolders != null) {
-                    boolean needGetNewData = true;
+                    boolean needGetNewData = false;
                     for (FavFolder oldFolder : oldFolders) {
-                        if (!oldFolder.getTitle().equals(folder.getTitle())) {
-                            needGetNewData = false;
+                        if (oldFolder.getTitle().equals(folder.getTitle())) {
+                            needGetNewData = true;
+                            break;
                         }
                     }
                     if (!needGetNewData) {

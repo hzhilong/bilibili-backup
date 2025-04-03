@@ -17,7 +17,7 @@ import io.github.hzhilong.bilibili.backup.app.service.impl.ToViewService;
  * @author hzhilong
  * @version 1.0
  */
-public enum BackupRestoreItem {
+public enum BackupRestoreItem implements ServiceOptItem {
     FOLLOWING("关注", FollowingService::new),
     TO_VIEW("稍后再看", ToViewService::new),
     BLACK("黑名单", BlackService::new),
@@ -53,10 +53,12 @@ public enum BackupRestoreItem {
         this.serviceBuilder = serviceBuilder;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public ServiceBuilder getServiceBuilder() {
         return serviceBuilder;
     }

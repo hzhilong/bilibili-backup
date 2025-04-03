@@ -1,10 +1,10 @@
 package io.github.hzhilong.bilibili.backup.gui.page;
 
 import io.github.hzhilong.base.bean.BuCallback;
+import io.github.hzhilong.baseapp.component.OptItemSelector;
 import io.github.hzhilong.baseapp.utils.LayoutUtil;
 import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreItem;
 import io.github.hzhilong.bilibili.backup.app.state.GlobalState;
-import io.github.hzhilong.bilibili.backup.gui.component.BackupRestoreItemSelector;
 import io.github.hzhilong.bilibili.backup.gui.component.UserSelector;
 import io.github.hzhilong.bilibili.backup.gui.worker.ClearRunnable;
 import io.github.hzhilong.bilibili.backup.gui.worker.DelaySetProcessingLoggerRunnable;
@@ -13,6 +13,7 @@ import okhttp3.OkHttpClient;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 
 /**
@@ -30,7 +31,7 @@ public class ClearPage extends PagePanel {
 
     private UserSelector userSelector;
 
-    private BackupRestoreItemSelector backupRestoreItemSelector;
+    private OptItemSelector<BackupRestoreItem> backupRestoreItemSelector;
 
     private JButton btnBackup;
 
@@ -56,7 +57,7 @@ public class ClearPage extends PagePanel {
         addSeparatorToFixed(0, posY++);
 
         posY = 0;
-        backupRestoreItemSelector = new BackupRestoreItemSelector(parentWindow, appIconPath, null, 3);
+        backupRestoreItemSelector = new OptItemSelector<>(parentWindow, appIconPath, Arrays.asList(BackupRestoreItem.values()), 3);
         addDynamicContent(backupRestoreItemSelector, 0, posY++);
 
         JPanel btnPanel = new JPanel();
