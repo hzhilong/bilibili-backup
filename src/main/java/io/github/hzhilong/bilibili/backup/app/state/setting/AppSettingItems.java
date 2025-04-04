@@ -20,9 +20,12 @@ public class AppSettingItems {
     public static AppSettingItem<Boolean> FAV_SAVE_TO_DEFAULT_ON_FAILURE
             = new AppSettingItem<>("setting.fav-save-to-default-on-failure", new BooleanItemValue(false),
             "【还原】：创建[收藏夹]达到上限后，将该收藏夹的视频移入默认收藏夹");
+    public static AppSettingItem<Boolean> SELECT_RELATION_TAG
+            = new AppSettingItem<>("setting.select-relation-tag", new BooleanItemValue(false),
+            "【备份/还原】：手动选择需要操作的[关注分组]");
     public static AppSettingItem<Boolean> SELECT_FAV
             = new AppSettingItem<>("setting.select-fav", new BooleanItemValue(false),
-            "【备份/还原】：手动选择需要操作的[收藏夹]");
+            "【备份/还原】：手动选择需要操作的[收藏夹]（不支持分段处理）");
 
 
 }

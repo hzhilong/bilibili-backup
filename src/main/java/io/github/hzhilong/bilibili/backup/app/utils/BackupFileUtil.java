@@ -1,16 +1,17 @@
 package io.github.hzhilong.bilibili.backup.app.utils;
 
 import io.github.hzhilong.base.utils.ListUtil;
-import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreItem;
-import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreService;
 import io.github.hzhilong.bilibili.backup.app.bean.BackupDir;
 import io.github.hzhilong.bilibili.backup.app.bean.BackupFile;
 import io.github.hzhilong.bilibili.backup.app.constant.AppConstant;
+import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreItem;
+import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -55,6 +56,8 @@ public class BackupFileUtil {
             backupDir.setDirFile(dir);
             backupDir.setName(dir.getName());
 
+            File oldVersionFollowingFile = new File(Paths.get(dir.getPath(), "关注.json").toUri());
+            boolean oldVersion = oldVersionFollowingFile.exists();
             List<BackupFile> backupFiles = new ArrayList<>();
             for (BackupRestoreItem item : BackupRestoreItem.values()) {
                 try {
@@ -64,6 +67,20 @@ public class BackupFileUtil {
                     backupFiles.add(backupFile);
                 } catch (Exception ignored) {
 
+                }
+            }
+            if (!oldVersion) {
+                int tagCount = 0;
+                for (File file : dir.listFiles()) {
+                    if (file.getName().startsWith("关注-")) {
+                        tagCount++;
+                    }
+                }
+                if (tagCount > 0) {
+                    BackupFile backupFile = new BackupFile();
+                    backupFile.setItem(BackupRestoreItem.FOLLOWING);
+                    backupFile.setCount(tagCount);
+                    backupFiles.add(backupFile);
                 }
             }
             backupDir.setBackupFiles(backupFiles);

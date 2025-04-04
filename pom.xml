@@ -22,7 +22,7 @@
 
         <flatlaf.version>3.5.2</flatlaf.version>
         <ybgnb-base.version>0.0.2</ybgnb-base.version>
-        <ybgnb-base-app.version>0.0.6-SNAPSHOT</ybgnb-base-app.version>
+        <ybgnb-base-app.version>0.0.6</ybgnb-base-app.version>
         <javapackager.jrePath>D:\Java\jdk1.8.0_201\jre</javapackager.jrePath>
     </properties>
 

@@ -19,6 +19,7 @@ import io.github.hzhilong.bilibili.backup.app.bean.BusinessResult;
 import io.github.hzhilong.bilibili.backup.app.business.BusinessType;
 import io.github.hzhilong.bilibili.backup.app.error.ApiException;
 import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreService;
+import io.github.hzhilong.bilibili.backup.app.state.setting.AppSettingItems;
 import io.github.hzhilong.bilibili.backup.gui.dialog.FavFolderSelectDialog;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -133,7 +134,7 @@ public class FavoritesService extends BackupRestoreService<FavFolder> implements
 
                     @Override
                     public List<FavFolder> processData(List<FavFolder> list) throws BusinessException {
-                        if (parentWindow != null) {
+                        if (parentWindow != null && AppSettingItems.SELECT_FAV.getValue()) {
                             FavFolderSelectDialog dialog = new FavFolderSelectDialog(parentWindow, appIconPath, list);
                             dialog.setVisible(true);
                             list = dialog.getSelectedList();
@@ -254,7 +255,7 @@ public class FavoritesService extends BackupRestoreService<FavFolder> implements
 
         List<FavFolder> oldFolders = JSONObject.parseArray(readJsonFile(path, "收藏夹", "创建的收藏夹"), FavFolder.class);
 
-        if (parentWindow != null) {
+        if (parentWindow != null && AppSettingItems.SELECT_FAV.getValue()) {
             FavFolderSelectDialog dialog = new FavFolderSelectDialog(parentWindow, appIconPath, oldFolders);
             dialog.setVisible(true);
             oldFolders = dialog.getSelectedList();

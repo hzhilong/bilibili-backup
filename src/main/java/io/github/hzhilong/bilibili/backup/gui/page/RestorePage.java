@@ -11,7 +11,6 @@ import io.github.hzhilong.bilibili.backup.app.business.BusinessType;
 import io.github.hzhilong.bilibili.backup.app.constant.AppConstant;
 import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreItem;
 import io.github.hzhilong.bilibili.backup.app.state.GlobalState;
-import io.github.hzhilong.bilibili.backup.app.state.setting.AppSettingItems;
 import io.github.hzhilong.bilibili.backup.gui.component.BackupFileSelector;
 import io.github.hzhilong.bilibili.backup.gui.component.UserSelector;
 import io.github.hzhilong.bilibili.backup.gui.segment.SegmentUtil;
@@ -179,9 +178,8 @@ public class RestorePage extends PagePanel {
 
     private void restore(LinkedHashSet<BackupRestoreItem> items) {
         setBusyStatus(true);
-        restoreRunnable = new RestoreRunnable(AppSettingItems.SELECT_FAV.getValue() ? parentWindow : null,
-                appIconPath, client, userSelector.getCurrUser(), items,
-                backupFileSelector.getCurrBackupDir().getDirFile().getPath(),
+        restoreRunnable = new RestoreRunnable(parentWindow, appIconPath, client, userSelector.getCurrUser(),
+                items, backupFileSelector.getCurrBackupDir().getDirFile().getPath(),
                 new BuCallback<Void>() {
                     @Override
                     public void success(Void data) {

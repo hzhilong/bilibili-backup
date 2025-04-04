@@ -5,7 +5,9 @@ import io.github.hzhilong.bilibili.backup.app.business.BusinessType;
 import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreItem;
 import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreService;
 import io.github.hzhilong.bilibili.backup.app.service.SegmentableBackupRestoreService;
+import io.github.hzhilong.bilibili.backup.app.service.impl.FollowingService;
 import io.github.hzhilong.bilibili.backup.app.state.setting.AppData;
+import io.github.hzhilong.bilibili.backup.app.state.setting.AppSettingItems;
 import io.github.hzhilong.bilibili.backup.gui.worker.BackupRestoreRunnable;
 import lombok.extern.slf4j.Slf4j;
 
@@ -73,37 +75,47 @@ public class SegmentUtil {
         for (Map.Entry<BackupRestoreItem, BackupRestoreService> entry : itemServices.entrySet()) {
             BackupRestoreItem item = entry.getKey();
             BackupRestoreService service = entry.getValue();
-            log.info("正在判断[{}]分段处理：{}，maxSize: {}", businessType, item.getName(), maxSize);
-            if (service instanceof SegmentableBackupRestoreService) {
-                SegmentableBackupRestoreService segmentService = (SegmentableBackupRestoreService) service;
-                log.info("可分段处理：{}", item.getName());
+            if (businessType != BusinessType.CLEAR) {
+                log.info("正在判断[{}]分段处理：{}，maxSize: {}", businessType, item.getName(), maxSize);
+                if (service instanceof SegmentableBackupRestoreService) {
+                    if (service instanceof FollowingService && businessType == BusinessType.BACKUP) {
+                        if (AppSettingItems.SELECT_RELATION_TAG.getValue()) {
+                            log.info("[{}]已开启手动选择分组的功能", item.getName());
+                        } else {
+                            log.info("新版本(2.1.0)已取消备份[{}]时的分段处理功能，关注数过多的话可以开启手动选择分组", item.getName());
+                        }
+                    } else {
+                        SegmentableBackupRestoreService segmentService = (SegmentableBackupRestoreService) service;
+                        log.info("可分段处理：{}", item.getName());
 
-                log.info("设置新的分段处理：{}", item.getName());
-                newSegmentItems.add(item);
-                segmentService.setSegmentConfig(new SegmentConfig(uid, businessType, item, backupDirPath, maxSize));
+                        log.info("设置新的分段处理：{}", item.getName());
+                        newSegmentItems.add(item);
+                        segmentService.setSegmentConfig(new SegmentConfig(uid, businessType, item, backupDirPath, maxSize));
 
-                SegmentConfig segmentConfig = appData.getSegmentConfig(uid, businessType, item);
-                if (segmentConfig != null) {
-                    log.info("存在未完成的分段处理：{}", item.getName());
-                    segmentConfig.setMaxSize(maxSize);
-                    oldSegmentItems.put(item, segmentConfig);
-                    oldSegmentServices.put(item, segmentService);
+                        SegmentConfig segmentConfig = appData.getSegmentConfig(uid, businessType, item);
+                        if (segmentConfig != null) {
+                            log.info("存在未完成的分段处理：{}", item.getName());
+                            segmentConfig.setMaxSize(maxSize);
+                            oldSegmentItems.put(item, segmentConfig);
+                            oldSegmentServices.put(item, segmentService);
+                        }
+                        segmentService.setSegmentCallBack(new SegmentCallback() {
+                            @Override
+                            public void unfinished(SegmentConfig config) {
+                                appData.setSegmentConfig(config);
+                                log.info("当前[{} {}]分段处理完成，页码：{}", businessType, item.getName(), config.getNextPage() - 1);
+                            }
+
+                            @Override
+                            public void finished(SegmentConfig config) {
+                                appData.delSegmentConfig(config);
+                                log.info("[{} {}]分段处理已全部完成", businessType, item.getName());
+                            }
+                        });
+                    }
+                } else {
+                    log.info("不支持分段处理：{}", item.getName());
                 }
-                segmentService.setSegmentCallBack(new SegmentCallback() {
-                    @Override
-                    public void unfinished(SegmentConfig config) {
-                        appData.setSegmentConfig(config);
-                        log.info("当前[{} {}]分段处理完成，页码：{}", businessType, item.getName(), config.getNextPage() - 1);
-                    }
-
-                    @Override
-                    public void finished(SegmentConfig config) {
-                        appData.delSegmentConfig(config);
-                        log.info("[{} {}]分段处理已全部完成", businessType, item.getName());
-                    }
-                });
-            } else {
-                log.info("不支持分段处理：{}", item.getName());
             }
             items.add(item);
         }

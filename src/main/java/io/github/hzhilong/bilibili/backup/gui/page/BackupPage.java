@@ -6,7 +6,6 @@ import io.github.hzhilong.baseapp.utils.LayoutUtil;
 import io.github.hzhilong.bilibili.backup.app.business.BusinessType;
 import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreItem;
 import io.github.hzhilong.bilibili.backup.app.state.GlobalState;
-import io.github.hzhilong.bilibili.backup.app.state.setting.AppSettingItems;
 import io.github.hzhilong.bilibili.backup.gui.component.UserSelector;
 import io.github.hzhilong.bilibili.backup.gui.segment.SegmentUtil;
 import io.github.hzhilong.bilibili.backup.gui.worker.BackupRunnable;
@@ -140,24 +139,23 @@ public class BackupPage extends PagePanel {
 
     private void backup(LinkedHashSet<BackupRestoreItem> items) {
         setBusyStatus(true);
-        backupRunnable = new BackupRunnable(AppSettingItems.SELECT_FAV.getValue() ? parentWindow : null,
-                appIconPath, client, userSelector.getCurrUser(), items,
-                new BuCallback<Void>() {
-                    @Override
-                    public void success(Void data) {
-                        setBusyStatus(false);
-                    }
+        backupRunnable = new BackupRunnable(parentWindow, appIconPath, client, userSelector.getCurrUser(),
+                items, new BuCallback<Void>() {
+            @Override
+            public void success(Void data) {
+                setBusyStatus(false);
+            }
 
-                    @Override
-                    public void fail(String msg) {
-                        setBusyStatus(false);
-                    }
+            @Override
+            public void fail(String msg) {
+                setBusyStatus(false);
+            }
 
-                    @Override
-                    public void interrupt() {
-                        setBusyStatus(false);
-                    }
-                });
+            @Override
+            public void interrupt() {
+                setBusyStatus(false);
+            }
+        });
         // 分段处理
         SegmentUtil.handle(this, BusinessType.BACKUP, backupRunnable, segmentButtons);
         new Thread(backupRunnable).start();

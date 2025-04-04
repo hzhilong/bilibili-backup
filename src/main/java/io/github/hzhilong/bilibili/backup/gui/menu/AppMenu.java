@@ -52,6 +52,7 @@ public class AppMenu extends BaseMenu {
                             add(new CheckBoxSettingItem(AppSettingItems.ALLOW_FAILURE));
                             add(new CheckBoxSettingItem(AppSettingItems.FAV_SAVE_TO_DEFAULT_ON_FAILURE));
                             add(new CheckBoxSettingItem(AppSettingItems.SELECT_FAV));
+                            add(new CheckBoxSettingItem(AppSettingItems.SELECT_RELATION_TAG));
                         }}).setVisible(true));
         return setting;
     }
