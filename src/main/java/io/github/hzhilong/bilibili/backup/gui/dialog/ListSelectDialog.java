@@ -46,12 +46,18 @@ public class ListSelectDialog<T> extends BaseDialog {
 
     private JTable table;
     private JButton btnOK;
+    private boolean single;
 
     public ListSelectDialog(Window parent, String appIconPath, String title, String tip, List<T> list, Callback<T> callback) {
+        this(parent, appIconPath, title, tip, list, callback, false);
+    }
+
+    public ListSelectDialog(Window parent, String appIconPath, String title, String tip, List<T> list, Callback<T> callback, boolean single) {
         super(parent, appIconPath, title);
         this.tip = tip;
         this.list = list;
         this.callback = callback;
+        this.single = single;
         try {
             initData();
             initUI();
@@ -74,7 +80,9 @@ public class ListSelectDialog<T> extends BaseDialog {
 
         // 添加内容
         LayoutUtil.addGridBar(contentPanel, new JLabel(tip), 0, 0, 1, 1);
-        LayoutUtil.addGridBar(contentPanel, new JLabel("（按住 Ctrl 多选）"), 1, 0, 1, 1);
+        if (!single) {
+            LayoutUtil.addGridBar(contentPanel, new JLabel("（按住 Ctrl 多选）"), 1, 0, 1, 1);
+        }
 
         table = initTable();
         JScrollPane listPanel = new JScrollPane(table);
@@ -84,8 +92,11 @@ public class ListSelectDialog<T> extends BaseDialog {
         constraints.weighty = 1;
         contentPanel.add(listPanel, constraints);
 
-        JButton btnAll = new JButton("全选");
-        LayoutUtil.addGridBar(contentPanel, btnAll, 0, 2 + 8, GridBagConstraints.WEST, 1, 1);
+        JButton btnAll = null;
+        if (!single) {
+            btnAll = new JButton("全选");
+            LayoutUtil.addGridBar(contentPanel, btnAll, 0, 2 + 8, GridBagConstraints.WEST, 1, 1);
+        }
 
         btnOK = new JButton("确定");
         LayoutUtil.addGridBar(contentPanel, btnOK, 1, 2 + 8, GridBagConstraints.EAST, 1, 1);
@@ -104,17 +115,19 @@ public class ListSelectDialog<T> extends BaseDialog {
                 }
             }
         });
-        btnAll.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int selCount = table.getSelectedRows().length;
-                if (selCount == ListUtil.getSize(list)) {
-                    table.clearSelection();
-                } else {
-                    table.selectAll();
+        if (btnAll != null) {
+            btnAll.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    int selCount = table.getSelectedRows().length;
+                    if (selCount == ListUtil.getSize(list)) {
+                        table.clearSelection();
+                    } else {
+                        table.selectAll();
+                    }
                 }
-            }
-        });
+            });
+        }
         btnOK.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -160,7 +173,11 @@ public class ListSelectDialog<T> extends BaseDialog {
 
         JTable table = new JTable(model);
         table.setAutoCreateRowSorter(true);
-        table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        if (this.single) {
+            table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        } else {
+            table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        }
 
         return table;
     }

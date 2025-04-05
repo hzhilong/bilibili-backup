@@ -12,6 +12,10 @@ import java.util.List;
 public class FavFolderSelectDialog extends ListSelectDialog<FavFolder> {
 
     public FavFolderSelectDialog(Window parent, String appIconPath, List<FavFolder> list) {
+        this(parent, appIconPath, list, false);
+    }
+
+    public FavFolderSelectDialog(Window parent, String appIconPath, List<FavFolder> list, boolean single) {
         super(parent, appIconPath, "提示", "请选择要操作的收藏夹：", list,
                 new ListSelectDialog.Callback<FavFolder>() {
 
@@ -34,7 +38,7 @@ public class FavFolderSelectDialog extends ListSelectDialog<FavFolder> {
                         }
                         return "";
                     }
-                });
+                }, single);
     }
 
 }

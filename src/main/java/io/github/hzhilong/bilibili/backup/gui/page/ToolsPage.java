@@ -6,6 +6,7 @@ import io.github.hzhilong.bilibili.backup.app.bean.SavedUser;
 import io.github.hzhilong.bilibili.backup.app.state.GlobalState;
 import io.github.hzhilong.bilibili.backup.gui.component.UserSelector;
 import io.github.hzhilong.bilibili.backup.gui.frame.ViewDMFrame;
+import io.github.hzhilong.bilibili.backup.gui.worker.CopyFavRunnable;
 import io.github.hzhilong.bilibili.backup.gui.worker.DelaySetProcessingLoggerRunnable;
 import io.github.hzhilong.bilibili.backup.gui.worker.tools.BackupDMRunnable;
 import io.github.hzhilong.bilibili.backup.gui.worker.tools.OpenAutoReplyRunnable;
@@ -79,6 +80,8 @@ public class ToolsPage extends PagePanel {
                 return new OpenFrameRunnable(client, user, buCallback, new ViewDMFrame(parentWindow, userSelector.getCurrUser().getCookie(), client));
             }
         }, false));
+        tools.add(new Tool("拷贝收藏夹", "批量拷贝他人公开的收藏夹，亦可用于快速还原。",
+                CopyFavRunnable::new, false));
     }
 
     @Override

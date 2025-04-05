@@ -7,6 +7,7 @@ import io.github.hzhilong.base.utils.StringUtils;
 import io.github.hzhilong.baseapp.bean.NeedContext;
 import io.github.hzhilong.bilibili.backup.api.bean.ApiResult;
 import io.github.hzhilong.bilibili.backup.api.bean.FavFolder;
+import io.github.hzhilong.bilibili.backup.api.bean.FavInfo;
 import io.github.hzhilong.bilibili.backup.api.bean.Media;
 import io.github.hzhilong.bilibili.backup.api.bean.page.FavPageData;
 import io.github.hzhilong.bilibili.backup.api.request.AddQueryParams;
@@ -64,7 +65,7 @@ public class FavoritesService extends BackupRestoreService<FavFolder> implements
         super(client, user, path);
     }
 
-    private List<FavFolder> getFavFolders() throws BusinessException {
+    public List<FavFolder> getFavFolders() throws BusinessException {
         return new ListApi<>(client, signUser(),
                 "https://api.bilibili.com/x/v3/fav/folder/created/list-all",
                 queryParams -> {
@@ -521,4 +522,67 @@ public class FavoritesService extends BackupRestoreService<FavFolder> implements
         }
         super.setInterrupt(interrupt);
     }
+
+
+    public List<FavInfo> getFavInfos(String uid) throws BusinessException {
+        return getFavInfos(uid, 1, 100);
+    }
+
+    public List<FavInfo> getFavInfos(String uid, int pn, int ps) throws BusinessException {
+        return new ListApi<>(client, signUser(),
+                "https://api.bilibili.com/x/v3/fav/folder/created/list",
+                queryParams -> {
+                    queryParams.put("pn", String.valueOf(pn));
+                    queryParams.put("ps", String.valueOf(ps));
+                    queryParams.put("up_mid", uid);
+                }, FavInfo.class).getList();
+    }
+
+
+    public List<Media> getFavMedias(String mediaId, int pageStart, int pageEnd) throws BusinessException {
+        pageApi = new PageApi<>(client, signUser(), "https://api.bilibili.com/x/v3/fav/resource/list",
+                queryParams -> {
+                    queryParams.put("media_id", mediaId);
+                    queryParams.put("order", "mtime");
+                    queryParams.put("type", "0");
+                    queryParams.put("platform", "web");
+                    queryParams.put("ps", "40");
+                },
+                FavPageData.class, Media.class);
+        return pageApi.getAllData(pageStart, (pageEnd + 1 - pageStart) * 40);
+    }
+
+    public List<Media> copy(String srcUid, String srcMediaId, String tarMediaId, int pageStart, int pageEnd) throws BusinessException {
+        log.info("获取收藏夹内容中...");
+        Map<String, String> params = new HashMap<>();
+        List<Media> successMedias = new ArrayList<>();
+
+        log.info("获取第{}页~第{}页的内容", pageStart, pageEnd);
+        List<Media> medias = getFavMedias(srcMediaId, pageStart, pageEnd);
+        log.info("已获取{}条收藏内容", ListUtil.getSize(medias));
+        if (ListUtil.isEmpty(medias)) {
+            log.info("收藏内容，停止拷贝");
+            return successMedias;
+        }
+        log.info("正在批量拷贝收藏内容，每批最多拷贝{}条数据", 40);
+        for (List<Media> list : ListUtils.partition(medias, 40)) {
+            handleInterrupt();
+            ModifyApi<Integer> api = new ModifyApi<>(client, signUser(), "https://api.bilibili.com/x/v3/fav/resource/copy", Integer.class);
+            params.put("src_media_id", srcMediaId);
+            params.put("tar_media_id", tarMediaId);
+            params.put("mid", srcUid);
+            params.put("resources", ListUtil.listToString(list.stream().map(media -> media.getId() + ":2").collect(Collectors.toList()), ","));
+            ApiResult<Integer> apiResult = api.modify(params);
+            if (apiResult.isFail()) {
+                throw new BusinessException("拷贝失败，停止拷贝：" + apiResult.getMessage());
+            }
+            successMedias.addAll(list);
+            log.info("成功拷贝{}条数据", list.size());
+        }
+
+        log.info("");
+        log.info("成功拷贝{}条数据", successMedias.size());
+        return successMedias;
+    }
+
 }

@@ -179,7 +179,7 @@ public class FollowingService extends RelationService implements NeedContext {
                             temp.add(tag.getTagId());
                         }
                     } else {
-                        List<Long> tagIds = new ArrayList();
+                        List<Long> tagIds = new ArrayList<>();
                         tagIds.add(tag.getTagId());
                         relation.setTag(tagIds);
                         oldIdMapRelation.put(uid, relation);
