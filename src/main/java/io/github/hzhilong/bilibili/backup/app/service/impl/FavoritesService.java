@@ -564,6 +564,7 @@ public class FavoritesService extends BackupRestoreService<FavFolder> implements
             log.info("收藏内容，停止拷贝");
             return successMedias;
         }
+        Collections.reverse(medias);
         log.info("正在批量拷贝收藏内容，每批最多拷贝{}条数据", 40);
         for (List<Media> list : ListUtils.partition(medias, 40)) {
             handleInterrupt();
