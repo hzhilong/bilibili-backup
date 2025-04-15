@@ -122,8 +122,8 @@ public class FollowingService extends RelationService implements NeedContext {
             ApiResult<List<Relation>> apiResult = new BaseApi<List<Relation>>(client, signUser(),
                     "https://api.bilibili.com/x/relation/tag", queryParams -> {
                 queryParams.put("tagid", String.valueOf(tag.getTagId()));
-                queryParams.put("pn", "1");
-                queryParams.put("ps", String.valueOf(finalI > tag.getCount() ? (tag.getCount() % 200) : 200));
+                queryParams.put("pn", String.valueOf(finalI / 200));
+                queryParams.put("ps", "200");
             }, true, List.class, Relation.class).apiGet();
             if (apiResult.isSuccess() && ListUtil.notEmpty(apiResult.getData())) {
                 relations.addAll(apiResult.getData());
@@ -250,10 +250,22 @@ public class FollowingService extends RelationService implements NeedContext {
                     .map(entry -> newRelationTags.get(entry.getValue()))
                     .collect(Collectors.toList());
             for (RelationTag tag : needGetTags) {
+                Long tagId = tag.getTagId();
                 List<Relation> newFollowings = getRelations(BusinessType.RESTORE, tag);
                 for (Relation newFollowing : newFollowings) {
-                    newFollowingIds.add(newFollowing.getMid());
-                    mapNewFollowing.put(newFollowing.getMid(), newFollowing);
+                    Long mid = newFollowing.getMid();
+                    newFollowingIds.add(mid);
+                    newFollowing.setTag(new ArrayList<Long>() {{
+                        add(tagId);
+                    }});
+                    if (mapNewFollowing.containsKey(mid)) {
+                        Relation cache = mapNewFollowing.get(mid);
+                        if (ListUtil.isEmpty(cache.getTag()) || !cache.getTag().contains(tagId)) {
+                            cache.getTag().add(tagId);
+                        }
+                    } else {
+                        mapNewFollowing.put(mid, newFollowing);
+                    }
                 }
             }
         }
