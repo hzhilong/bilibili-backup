@@ -54,7 +54,13 @@ public class UserService extends BaseService {
      * @return
      */
     public UserCard getCard(String uid, boolean ignoreResult) throws BusinessException {
-        log.info("正在获取用户{}的名片信息，请稍候...", uid);
+        return getCard(uid, ignoreResult, true);
+    }
+
+    public UserCard getCard(String uid, boolean ignoreResult, boolean isLogger) throws BusinessException {
+        if (isLogger) {
+            log.info("正在获取用户{}的名片信息，请稍候...", uid);
+        }
         ApiResult<UserCard> apiResult = new BaseApi<UserCard>(client, user,
                 "https://api.bilibili.com/x/web-interface/card",
                 new AddQueryParams() {

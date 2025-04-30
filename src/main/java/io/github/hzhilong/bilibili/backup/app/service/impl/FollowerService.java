@@ -27,12 +27,12 @@ public class FollowerService extends RelationService {
 
     public FollowerService(OkHttpClient client, User user, String path) {
         super(client, user, path);
-        this.pageApi = new PageApi<>(client, user, "https://api.bilibili.com/x/relation/followers",
+        this.pageApi = new PageApi<>(client, user, "https://api.bilibili.com/x/relation/fans",
                 queryParams -> {
                     queryParams.put("vmid", user.getUid());
                     queryParams.put("order", "desc");
                 }, Relation.class);
-        this.pageApi.setPageSize(24);
+        this.pageApi.setPageSize(50);
     }
 
     @Override
@@ -42,13 +42,9 @@ public class FollowerService extends RelationService {
                         new BackupCallback<List<Relation>>() {
                             @Override
                             public List<Relation> getData() throws BusinessException {
-                                return getAllData();
+                                return getFollowers();
                             }
                         }));
-    }
-
-    private List<Relation> getAllData() throws BusinessException {
-        return pageApi.getAllData();
     }
 
     @Override
@@ -66,7 +62,7 @@ public class FollowerService extends RelationService {
         return createResults(clearList("粉丝", new ClearListCallback<Relation>() {
             @Override
             public List<Relation> getList() throws BusinessException {
-                return FollowerService.this.getAllData();
+                return FollowerService.this.getFollowers();
             }
 
             @Override
@@ -92,5 +88,13 @@ public class FollowerService extends RelationService {
             pageApi.setInterrupt(interrupt);
         }
         super.setInterrupt(interrupt);
+    }
+
+    public List<Relation> getFollowers() throws BusinessException {
+        return pageApi.getAllData();
+    }
+
+    public void removeFollower(Relation follower) throws BusinessException {
+        modify(follower, RelationAct.REMOVE_FOLLOWER, false);
     }
 }

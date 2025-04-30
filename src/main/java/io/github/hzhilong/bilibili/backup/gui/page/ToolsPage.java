@@ -1,5 +1,6 @@
 package io.github.hzhilong.bilibili.backup.gui.page;
 
+import io.github.hzhilong.base.utils.StringUtils;
 import io.github.hzhilong.baseapp.utils.JContextUtil;
 import io.github.hzhilong.baseapp.utils.LayoutUtil;
 import io.github.hzhilong.bilibili.backup.app.bean.SavedUser;
@@ -11,6 +12,7 @@ import io.github.hzhilong.bilibili.backup.gui.worker.DelaySetProcessingLoggerRun
 import io.github.hzhilong.bilibili.backup.gui.worker.tools.BackupDMRunnable;
 import io.github.hzhilong.bilibili.backup.gui.worker.tools.OpenAutoReplyRunnable;
 import io.github.hzhilong.bilibili.backup.gui.worker.tools.OpenFrameRunnable;
+import io.github.hzhilong.bilibili.backup.gui.worker.tools.RemoveScamFollowerRunnable;
 import io.github.hzhilong.bilibili.backup.gui.worker.tools.RunnableBuilder;
 import io.github.hzhilong.bilibili.backup.gui.worker.tools.SessionRunnable;
 import io.github.hzhilong.bilibili.backup.gui.worker.tools.Tool;
@@ -80,8 +82,10 @@ public class ToolsPage extends PagePanel {
                 return new OpenFrameRunnable(client, user, buCallback, new ViewDMFrame(parentWindow, userSelector.getCurrUser().getCookie(), client));
             }
         }, false));
-        tools.add(new Tool("拷贝收藏夹", "批量拷贝他人公开的收藏夹，亦可用于快速还原。",
+        tools.add(new Tool("批量拷贝收藏夹", "批量拷贝他人公开的收藏夹，亦可用于快速还原。",
                 CopyFavRunnable::new, false));
+        tools.add(new Tool("移除粉丝中的片姐", "2025.4 出现一大堆自动关注别人的片姐，被关注后可能导致自己的账号被大量举报/警告/封禁",
+                RemoveScamFollowerRunnable::new, true, "是否一键移除粉丝中的片姐？（低等级+大量关注+没有其他活动痕迹）"));
     }
 
     @Override
@@ -107,7 +111,7 @@ public class ToolsPage extends PagePanel {
             button.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    startRunnable(button, name, builder, tool.isTip());
+                    startRunnable(button, name, builder, tool.isTip(), tool.getTipMsg());
                 }
             });
             toolsBtn.put(tool, button);
@@ -122,7 +126,7 @@ public class ToolsPage extends PagePanel {
     }
 
 
-    private void startRunnable(JButton button, String name, RunnableBuilder builder, boolean isTip) {
+    private void startRunnable(JButton button, String name, RunnableBuilder builder, boolean isTip, String tipMsg) {
         if (button.getText().startsWith(INACTIVE_BTN_NAME_BEGIN)) {
             // 停止
             int result = JOptionPane.showConfirmDialog(parentWindow, "正在进行" + name + "，是否取消？", "提示",
@@ -145,7 +149,10 @@ public class ToolsPage extends PagePanel {
             }
             int result = JOptionPane.YES_OPTION;
             if (isTip) {
-                result = JOptionPane.showConfirmDialog(parentWindow, "是否开始" + name + "？", "提示",
+                if (StringUtils.isEmpty(tipMsg)) {
+                    tipMsg = "是否开始" + name + "？";
+                }
+                result = JOptionPane.showConfirmDialog(parentWindow, tipMsg, "提示",
                         JOptionPane.YES_NO_OPTION);
             }
             if (result == JOptionPane.YES_OPTION) {

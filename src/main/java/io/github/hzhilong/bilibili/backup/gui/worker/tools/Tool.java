@@ -1,6 +1,5 @@
 package io.github.hzhilong.bilibili.backup.gui.worker.tools;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,7 +10,6 @@ import lombok.NoArgsConstructor;
  * @version 1.0
  */
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 public class Tool {
 
@@ -19,6 +17,22 @@ public class Tool {
     private String desc;
     private RunnableBuilder runnableBuilder;
     private boolean isTip = true;
+    private String tipMsg;
+
+    public Tool(String name, String desc, RunnableBuilder runnableBuilder, boolean isTip, String tipMsg) {
+        this.name = name;
+        this.desc = desc;
+        this.runnableBuilder = runnableBuilder;
+        this.isTip = isTip;
+        this.tipMsg = tipMsg;
+    }
+
+    public Tool(String name, String desc, RunnableBuilder runnableBuilder, boolean isTip) {
+        this.name = name;
+        this.desc = desc;
+        this.runnableBuilder = runnableBuilder;
+        this.isTip = isTip;
+    }
 
     public Tool(String name, String desc, RunnableBuilder runnableBuilder) {
         this.name = name;

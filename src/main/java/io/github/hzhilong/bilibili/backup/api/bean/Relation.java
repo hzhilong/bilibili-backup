@@ -23,4 +23,5 @@ public class Relation {
     private String uname;
     private String face;
     private String sign;
+    private VIP vip;
 }
