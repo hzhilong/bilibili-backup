@@ -200,6 +200,7 @@
                             <goal>package</goal>
                         </goals>
                         <configuration>
+                            <arch>x86</arch>
                             <mainClass>${app.mainClass}</mainClass>
                             <displayName>${project.name}</displayName>
                             <name>${project.artifactId}_x86</name>
