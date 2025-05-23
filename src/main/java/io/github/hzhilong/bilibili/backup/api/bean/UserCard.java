@@ -132,7 +132,7 @@ public class UserCard {
             private Integer expire;
             private String imageEnhance;
             private String imageEnhanceFrame;
-            private Integer nPid;
+            private Long nPid;
         }
 
         @NoArgsConstructor
