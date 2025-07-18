@@ -1,4 +1,4 @@
-package io.github.hzhilong.bilibili.backup.gui.worker;
+package io.github.hzhilong.bilibili.backup.gui.worker.tools;
 
 import io.github.hzhilong.base.error.BusinessException;
 import io.github.hzhilong.base.utils.ListUtil;
@@ -13,8 +13,6 @@ import io.github.hzhilong.bilibili.backup.app.service.impl.FavoritesService;
 import io.github.hzhilong.bilibili.backup.gui.dialog.FavFolderSelectDialog;
 import io.github.hzhilong.bilibili.backup.gui.dialog.FavInfoSelectDialog;
 import io.github.hzhilong.bilibili.backup.gui.dialog.PageInputDialog;
-import io.github.hzhilong.bilibili.backup.gui.worker.tools.ToolBuCallback;
-import io.github.hzhilong.bilibili.backup.gui.worker.tools.ToolRunnable;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;

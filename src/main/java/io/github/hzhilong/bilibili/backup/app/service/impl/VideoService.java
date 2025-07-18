@@ -36,6 +36,8 @@ import java.util.Map;
 @Slf4j
 public class VideoService extends BaseService {
 
+    private PageApi<CursorPageData, JSONObject> pageApi;
+
     public VideoService(OkHttpClient client, User user) {
         super(client, user);
     }
@@ -46,14 +48,20 @@ public class VideoService extends BaseService {
     public List<Video> getVideos(String uid) throws BusinessException {
         log.info("获取用户[{}]投稿视频中...", user.getUid());
         List<Video> videos = new ArrayList<>();
-        List<JSONObject> list = new PageApi<>(client, signUser(), "https://app.bilibili.com/x/v2/space/archive/cursor",
+        pageApi = new PageApi<>(client, signUser(), "https://app.bilibili.com/x/v2/space/archive/cursor",
                 new AddQueryParams() {
                     @Override
                     public void addQueryParams(Map<String, String> queryParams) {
                         queryParams.put("vmid", uid);
                     }
-                }, CursorPageData.class, JSONObject.class)
+                }, CursorPageData.class, JSONObject.class);
+        List<JSONObject> list = pageApi
                 .getAllData((pageData, queryParams) -> {
+                    try {
+                        handleInterrupt();
+                    } catch (BusinessException e) {
+                        throw new RuntimeException(e);
+                    }
                     if (pageData != null) {
                         List<JSONObject> allData = pageData.getList();
                         if (ListUtil.notEmpty(allData)) {
@@ -72,6 +80,14 @@ public class VideoService extends BaseService {
             videos.add(video);
         }
         return videos;
+    }
+
+    @Override
+    protected void handleInterrupt() throws BusinessException {
+        if (pageApi != null) {
+            pageApi.setInterrupt(interrupt);
+        }
+        super.handleInterrupt();
     }
 
     public void backup(String path, List<Video> videos) throws BusinessException {

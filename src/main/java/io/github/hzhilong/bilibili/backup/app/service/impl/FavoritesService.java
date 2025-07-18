@@ -371,20 +371,7 @@ public class FavoritesService extends BackupRestoreService<FavFolder> implements
             if (!isNeedAdd) {
                 log.info("{}[{}]已收藏", String.format(logNoFormat, i), media.getTitle());
             } else {
-                ApiResult<Object> apiResult = new ModifyApi<>(client, user,
-                        "https://api.bilibili.com/x/v3/fav/resource/deal", JSONObject.class).modify(
-                        new HashMap<String, String>() {{
-                            put("rid", String.valueOf(mediaId));
-                            put("type", "2");
-                            put("add_media_ids", ListUtil.listToString(folderIds, ","));
-                            put("del_media_ids", "");
-                            put("platform", "web");
-                            put("eab_x", "1");
-                            put("ramval", "10");
-                            put("ga", "1");
-                            put("gaia_source", "web_normal");
-                        }}
-                );
+                ApiResult<JSONObject> apiResult = favVideo(String.valueOf(mediaId), ListUtil.listToString(folderIds, ","), "");
                 if (apiResult.isFail()) {
                     log.info("{}收藏[{}]失败：{}({})", String.format(logNoFormat, i), media.getTitle(), apiResult.getMessage(), apiResult.getCode());
                     failIds.add(mediaId);
@@ -431,6 +418,26 @@ public class FavoritesService extends BackupRestoreService<FavFolder> implements
     public void initFileName(Map<String, String> fileNames) {
         fileNames.put("收藏夹", "Favorites");
         fileNames.put("创建的收藏夹", "CreatedFavorites");
+    }
+
+    /**
+     * 收藏视频
+     */
+    public ApiResult<JSONObject> favVideo(String rid, String addMediaIds, String delMediaIds) throws BusinessException {
+        return new ModifyApi<JSONObject>(client, user,
+                "https://api.bilibili.com/x/v3/fav/resource/deal", JSONObject.class).modify(
+                new HashMap<String, String>() {{
+                    put("rid", rid);
+                    put("type", "2");
+                    put("add_media_ids", addMediaIds);
+                    put("del_media_ids", delMediaIds);
+                    put("platform", "web");
+                    put("eab_x", "1");
+                    put("ramval", "10");
+                    put("ga", "1");
+                    put("gaia_source", "web_normal");
+                }}
+        );
     }
 
     private BusinessResult<List<FavFolder>> buildClearResult(String buName, boolean success, String msg) {
