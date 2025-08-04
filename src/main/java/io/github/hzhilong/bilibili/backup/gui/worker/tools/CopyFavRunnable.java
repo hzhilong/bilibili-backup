@@ -70,11 +70,23 @@ public class CopyFavRunnable extends ToolRunnable<FavoritesService, Void> implem
         pageInputDialog.setVisible(true);
         int[] pages = pageInputDialog.getResult();
         if (pages[0] == -1) {
-            throw new BusinessException("取消操作222");
+            throw new BusinessException("取消操作");
         }
         log.info("拷贝范围{}-{}", pages[0], pages[1]);
+        int selectCount = getDataCountInPageRange(mediaCount, 40, pages[0], pages[1]);
+        log.info("该范围共有{}个视频", selectCount);
         log.info("获取当前账号的收藏夹中...");
-        FavInfo tarFav = chooseFavFolder(getFavFolders());
+        List<FavFolder> favFolders = getFavFolders();
+        FavInfo tarFav;
+        while (true) {
+            tarFav = chooseFavFolder(favFolders);
+            if (tarFav.getRemainingCount() < selectCount) {
+                JOptionPane.showMessageDialog(parentWindow, "当前收藏夹剩余空间不够", "提示", JOptionPane.ERROR_MESSAGE);
+            } else {
+                break;
+            }
+        }
+
         log.info("即将开始拷贝收藏夹 {}=>{}", srcFav.getTitle(), tarFav.getTitle());
         favoritesService.copy(uid, String.valueOf(srcFav.getId()), String.valueOf(tarFav.getId()), pages[0], pages[1]);
         return null;
@@ -129,4 +141,21 @@ public class CopyFavRunnable extends ToolRunnable<FavoritesService, Void> implem
         }
         return favFolders.get(0);
     }
+
+    public static int getDataCountInPageRange(int total, int pageSize, int startPage, int endPage) {
+        if (pageSize <= 0 || total <= 0) return 0;
+
+        int maxPage = (int) Math.ceil((double) total / pageSize);
+
+        // 修正页码范围
+        startPage = Math.max(1, startPage);
+        endPage = Math.min(endPage, maxPage);
+        if (startPage > endPage) return 0;
+
+        int startIndex = (startPage - 1) * pageSize;
+        int endIndex = Math.min(endPage * pageSize, total);
+
+        return endIndex - startIndex;
+    }
+
 }

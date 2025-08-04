@@ -21,7 +21,7 @@ public class FavFolderSelectDialog extends ListSelectDialog<FavFolder> {
 
                     @Override
                     public String[] initColumnNames() {
-                        return new String[]{"序号", "id", "收藏夹标题", "收藏的视频数"};
+                        return new String[]{"序号", "id", "收藏夹标题", "收藏的视频数", "剩余空间"};
                     }
 
                     @Override
@@ -35,6 +35,8 @@ public class FavFolderSelectDialog extends ListSelectDialog<FavFolder> {
                                 return data.getTitle();
                             case 3:
                                 return String.valueOf(data.getMediaCount());
+                            case 4:
+                                return String.valueOf(data.getRemainingCount());
                         }
                         return "";
                     }

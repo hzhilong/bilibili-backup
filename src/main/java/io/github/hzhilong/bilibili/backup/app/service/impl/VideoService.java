@@ -46,7 +46,7 @@ public class VideoService extends BaseService {
      * 用户投稿的视频
      */
     public List<Video> getVideos(String uid) throws BusinessException {
-        log.info("获取用户[{}]投稿视频中...", user.getUid());
+        log.info("获取用户[{}]投稿视频中...", uid);
         List<Video> videos = new ArrayList<>();
         pageApi = new PageApi<>(client, signUser(), "https://app.bilibili.com/x/v2/space/archive/cursor",
                 new AddQueryParams() {

@@ -34,9 +34,13 @@ public class FavInfo {
     private Integer mediaCount;
 
     public boolean isDefault() {
-        if(attr == null){
+        if (attr == null) {
             return false;
         }
         return (attr >> 1 & 1) != 1;
+    }
+
+    public int getRemainingCount() {
+        return this.isDefault() ? (50000 - this.getMediaCount()) : 1000 - this.getMediaCount();
     }
 }

@@ -64,16 +64,27 @@ public class FavAllVideosRunnable extends ToolRunnable<BaseService, Void> implem
         if (ListUtil.isEmpty(videos)) {
             throw new BusinessException("该用户投稿的视频为空");
         }
+        log.info("已获取{}个视频", videos.size());
+
         handleInterrupt();
         log.info("获取当前账号的收藏夹中...");
-        FavInfo tarFav = chooseFavFolder(getFavFolders());
+        List<FavFolder> favFolders = getFavFolders();
+        FavInfo tarFav;
+        while (true) {
+            tarFav = chooseFavFolder(favFolders);
+            if (tarFav.getRemainingCount() < videos.size()) {
+                JOptionPane.showMessageDialog(parentWindow, "当前收藏夹剩余空间不够", "提示", JOptionPane.ERROR_MESSAGE);
+            } else {
+                break;
+            }
+        }
 
         Collections.reverse(videos);
         log.info("即将收藏{}个视频", videos.size());
         String logNoFormat = StringUtils.getLogNoFormat(videos.size());
         for (int i = 1; i <= videos.size(); i++) {
             handleInterrupt();
-            Video video = videos.get(i-1);
+            Video video = videos.get(i - 1);
             ApiResult<JSONObject> apiResult = favoritesService.favVideo(String.valueOf(video.getAid()), String.valueOf(tarFav.getId()), "");
             if (apiResult.isFail()) {
                 log.info("{}收藏[{}]失败：{}({})", String.format(logNoFormat, i), video.getTitle(), apiResult.getMessage(), apiResult.getCode());
