@@ -26,11 +26,11 @@ public class OpenAIUtils {
 
     public static String chat(OkHttpClient client, String msg) throws BusinessException {
         String url = AppSettingItems.OPENAI_API_URL.getValue();
-        if (StringUtils.isEmpty(url)) {
-            throw new BusinessException("配置为空");
+        String model = AppSettingItems.OPENAI_API_MODEL.getValue();
+        if (StringUtils.isEmpty(url) || StringUtils.isEmpty(model)) {
+            throw new BusinessException("相关配置为空");
         }
         String key = AppSettingItems.OPENAI_API_KEY.getValue();
-        String model = AppSettingItems.OPENAI_API_MODEL.getValue();
 
         log.debug("OpenAI API URL：{}", url);
         log.debug("OpenAI API key：{}", key);
