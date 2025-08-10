@@ -87,19 +87,19 @@ public class AIAnsweringRunnable extends ToolRunnable<AnswerService, Void> imple
 
             if (answerStatus.getStatus() == 3) {
                 log.info("结束任务：当前答题已通过");
+                if (AppSettingItems.AUTO_SUBMIT_ANSWER.getValue() && answerStatus.getScore() >= 60) {
+                    log.info("已达到60分，提交试卷中...");
+                    randomSleep(1000, 1000);
+                    handleInterrupt();
+                    answerService.submit();
+                    log.info("提交成功");
+                }
                 break;
             } else if ("complete".equals(answerStatus.getStage())) {
                 log.info("结束任务：当前答题已完成");
                 break;
             } else if ("pro_type".equals(answerStatus.getStage()) || "pro".equals(answerStatus.getStage())) {
                 log.info("结束任务：当前答题正处于【{}】状态", answerStatus._getStageDesc());
-                break;
-            } else if (AppSettingItems.AUTO_SUBMIT_ANSWER.getValue() && answerStatus.getScore() >= 60) {
-                log.info("已达到60分，提交试卷中...");
-                randomSleep(1000, 1000);
-                handleInterrupt();
-                answerService.submit();
-                log.info("提交成功");
                 break;
             }
             log.info("拉取题目中...");
