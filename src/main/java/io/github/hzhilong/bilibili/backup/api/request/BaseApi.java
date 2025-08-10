@@ -193,9 +193,7 @@ public class BaseApi<D> implements AddQueryParams {
     public Request getRequest(Map<String, String> formParams, String jsonBody) throws BusinessException {
         Map<String, String> queryParams = new HashMap<>();
         addQueryParams(queryParams);
-        if (this.addQueryParams != null) {
-            this.addQueryParams.addQueryParams(queryParams);
-        }
+        if (this.addQueryParams != null) this.addQueryParams.addQueryParams(queryParams);
         for (Map.Entry<String, String> entry : queryParams.entrySet()) {
             try {
                 queryParams.put(entry.getKey(), URLEncoder.encode(entry.getValue(), "UTF-8"));

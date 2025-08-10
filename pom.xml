@@ -8,7 +8,7 @@
     <artifactId>bilibili-backup</artifactId>
     <name>哔哩哔哩账号备份</name>
     <description>一键对B站账号进行数据备份和还原，方便账号数据迁移/快速转生(哔哩哔哩 bilibili)</description>
-    <version>2.1.5</version>
+    <version>2.1.6</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -22,7 +22,7 @@
 
         <flatlaf.version>3.5.2</flatlaf.version>
         <ybgnb-base.version>0.0.2</ybgnb-base.version>
-        <ybgnb-base-app.version>0.0.6</ybgnb-base-app.version>
+        <ybgnb-base-app.version>0.0.7</ybgnb-base-app.version>
         <javapackager.jrePath>D:\Java\jdk1.8.0_201\jre</javapackager.jrePath>
         <javapackager.jrePathX86>D:\Java\jdk1.8.0_201_x86\jre</javapackager.jrePathX86>
     </properties>

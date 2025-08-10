@@ -1,6 +1,7 @@
 package io.github.hzhilong.bilibili.backup.gui.menu;
 
 import io.github.hzhilong.baseapp.component.CheckBoxSettingItem;
+import io.github.hzhilong.baseapp.component.InputSettingItem;
 import io.github.hzhilong.baseapp.dialog.BaseSettingDialog;
 import io.github.hzhilong.baseapp.menu.BaseMenu;
 import io.github.hzhilong.bilibili.backup.app.state.setting.AppSettingItems;
@@ -53,6 +54,10 @@ public class AppMenu extends BaseMenu {
                             add(new CheckBoxSettingItem(AppSettingItems.FAV_SAVE_TO_DEFAULT_ON_FAILURE));
                             add(new CheckBoxSettingItem(AppSettingItems.SELECT_FAV));
                             add(new CheckBoxSettingItem(AppSettingItems.SELECT_RELATION_TAG));
+                            add(new InputSettingItem(AppSettingItems.OPENAI_API_URL));
+                            add(new InputSettingItem(AppSettingItems.OPENAI_API_KEY));
+                            add(new InputSettingItem(AppSettingItems.OPENAI_API_MODEL));
+                            add(new CheckBoxSettingItem(AppSettingItems.AUTO_SUBMIT_ANSWER));
                         }}).setVisible(true));
         return setting;
     }

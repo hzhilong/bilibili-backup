@@ -2,6 +2,7 @@ package io.github.hzhilong.bilibili.backup.app.state.setting;
 
 import io.github.hzhilong.baseapp.state.setting.AppSettingItem;
 import io.github.hzhilong.baseapp.state.setting.value.BooleanItemValue;
+import io.github.hzhilong.baseapp.state.setting.value.StringItemValue;
 
 /**
  * 应用设置项
@@ -27,5 +28,20 @@ public class AppSettingItems {
             = new AppSettingItem<>("setting.select-fav", new BooleanItemValue(false),
             "【备份/还原】：手动选择需要操作的[收藏夹]（不支持分段处理）");
 
+    public static AppSettingItem<String> OPENAI_API_URL
+            = new AppSettingItem<>("setting.openai-api-url", new StringItemValue(""),
+            "【答题】：OpenAI API URL");
+
+    public static AppSettingItem<String> OPENAI_API_KEY
+            = new AppSettingItem<>("setting.openai-api-key", new StringItemValue(""),
+            "【答题】：OpenAI API 密匙");
+
+    public static AppSettingItem<String> OPENAI_API_MODEL
+            = new AppSettingItem<>("setting.openai-api-model", new StringItemValue(""),
+            "【答题】：OpenAI API 模型");
+
+    public static AppSettingItem<Boolean> AUTO_SUBMIT_ANSWER
+            = new AppSettingItem<>("setting.auto-submit-answer", new BooleanItemValue(false),
+            "【答题】：分数达到60分后自动提交");
 
 }

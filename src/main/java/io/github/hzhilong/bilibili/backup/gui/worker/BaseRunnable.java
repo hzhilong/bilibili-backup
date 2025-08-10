@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 import okhttp3.OkHttpClient;
 
+import java.util.Random;
+
 /**
  * 工作线程基类
  *
@@ -19,8 +21,11 @@ public abstract class BaseRunnable implements Runnable {
     @Getter
     protected boolean interrupt;
 
+    private Random random;
+
     public BaseRunnable(OkHttpClient client) {
         this.client = client;
+        this.random = new Random();
     }
 
     /**
@@ -38,4 +43,12 @@ public abstract class BaseRunnable implements Runnable {
         } catch (InterruptedException ignored) {
         }
     }
+
+    public void randomSleep(int min, int max) {
+        try {
+            Thread.sleep(min + random.nextInt(max - min + 1));
+        } catch (InterruptedException ignored) {
+        }
+    }
+
 }
