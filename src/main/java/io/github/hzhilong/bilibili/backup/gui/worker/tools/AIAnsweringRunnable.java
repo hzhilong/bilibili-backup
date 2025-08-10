@@ -22,13 +22,13 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 
 /**
- * 自动答题
+ * AI转正答题
  *
  * @author hzhilong
  * @version 1.0
  */
 @Slf4j
-public class AutoAnsweringRunnable extends ToolRunnable<AnswerService, Void> implements NeedContext {
+public class AIAnsweringRunnable extends ToolRunnable<AnswerService, Void> implements NeedContext {
 
     private AnswerService answerService;
 
@@ -37,7 +37,7 @@ public class AutoAnsweringRunnable extends ToolRunnable<AnswerService, Void> imp
     @Setter
     private String appIconPath;
 
-    public AutoAnsweringRunnable(OkHttpClient client, SavedUser user, ToolBuCallback<Void> buCallback) {
+    public AIAnsweringRunnable(OkHttpClient client, SavedUser user, ToolBuCallback<Void> buCallback) {
         super(client, user, buCallback);
     }
 
@@ -50,7 +50,7 @@ public class AutoAnsweringRunnable extends ToolRunnable<AnswerService, Void> imp
     @Override
     protected Void runTool() throws BusinessException {
         int result = JOptionPane.showConfirmDialog(parentWindow,
-                "当前功能开发中，未经过多个账号测试。\n可能会因为出现多次验证码导致账号高危（需要实名解除）。\n是否继续？", "提示",
+                "实验性功能，未经过多个账号测试。\n可能会因为出现多次验证码导致账号高危（需要实名解除）。\n是否继续？", "提示",
                 JOptionPane.YES_NO_OPTION);
         if (result != JOptionPane.OK_OPTION) {
             throw new BusinessException("取消操作");

@@ -21,7 +21,10 @@ import io.github.hzhilong.bilibili.backup.app.business.BusinessType;
 import io.github.hzhilong.bilibili.backup.app.error.ApiException;
 import io.github.hzhilong.bilibili.backup.app.service.BackupRestoreService;
 import io.github.hzhilong.bilibili.backup.app.state.setting.AppSettingItems;
+import io.github.hzhilong.bilibili.backup.app.utils.PageUtils;
 import io.github.hzhilong.bilibili.backup.gui.dialog.FavFolderSelectDialog;
+import io.github.hzhilong.bilibili.backup.gui.utils.FavFolderUtils;
+import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
@@ -51,8 +54,10 @@ import java.util.stream.Collectors;
 public class FavoritesService extends BackupRestoreService<FavFolder> implements NeedContext {
 
     @Setter
+    @Getter
     private Window parentWindow;
 
+    @Getter
     @Setter
     private String appIconPath;
 
@@ -531,10 +536,16 @@ public class FavoritesService extends BackupRestoreService<FavFolder> implements
     }
 
 
+    /**
+     * 获取用户公开的收藏夹
+     */
     public List<FavInfo> getFavInfos(String uid) throws BusinessException {
         return getFavInfos(uid, 1, 100);
     }
 
+    /**
+     * 获取用户公开的收藏夹
+     */
     public List<FavInfo> getFavInfos(String uid, int pn, int ps) throws BusinessException {
         return new ListApi<>(client, signUser(),
                 "https://api.bilibili.com/x/v3/fav/folder/created/list",
@@ -546,6 +557,9 @@ public class FavoritesService extends BackupRestoreService<FavFolder> implements
     }
 
 
+    /**
+     * 获取公开的收藏夹内容
+     */
     public List<Media> getFavMedias(String mediaId, int pageStart, int pageEnd) throws BusinessException {
         pageApi = new PageApi<>(client, signUser(), "https://api.bilibili.com/x/v3/fav/resource/list",
                 queryParams -> {
@@ -559,21 +573,27 @@ public class FavoritesService extends BackupRestoreService<FavFolder> implements
         return pageApi.getAllData(pageStart, (pageEnd + 1 - pageStart) * 40);
     }
 
-    public List<Media> copy(String srcUid, String srcMediaId, String tarMediaId, int pageStart, int pageEnd) throws BusinessException {
+    /**
+     * 拷贝收藏夹
+     */
+    public List<Media> copy(String srcUid, String srcMediaId, String tarMediaId, int pageStart, int pageEnd, boolean canSwitchFolder) throws BusinessException {
         log.info("获取收藏夹内容中...");
         Map<String, String> params = new HashMap<>();
         List<Media> successMedias = new ArrayList<>();
 
         log.info("获取第{}页~第{}页的内容", pageStart, pageEnd);
         List<Media> medias = getFavMedias(srcMediaId, pageStart, pageEnd);
-        log.info("已获取{}条收藏内容", ListUtil.getSize(medias));
+        int size = ListUtil.getSize(medias);
+        log.info("已获取{}条收藏内容", size);
         if (ListUtil.isEmpty(medias)) {
             log.info("收藏内容，停止拷贝");
             return successMedias;
         }
         Collections.reverse(medias);
         log.info("正在批量拷贝收藏内容，每批最多拷贝{}条数据", 40);
-        for (List<Media> list : ListUtils.partition(medias, 40)) {
+        List<List<Media>> partitioned = ListUtils.partition(medias, 40);
+        for (int i = 0; i < partitioned.size(); i++) {
+            List<Media> list = partitioned.get(i);
             handleInterrupt();
             ModifyApi<Integer> api = new ModifyApi<>(client, signUser(), "https://api.bilibili.com/x/v3/fav/resource/copy", Integer.class);
             params.put("src_media_id", srcMediaId);
@@ -582,14 +602,26 @@ public class FavoritesService extends BackupRestoreService<FavFolder> implements
             params.put("resources", ListUtil.listToString(list.stream().map(media -> media.getId() + ":2").collect(Collectors.toList()), ","));
             ApiResult<Integer> apiResult = api.modify(params);
             if (apiResult.isFail()) {
-                throw new BusinessException("拷贝失败，停止拷贝：" + apiResult.getMessage());
+                log.info("收藏失败：{}({})", apiResult.getMessage(), apiResult.getCode());
+                if (FavFolderUtils.isFavFull(apiResult) && canSwitchFolder) {
+                    log.info("该收藏夹已满，切换收藏夹...");
+                    int countInPageRange = PageUtils.getDataCountInPageRange(size, 40, i + 1, partitioned.size());
+                    tarMediaId = String.valueOf(FavFolderUtils.chooseFavFolder(parentWindow, appIconPath, this,
+                            countInPageRange).getId());
+                    log.info("已切换收藏夹，等待继续...");
+                    i--;
+                    continue;
+                } else {
+                    throw new BusinessException("拷贝失败，停止拷贝：" + apiResult.getMessage());
+                }
+
             }
             successMedias.addAll(list);
             log.info("成功拷贝{}条数据", list.size());
         }
 
         log.info("");
-        log.info("成功拷贝{}条数据", successMedias.size());
+        log.info("本次成功拷贝{}条数据", successMedias.size());
         return successMedias;
     }
 

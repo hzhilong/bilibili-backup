@@ -7,7 +7,7 @@ import io.github.hzhilong.bilibili.backup.app.bean.SavedUser;
 import io.github.hzhilong.bilibili.backup.app.state.GlobalState;
 import io.github.hzhilong.bilibili.backup.gui.component.UserSelector;
 import io.github.hzhilong.bilibili.backup.gui.frame.ViewDMFrame;
-import io.github.hzhilong.bilibili.backup.gui.worker.tools.AutoAnsweringRunnable;
+import io.github.hzhilong.bilibili.backup.gui.worker.tools.AIAnsweringRunnable;
 import io.github.hzhilong.bilibili.backup.gui.worker.tools.CopyFavRunnable;
 import io.github.hzhilong.bilibili.backup.gui.worker.DelaySetProcessingLoggerRunnable;
 import io.github.hzhilong.bilibili.backup.gui.worker.tools.BackupDMRunnable;
@@ -91,7 +91,7 @@ public class ToolsPage extends PagePanel {
         tools.add(new Tool("收藏所有投稿", "收藏其他人投稿的所有视频",
                 FavAllVideosRunnable::new, false));
         tools.add(new Tool("AI转正答题", "使用AI自动完成转正答题",
-                AutoAnsweringRunnable::new, false));
+                AIAnsweringRunnable::new, false));
     }
 
     @Override
