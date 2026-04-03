@@ -5,6 +5,7 @@ import io.github.hzhilong.base.utils.ListUtil;
 import io.github.hzhilong.bilibili.backup.api.bean.ApiResult;
 import io.github.hzhilong.bilibili.backup.api.bean.page.PageCallback;
 import io.github.hzhilong.bilibili.backup.api.bean.page.PageData;
+import io.github.hzhilong.bilibili.backup.api.bean.page.PageableData;
 import io.github.hzhilong.bilibili.backup.api.user.User;
 import io.github.hzhilong.bilibili.backup.app.error.ApiException;
 import lombok.EqualsAndHashCode;
@@ -25,7 +26,7 @@ import java.util.Map;
  */
 @EqualsAndHashCode(callSuper = true)
 @Slf4j
-public class PageApi<D extends PageData<L>, L> extends BaseApi<D> {
+public class PageApi<D extends PageableData<L>, L> extends BaseApi<D> {
 
     public final static int MAX_SIZE = -1;
 

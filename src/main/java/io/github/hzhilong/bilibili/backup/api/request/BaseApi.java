@@ -235,7 +235,7 @@ public class BaseApi<D> implements AddQueryParams {
         Call call = client.newCall(this.getRequest(formParams, jsonBody));
         try (Response response = call.execute()) {
             if (response.isSuccessful() && response.body() != null) {
-                if (this.dataClasses != null && GeneratedMessageV3.class.isAssignableFrom(this.dataClasses[0]) && protoCallback != null) {
+                if (this.dataClasses != null && this.dataClasses[0] != null && GeneratedMessageV3.class.isAssignableFrom(this.dataClasses[0]) && protoCallback != null) {
                     D data = protoCallback.parse(response.body().byteStream());
                     ApiResponse<D> apiResponse = new ApiResponse<>();
                     apiResponse.setBody("");

@@ -15,7 +15,7 @@ import java.util.List;
  */
 @NoArgsConstructor
 @Data
-public class PageData<L> {
+public class PageData<L> implements PageableData<L>{
 
     List<L> list;
 

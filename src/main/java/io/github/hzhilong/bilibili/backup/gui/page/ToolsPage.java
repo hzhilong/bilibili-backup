@@ -11,6 +11,9 @@ import io.github.hzhilong.bilibili.backup.gui.worker.tools.AIAnsweringRunnable;
 import io.github.hzhilong.bilibili.backup.gui.worker.tools.CopyFavRunnable;
 import io.github.hzhilong.bilibili.backup.gui.worker.DelaySetProcessingLoggerRunnable;
 import io.github.hzhilong.bilibili.backup.gui.worker.tools.BackupDMRunnable;
+import io.github.hzhilong.bilibili.backup.gui.worker.tools.DelAtMsgFeedRunnable;
+import io.github.hzhilong.bilibili.backup.gui.worker.tools.DelCommentsByLikeRunnable;
+import io.github.hzhilong.bilibili.backup.gui.worker.tools.DelCommentsByReplyRunnable;
 import io.github.hzhilong.bilibili.backup.gui.worker.tools.FavAllVideosRunnable;
 import io.github.hzhilong.bilibili.backup.gui.worker.tools.OpenAutoReplyRunnable;
 import io.github.hzhilong.bilibili.backup.gui.worker.tools.OpenFrameRunnable;
@@ -92,6 +95,12 @@ public class ToolsPage extends PagePanel {
                 FavAllVideosRunnable::new, false));
         tools.add(new Tool("AI转正答题", "使用AI自动完成转正答题",
                 AIAnsweringRunnable::new, false));
+        tools.add(new Tool("清空[@ 我的]消息", "清空[@ 我的]消息",
+                DelAtMsgFeedRunnable::new));
+        tools.add(new Tool("删除[回复我的]关联评论", "遍历被回复的互动通知，删除其中能定位到的互动评论，并同时删除这些通知。",
+                DelCommentsByReplyRunnable::new));
+        tools.add(new Tool("删除[收到的赞]关联评论", "遍历被点赞的互动通知，删除其中能定位到的互动评论，并同时删除这些通知。",
+                DelCommentsByLikeRunnable::new));
     }
 
     @Override
