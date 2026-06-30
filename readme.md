@@ -1,6 +1,9 @@
 # 哔哩哔哩账号备份
 ![alt icon](./assets/doc/app_logo2-128.png)
 
+> [!WARNING]
+> 该项目已停止维护，相关功能已全部迁移至 [「哔哩工具姬」](https://github.com/hzhilong/bilitoolkit)。
+
 主要功能：一键对B站账号进行数据备份和还原，方便账号数据迁移/快速转生。
 
 > 某些需要转生的原因：

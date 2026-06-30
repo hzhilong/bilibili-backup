@@ -296,7 +296,7 @@ public class MessageService extends BaseService {
     }
 
     /**
-     * 获取所有的点赞通知
+     * 获取所有的回复通知
      */
     public List<JSONObject> getAllReplyMsgFeed() throws BusinessException {
         replyMsgFeedPageApi = new PageApi(client, user,
@@ -318,7 +318,7 @@ public class MessageService extends BaseService {
     }
 
     /**
-     * 获取所有的点赞通知
+     * 获取所有的@通知
      */
     public List<JSONObject> getAllAtMsgFeed() throws BusinessException {
         replyMsgFeedPageApi = new PageApi(client, user,

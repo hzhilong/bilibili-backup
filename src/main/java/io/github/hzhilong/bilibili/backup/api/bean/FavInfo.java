@@ -41,6 +41,6 @@ public class FavInfo {
     }
 
     public int getRemainingCount() {
-        return this.isDefault() ? (50000 - this.getMediaCount()) : 1000 - this.getMediaCount();
+        return this.isDefault() ? (50000 - this.getMediaCount()) : (1000 - this.getMediaCount());
     }
 }

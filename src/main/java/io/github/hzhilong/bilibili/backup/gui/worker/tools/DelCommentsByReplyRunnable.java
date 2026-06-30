@@ -54,7 +54,9 @@ public class DelCommentsByReplyRunnable extends ToolRunnable<BaseService, Void> 
         for (JSONObject msg : allReplyMsg) {
             try {
                 CommentDelParams params = messageService.delCommentByReplyMsg(msg, deletedFlag);
-                deletedFlag.add(params.toCacheKey());
+                if(params!= null){
+                    deletedFlag.add(params.toCacheKey());
+                }
             } catch (BusinessException e) {
                 continue;
             }

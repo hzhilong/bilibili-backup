@@ -162,7 +162,7 @@ public class FollowingService extends RelationService implements NeedContext {
             dialog.setVisible(true);
             oldTags = dialog.getSelectedList();
             if (oldTags == null) {
-                throw new BusinessException("未选择收藏夹");
+                throw new BusinessException("未选择分组");
             }
         }
 
